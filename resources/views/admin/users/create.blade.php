@@ -1,0 +1,153 @@
+@extends('layouts.app')
+
+@section('title', 'Tambah User')
+@section('page-title', 'Tambah User Baru')
+
+@section('sidebar')
+@include('admin.partials.sidebar')
+@endsection
+
+@section('content')
+<!-- Header -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-6">
+    <div class="px-6 py-5 bg-[#27124A]">
+        <div class="flex items-center">
+            <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                <i class="fas fa-user-plus text-white text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-bold text-white">Form Tambah User</h3>
+                <p class="text-sm text-white/90">Tambah user baru untuk akses sistem TraxFit</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Form -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+    <div class="p-8">
+        <form action="{{ route('admin.users.store') }}" method="POST">
+            @csrf
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Username -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700" for="username">
+                        Username <span class="text-[#27124A]">*</span>
+                    </label>
+                    <div class="relative group">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-[#27124A] transition-colors duration-300">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input type="text" name="username" id="username" required
+                               class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#27124A] focus:ring-2 focus:ring-[#27124A]/20 transition-all duration-300"
+                               placeholder="Masukkan username"
+                               value="{{ old('username') }}">
+                    </div>
+                    @error('username')
+                        <div class="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+                            <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                        </div>
+                    @enderror
+                </div>
+                
+                <!-- Password -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700" for="password">
+                        Password <span class="text-[#27124A]">*</span>
+                    </label>
+                    <div class="relative group">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-[#27124A] transition-colors duration-300">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <input type="password" name="password" id="password" required
+                               class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#27124A] focus:ring-2 focus:ring-[#27124A]/20 transition-all duration-300"
+                               placeholder="Masukkan password">
+                    </div>
+                    @error('password')
+                        <div class="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+                            <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                        </div>
+                    @enderror
+                </div>
+                
+                <!-- Nama Lengkap -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700" for="nama">
+                        Nama Lengkap <span class="text-[#27124A]">*</span>
+                    </label>
+                    <div class="relative group">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-[#27124A] transition-colors duration-300">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <input type="text" name="nama" id="nama" required
+                               class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#27124A] focus:ring-2 focus:ring-[#27124A]/20 transition-all duration-300"
+                               placeholder="Masukkan nama lengkap"
+                               value="{{ old('nama') }}">
+                    </div>
+                    @error('nama')
+                        <div class="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+                            <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                        </div>
+                    @enderror
+                </div>
+                
+                <!-- Role -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700" for="role">
+                        Role <span class="text-[#27124A]">*</span>
+                    </label>
+                    <div class="relative group">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-[#27124A] transition-colors duration-300">
+                            <i class="fas fa-user-tag"></i>
+                        </div>
+                        <select name="role" id="role" required
+                                class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#27124A] focus:ring-2 focus:ring-[#27124A]/20 transition-all duration-300 appearance-none">
+                            <option value="" disabled selected>Pilih Role</option>
+                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="kasir" {{ old('role') == 'kasir' ? 'selected' : '' }}>Kasir</option>
+                            <option value="owner" {{ old('role') == 'owner' ? 'selected' : '' }}>Owner</option>
+                        </select>
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    @error('role')
+                        <div class="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+                            <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                        </div>
+                    @enderror
+                </div>
+                
+                <!-- Status -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center p-5 bg-gray-50 rounded-xl border-2 border-gray-200 hover:border-[#27124A] transition-all duration-300">
+                        <div class="relative">
+                            <input type="checkbox" name="status" id="status" value="1" checked
+                                   class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#27124A]"></div>
+                        </div>
+                        <label for="status" class="ml-3 block text-gray-700 font-medium">
+                            Aktifkan user setelah dibuat
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="mt-10 pt-8 border-t border-gray-200">
+                <div class="flex justify-end space-x-4">
+                    <a href="{{ route('admin.users.index') }}" 
+                       class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300 flex items-center border border-gray-300">
+                        <i class="fas fa-times mr-2"></i> Batal
+                    </a>
+                    <button type="submit"
+                            class="px-6 py-3 bg-[#27124A] hover:bg-[#3a1d6b] text-white font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-lg flex items-center group">
+                        <i class="fas fa-user-plus mr-2 group-hover:rotate-12 transition-transform"></i> Simpan User
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

@@ -96,32 +96,55 @@
         </div>
     </div>
     
+    <!-- Alert Messages with consistent spacing and close button -->
     @if(session('success'))
-    <div class="mx-6 mt-6 bg-green-50 border border-green-200 rounded-xl p-4">
+    <div class="mx-6 mt-6 mb-4 bg-green-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
         <div class="flex items-center">
             <div class="flex-shrink-0">
-                <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                <i class="fas fa-check-circle text-green-500 text-lg"></i>
             </div>
             <div class="ml-3">
                 <p class="text-green-700 font-medium">{{ session('success') }}</p>
             </div>
+            <button type="button" class="ml-auto text-green-400 hover:text-green-600" onclick="this.closest('.mx-6').style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
     @endif
     
     @if(session('error'))
-    <div class="mx-6 mt-6 bg-red-50 border border-red-200 rounded-xl p-4">
+    <div class="mx-6 mt-6 mb-4 bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-sm">
         <div class="flex items-center">
             <div class="flex-shrink-0">
-                <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+                <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
             </div>
             <div class="ml-3">
                 <p class="text-red-700 font-medium">{{ session('error') }}</p>
             </div>
+            <button type="button" class="ml-auto text-red-400 hover:text-red-600" onclick="this.closest('.mx-6').style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
     @endif
     
+    @if(session('warning'))
+    <div class="mx-6 mt-6 mb-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4 shadow-sm">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-lg"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-yellow-700 font-medium">{{ session('warning') }}</p>
+            </div>
+            <button type="button" class="ml-auto text-yellow-400 hover:text-yellow-600" onclick="this.closest('.mx-6').style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    @endif
+
     <!-- Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-100">
@@ -135,50 +158,50 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100">
-                @foreach($categories as $category)
+                @forelse($categories as $category)
                 <tr class="hover:bg-gray-50 transition-colors duration-150">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-lg text-gray-600 font-medium text-sm">
                             {{ $loop->iteration }}
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-normal break-words">
-                        <div class="flex items-start">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
                             <div class="flex-shrink-0 w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mr-3">
                                 <i class="fas fa-folder text-[#27124A]"></i>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-medium text-gray-800 break-words">{{ $category->nama_kategori }}</h4>
-                                <p class="text-xs text-gray-400 break-words">ID: {{ $category->id }}</p>
+                            <div>
+                                <h4 class="font-medium text-gray-800">{{ $category->nama_kategori }}</h4>
+                                <p class="text-xs text-gray-400">ID: {{ $category->id }}</p>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-normal break-words">
-                        <div class="flex flex-col items-start min-w-0">
-                            <span class="px-2.5 py-1.5 bg-purple-50 text-[#27124A] rounded-lg text-sm font-medium inline-flex items-center break-words">
-                                <i class="fas fa-box mr-1 text-xs flex-shrink-0"></i> <span class="break-words">{{ $category->products_count }} produk</span>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col items-start">
+                            <span class="px-2.5 py-1.5 bg-purple-50 text-[#27124A] rounded-lg text-sm font-medium inline-flex items-center">
+                                <i class="fas fa-box mr-1 text-xs"></i> {{ $category->products_count }} produk
                             </span>
                             @if($category->products_count > 0)
                             <div class="w-32 h-1.5 bg-gray-100 rounded-full overflow-hidden mt-2">
                                 @php
                                     $percentage = ($category->products_count / max(1, $categories->sum('products_count'))) * 100;
                                 @endphp
-                                <div class="h-full bg-[#27124A] rounded-full" 
+                                <div class="h-full bg-[#27124A] rounded-full progress-bar" 
                                      style="width: {{ $percentage }}%"></div>
                             </div>
                             @endif
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-normal break-words">
-                        <div class="flex flex-col min-w-0">
-                            <span class="text-sm text-gray-700 break-words">{{ $category->created_at->format('d/m/Y') }}</span>
-                            <span class="text-xs text-gray-400 break-words">{{ $category->created_at->format('H:i') }}</span>
+                    <td class="px-6 py-4">
+                        <div>
+                            <span class="text-sm text-gray-700">{{ $category->created_at->format('d/m/Y') }}</span>
+                            <span class="text-xs text-gray-400 block">{{ $category->created_at->format('H:i') }}</span>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center space-x-2">
                             <a href="{{ route('admin.categories.edit', $category->id) }}" 
-                               class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-all duration-300 border border-blue-100 flex-shrink-0"
+                               class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-all duration-300 border border-blue-100"
                                title="Edit Kategori">
                                 <i class="fas fa-edit text-sm"></i>
                             </a>
@@ -187,8 +210,8 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" 
-                                        class="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-all duration-300 border border-red-100 flex-shrink-0"
-                                        onclick="return confirm('Yakin ingin menghapus kategori ini? Tindakan ini akan mempengaruhi ' + {{ $category->products_count }} + ' produk terkait.')"
+                                        class="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-all duration-300 border border-red-100"
+                                        onclick="return confirm('Yakin ingin menghapus kategori {{ $category->nama_kategori }}? Tindakan ini akan mempengaruhi {{ $category->products_count }} produk terkait.')"
                                         title="Hapus Kategori">
                                     <i class="fas fa-trash text-sm"></i>
                                 </button>
@@ -196,90 +219,25 @@
                         </div>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-purple-50 rounded-full mb-4">
+                            <i class="fas fa-tags text-3xl text-[#27124A]"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2">Belum Ada Kategori</h4>
+                        <p class="text-gray-400 text-sm mb-6">Mulai dengan membuat kategori pertama untuk mengelompokkan produk</p>
+                        <a href="{{ route('admin.categories.create') }}" 
+                           class="inline-flex items-center px-5 py-2.5 bg-[#27124A] hover:bg-[#3a1d6b] text-white font-medium rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
+                            <i class="fas fa-plus mr-2"></i> Tambah Kategori Pertama
+                        </a>
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
-    
-    @if($categories->isEmpty())
-    <div class="p-12 text-center">
-        <div class="inline-flex items-center justify-center w-20 h-20 bg-purple-50 rounded-full mb-4">
-            <i class="fas fa-tags text-3xl text-[#27124A]"></i>
-        </div>
-        <h4 class="text-lg font-semibold text-gray-800 mb-2">Belum Ada Kategori</h4>
-        <p class="text-gray-400 text-sm mb-6">Mulai dengan membuat kategori pertama untuk mengelompokkan produk</p>
-        <a href="{{ route('admin.categories.create') }}" 
-           class="inline-flex items-center px-5 py-2.5 bg-[#27124A] hover:bg-[#3a1d6b] text-white font-medium rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
-            <i class="fas fa-plus mr-2"></i> Tambah Kategori Pertama
-        </a>
-    </div>
-    @endif
 </div>
-
-<!-- Analytics Section -->
-@if($categories->isNotEmpty())
-<div class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="p-6 border-b border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-800">Distribusi Produk per Kategori</h3>
-        <p class="text-sm text-gray-500 mt-1">Analisis penyebaran produk dalam setiap kategori</p>
-    </div>
-    
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($categories->sortByDesc('products_count') as $category)
-            <div class="bg-gray-50/50 border border-gray-100 rounded-xl p-5 hover:shadow-sm transition-shadow duration-300">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="min-w-0 flex-1">
-                        <h4 class="font-medium text-gray-800 break-words">{{ $category->nama_kategori }}</h4>
-                        <div class="flex items-center mt-1 flex-wrap">
-                            <span class="text-sm font-medium text-[#27124A] break-words">{{ $category->products_count }} produk</span>
-                            <span class="mx-2 text-gray-300 flex-shrink-0">•</span>
-                            <span class="text-sm text-gray-400 break-words">
-                                {{ number_format(($category->products_count / max(1, $categories->sum('products_count'))) * 100, 1) }}%
-                            </span>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-folder text-[#27124A]"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Progress Bar -->
-                <div class="mb-4">
-                    <div class="flex justify-between text-xs text-gray-400 mb-1 flex-wrap">
-                        <span>Progress</span>
-                        <span class="break-words">{{ $category->products_count }}/{{ $categories->sum('products_count') }}</span>
-                    </div>
-                    <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        @php
-                            $percentage = ($category->products_count / max(1, $categories->sum('products_count'))) * 100;
-                        @endphp
-                        <div class="h-full bg-[#27124A] rounded-full" 
-                             style="width: {{ $percentage }}%"></div>
-                    </div>
-                </div>
-                
-                @if($category->products_count > 0)
-                <div class="border-t border-gray-200 pt-4 mt-4">
-                    <h5 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Contoh Produk:</h5>
-                    <div class="space-y-2">
-                        @foreach($category->products->take(3) as $product)
-                        <div class="flex items-center justify-between text-sm p-2 bg-white rounded-lg border border-gray-100">
-                            <span class="font-medium text-gray-700 truncate break-words flex-1 mr-2">{{ $product->nama_produk }}</span>
-                            <span class="font-medium text-[#27124A] whitespace-nowrap flex-shrink-0">Rp {{ number_format($product->harga, 0, ',', '.') }}</span>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-            </div>
-            @endforeach
-        </div>
-    </div>
-</div>
-@endif
 @endsection
 
 @push('styles')
@@ -314,15 +272,49 @@
         background-color: #27124A;
     }
     
-    /* Word break utilities */
-    .break-words {
-        word-break: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto;
+    /* Custom scrollbar for table */
+    .overflow-x-auto {
+        scrollbar-width: thin;
+        scrollbar-color: #27124A #e5e7eb;
     }
     
-    td {
-        max-width: 300px;
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #e5e7eb;
+        border-radius: 3px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background-color: #422b66;
+        border-radius: 3px;
+    }
+    
+    /* Alert close button hover */
+    [onclick*="this.closest"]:hover {
+        opacity: 0.7;
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    // Auto-hide alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.border-l-4');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                if (alert) {
+                    alert.style.opacity = '0';
+                    alert.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => {
+                        if (alert) alert.style.display = 'none';
+                    }, 500);
+                }
+            }, 5000);
+        });
+    });
+</script>
 @endpush

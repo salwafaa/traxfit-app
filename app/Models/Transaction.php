@@ -13,42 +13,38 @@ class Transaction extends Model
         'id_user',
         'id_member',
         'nomor_unik',
-        'jenis_transaksi', // BARU
+        'jenis_transaksi',
         'total_harga',
         'uang_bayar',
         'uang_kembali',
         'metode_bayar',
         'status_transaksi',
         'catatan',
-        'data_tambahan', // BARU
+        'data_tambahan',
     ];
 
     protected $casts = [
         'total_harga' => 'decimal:2',
         'uang_bayar' => 'decimal:2',
         'uang_kembali' => 'decimal:2',
-        'data_tambahan' => 'array', // PENTING: biar otomatis jadi array
+        'data_tambahan' => 'array',
     ];
 
-    // Relasi dengan user/kasir
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    // Relasi dengan member
     public function member()
     {
         return $this->belongsTo(Member::class, 'id_member');
     }
 
-    // Relasi dengan detail transaksi
     public function details()
     {
         return $this->hasMany(TransactionDetail::class, 'id_transaction');
     }
 
-    // HELPER FUNCTIONS UNTUK CEK JENIS TRANSAKSI
     public function isProdukOnly()
     {
         return $this->jenis_transaksi === 'produk';
@@ -74,7 +70,6 @@ class Transaction extends Model
         return $this->jenis_transaksi === 'produk_membership';
     }
 
-    // HELPER UNTUK AKSES DATA VISIT
     public function getDataVisitAttribute()
     {
         if ($this->isVisitOnly() || $this->isProdukDanVisit()) {
@@ -86,7 +81,6 @@ class Transaction extends Model
         return null;
     }
 
-    // HELPER UNTUK AKSES DATA MEMBERSHIP
     public function getDataMembershipAttribute()
     {
         if ($this->isMembershipOnly() || $this->isProdukDanMembership()) {
@@ -102,7 +96,6 @@ class Transaction extends Model
         return null;
     }
 
-    // Generate nomor unik
     public static function generateNomorUnik()
     {
         $prefix = 'TRX' . date('Ymd');

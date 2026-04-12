@@ -8,6 +8,57 @@
 @endsection
 
 @section('content')
+
+{{-- 
+    ============================================================
+    NORMALISASI data_tambahan membership
+    Dua controller menyimpan struktur berbeda:
+    
+    TransactionController (via kasir umum):
+        data_tambahan['nama_paket'], ['harga_paket'], ['durasi_hari'], ['tgl_mulai'], ['tgl_selesai']
+    
+    MembershipTransactionController:
+        data_tambahan['paket_membership']['nama'], ['paket_membership']['harga'],
+        data_tambahan['paket_membership']['durasi_hari'], ['tgl_mulai'], ['tgl_selesai']
+    
+    Kita normalisasi ke satu variabel $ms agar blade tidak duplikat.
+    ============================================================
+--}}
+@php
+    $dt = $transaction->data_tambahan ?? [];
+
+    // Deteksi format mana yang dipakai
+    if (!empty($dt['paket_membership']) && is_array($dt['paket_membership'])) {
+        // Format MembershipTransactionController
+        $ms = [
+            'nama_paket'  => $dt['paket_membership']['nama']        ?? '-',
+            'harga_paket' => $dt['paket_membership']['harga']        ?? 0,
+            'durasi_hari' => $dt['paket_membership']['durasi_hari']  ?? 0,
+            'tgl_mulai'   => $dt['tgl_mulai']   ?? null,
+            'tgl_selesai' => $dt['tgl_selesai'] ?? null,
+            'is_renewal'  => $dt['is_renewal']  ?? false,
+        ];
+    } else {
+        // Format TransactionController (kasir umum)
+        $ms = [
+            'nama_paket'  => $dt['nama_paket']  ?? '-',
+            'harga_paket' => $dt['harga_paket'] ?? 0,
+            'durasi_hari' => $dt['durasi_hari'] ?? 0,
+            'tgl_mulai'   => $dt['tgl_mulai']   ?? null,
+            'tgl_selesai' => $dt['tgl_selesai'] ?? null,
+            'is_renewal'  => false,
+        ];
+    }
+
+    // Fallback: kalau nama_paket masih kosong, coba ambil dari relasi member->package
+    if (($ms['nama_paket'] === '-' || $ms['nama_paket'] === '') && $transaction->member?->package) {
+        $pkg = $transaction->member->package;
+        $ms['nama_paket']  = $pkg->nama_paket  ?? '-';
+        $ms['harga_paket'] = $ms['harga_paket'] ?: ($pkg->harga ?? 0);
+        $ms['durasi_hari'] = $ms['durasi_hari'] ?: ($pkg->durasi_hari ?? 0);
+    }
+@endphp
+
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -69,11 +120,11 @@
                                 <label class="block text-xs text-gray-500 mb-1">Jenis Transaksi</label>
                                 @php
                                     $jenisLabels = [
-                                        'produk' => ['Produk Only', 'blue'],
-                                        'visit' => ['Visit Only', 'green'],
-                                        'membership' => ['Membership Only', 'purple'],
-                                        'produk_visit' => ['Produk + Visit', 'orange'],
-                                        'produk_membership' => ['Produk + Membership', 'red']
+                                        'produk'            => ['Produk Only',           'blue'],
+                                        'visit'             => ['Visit Only',             'green'],
+                                        'membership'        => ['Membership Only',        'purple'],
+                                        'produk_visit'      => ['Produk + Visit',         'orange'],
+                                        'produk_membership' => ['Produk + Membership',    'red'],
                                     ];
                                     $label = $jenisLabels[$transaction->jenis_transaksi] ?? ['Unknown', 'gray'];
                                 @endphp
@@ -100,7 +151,7 @@
                     </div>
                 </div>
 
-                <!-- Detail Visit (dari data_tambahan) -->
+                <!-- Detail Visit -->
                 @if($transaction->isVisitOnly() || $transaction->isProdukDanVisit())
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">🏃‍♂️ Detail Visit</h4>
@@ -108,49 +159,60 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Harga Visit</label>
-                                <p class="font-medium text-gray-800">Rp {{ number_format($transaction->data_tambahan['harga_visit'] ?? 0, 0, ',', '.') }}</p>
+                                <p class="font-medium text-gray-800">Rp {{ number_format($dt['harga_visit'] ?? 0, 0, ',', '.') }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Tanggal Visit</label>
-                                <p class="font-medium text-gray-800">{{ isset($transaction->data_tambahan['tgl_visit']) ? Carbon\Carbon::parse($transaction->data_tambahan['tgl_visit'])->format('d F Y H:i') : '-' }}</p>
+                                <p class="font-medium text-gray-800">
+                                    {{ isset($dt['tgl_visit']) ? \Carbon\Carbon::parse($dt['tgl_visit'])->format('d F Y H:i') : '-' }}
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
                 @endif
 
-                <!-- Detail Membership (dari data_tambahan) -->
+                <!-- Detail Membership — menggunakan $ms yang sudah dinormalisasi -->
                 @if($transaction->isMembershipOnly() || $transaction->isProdukDanMembership())
                 <div class="mb-6">
-                    <h4 class="font-semibold text-gray-800 mb-3">🎫 Detail Membership</h4>
+                    <h4 class="font-semibold text-gray-800 mb-3">
+                        🎫 Detail Membership
+                        @if($ms['is_renewal'])
+                            <span class="ml-2 text-xs font-normal px-2 py-1 bg-blue-100 text-blue-700 rounded-lg">Perpanjangan</span>
+                        @endif
+                    </h4>
                     <div class="bg-purple-50 rounded-xl p-5 border border-purple-200">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Paket Membership</label>
-                                <p class="font-medium text-gray-800">{{ $transaction->data_tambahan['nama_paket'] ?? '-' }}</p>
+                                <p class="font-semibold text-gray-800">{{ $ms['nama_paket'] }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Harga Paket</label>
-                                <p class="font-medium text-gray-800">Rp {{ number_format($transaction->data_tambahan['harga_paket'] ?? 0, 0, ',', '.') }}</p>
+                                <p class="font-medium text-gray-800">Rp {{ number_format($ms['harga_paket'], 0, ',', '.') }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Durasi</label>
-                                <p class="font-medium text-gray-800">{{ $transaction->data_tambahan['durasi_hari'] ?? 0 }} Hari</p>
+                                <p class="font-medium text-gray-800">{{ $ms['durasi_hari'] }} Hari</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Tanggal Mulai</label>
-                                <p class="font-medium text-gray-800">{{ isset($transaction->data_tambahan['tgl_mulai']) ? Carbon\Carbon::parse($transaction->data_tambahan['tgl_mulai'])->format('d F Y H:i') : '-' }}</p>
+                                <p class="font-medium text-gray-800">
+                                    {{ $ms['tgl_mulai'] ? \Carbon\Carbon::parse($ms['tgl_mulai'])->format('d F Y') : '-' }}
+                                </p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Tanggal Selesai</label>
-                                <p class="font-medium text-gray-800">{{ isset($transaction->data_tambahan['tgl_selesai']) ? Carbon\Carbon::parse($transaction->data_tambahan['tgl_selesai'])->format('d F Y H:i') : '-' }}</p>
+                                <p class="font-medium text-gray-800">
+                                    {{ $ms['tgl_selesai'] ? \Carbon\Carbon::parse($ms['tgl_selesai'])->format('d F Y') : '-' }}
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
                 @endif
 
-                <!-- Detail Produk (dari transaction_details) -->
+                <!-- Detail Produk -->
                 @if($transaction->details->count() > 0)
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">📦 Detail Produk</h4>
@@ -224,15 +286,21 @@
                                 <span class="text-sm text-gray-600">Kode</span>
                                 <span class="font-mono text-sm bg-white px-2 py-1 rounded-lg">{{ $transaction->member->kode_member }}</span>
                             </div>
+                            @if($transaction->member->package)
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Paket</span>
+                                <span class="text-sm font-medium text-purple-700">{{ $transaction->member->package->nama_paket }}</span>
+                            </div>
+                            @endif
                         </div>
                     </div>
                     @endif
                     
                     <div class="space-y-3 mb-6">
                         @php
-                            $subtotalProduk = $transaction->details->sum('subtotal');
-                            $biayaVisit = $transaction->data_tambahan['harga_visit'] ?? 0;
-                            $biayaMembership = $transaction->data_tambahan['harga_paket'] ?? 0;
+                            $subtotalProduk   = $transaction->details->sum('subtotal');
+                            $biayaVisit       = $dt['harga_visit'] ?? 0;
+                            $biayaMembership  = $ms['harga_paket'] ?? 0;
                         @endphp
 
                         @if($subtotalProduk > 0)
@@ -251,7 +319,12 @@
 
                         @if($biayaMembership > 0)
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Biaya Membership</span>
+                            <span class="text-gray-600">
+                                Biaya Membership
+                                @if($ms['nama_paket'] !== '-')
+                                    <span class="block text-xs text-purple-600">({{ $ms['nama_paket'] }})</span>
+                                @endif
+                            </span>
                             <span class="font-medium text-purple-600">Rp {{ number_format($biayaMembership, 0, ',', '.') }}</span>
                         </div>
                         @endif

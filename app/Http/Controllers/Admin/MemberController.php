@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\MembershipPackage;
 use App\Models\Log;
+use App\Models\Transaction;
+use App\Models\MemberCheckin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class MemberController extends Controller
@@ -17,7 +20,8 @@ class MemberController extends Controller
      */
     public function index()
     {
-        // Ambil semua member dengan package
+        // Ambil semua member dengan package (include yang soft deleted juga ditampilkan?)
+        // Untuk admin, tampilkan semua termasuk yang sudah dihapus
         $members = Member::with('package')->latest()->get();
         
         // Hitung member aktif (status active DAN tgl_expired >= hari ini)
@@ -63,7 +67,10 @@ class MemberController extends Controller
      */
     public function show($id)
     {
-        $member = Member::with('package', 'transactions')->findOrFail($id);
+        $member = Member::with(['package', 'transactions' => function($query) {
+            $query->latest()->limit(20);
+        }, 'creator'])->findOrFail($id);
+        
         return view('admin.members.show', compact('member'));
     }
 
@@ -88,10 +95,13 @@ class MemberController extends Controller
             'nama' => 'required|string|max:255',
             'telepon' => 'nullable|numeric',
             'alamat' => 'nullable|string',
-            'jenis_member' => 'nullable|string|in:Regular,Premium,VIP,Student,Corporate',
+            'jenis_identitas' => 'nullable|string|in:KTP,Passport,SIM,Other',
+            'no_identitas' => 'nullable|string|max:50',
+            'tgl_lahir' => 'nullable|date',
             'id_paket' => 'required|exists:membership_packages,id',
             'tgl_expired' => 'required|date',
             'status' => 'required|in:active,expired',
+            'foto_identitas' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         DB::beginTransaction();
@@ -119,11 +129,26 @@ class MemberController extends Controller
                 'nama' => $request->nama,
                 'telepon' => $request->telepon,
                 'alamat' => $request->alamat,
-                'jenis_member' => $request->jenis_member,
+                'jenis_identitas' => $request->jenis_identitas,
+                'no_identitas' => $request->no_identitas,
+                'tgl_lahir' => $request->tgl_lahir,
                 'id_paket' => $request->id_paket,
                 'tgl_expired' => $request->tgl_expired,
                 'status' => $status,
             ];
+
+            // Handle upload foto identitas
+            if ($request->hasFile('foto_identitas')) {
+                // Hapus foto lama jika ada
+                if ($member->foto_identitas && Storage::disk('public')->exists($member->foto_identitas)) {
+                    Storage::disk('public')->delete($member->foto_identitas);
+                }
+                
+                $file = $request->file('foto_identitas');
+                $filename = 'identitas_' . $member->kode_member . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('identitas', $filename, 'public');
+                $data['foto_identitas'] = $path;
+            }
 
             $member->update($data);
 
@@ -164,6 +189,7 @@ class MemberController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * PERBAIKAN: Soft delete dengan pengecekan foreign key
      */
     public function destroy($id)
     {
@@ -174,27 +200,61 @@ class MemberController extends Controller
             $namaMember = $member->nama;
             $kodeMember = $member->kode_member;
             
-            // Hapus member
-            $member->delete();
-
-            // Log aktivitas
-            Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
-                'activity' => 'Delete Member',
-                'keterangan' => 'Admin menghapus member: ' . $namaMember . ' (' . $kodeMember . ')',
-            ]);
-
-            DB::commit();
-
-            return redirect()->route('admin.members.index')
-                ->with('success', 'Member ' . $namaMember . ' berhasil dihapus.');
+            // Cek apakah member memiliki transaksi atau checkin
+            $hasTransactions = $member->transactions()->count() > 0;
+            $hasCheckins = $member->checkins()->count() > 0;
+            
+            if ($hasTransactions || $hasCheckins) {
+                // Jika memiliki data terkait, lakukan soft delete
+                $member->delete(); // Soft delete karena sudah menggunakan SoftDeletes
+                
+                $keterangan = 'Admin menghapus member (soft delete): ' . $namaMember . ' (' . $kodeMember . ')';
+                
+                if ($hasTransactions) {
+                    $keterangan .= '. Member memiliki ' . $member->transactions()->count() . ' transaksi.';
+                }
+                if ($hasCheckins) {
+                    $keterangan .= ' Member memiliki ' . $member->checkins()->count() . ' history checkin.';
+                }
+                
+                Log::create([
+                    'id_user' => auth()->id(),
+                    'role_user' => auth()->user()->role,
+                    'activity' => 'Delete Member (Soft)',
+                    'keterangan' => $keterangan,
+                ]);
+                
+                DB::commit();
+                
+                return redirect()->route('admin.members.index')
+                    ->with('success', 'Member ' . $namaMember . ' berhasil dinonaktifkan (soft delete). Data transaksi tetap tersimpan.');
+            } else {
+                // Hapus foto identitas jika ada
+                if ($member->foto_identitas && Storage::disk('public')->exists($member->foto_identitas)) {
+                    Storage::disk('public')->delete($member->foto_identitas);
+                }
+                
+                // Jika tidak memiliki data terkait, hapus permanen
+                $member->forceDelete();
+                
+                Log::create([
+                    'id_user' => auth()->id(),
+                    'role_user' => auth()->user()->role,
+                    'activity' => 'Delete Member (Permanent)',
+                    'keterangan' => 'Admin menghapus permanen member: ' . $namaMember . ' (' . $kodeMember . ')',
+                ]);
+                
+                DB::commit();
+                
+                return redirect()->route('admin.members.index')
+                    ->with('success', 'Member ' . $namaMember . ' berhasil dihapus permanen.');
+            }
                 
         } catch (\Exception $e) {
             DB::rollback();
             
             return redirect()->route('admin.members.index')
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat menghapus member: ' . $e->getMessage());
         }
     }
 

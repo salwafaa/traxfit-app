@@ -203,7 +203,6 @@
 </head>
 <body>
     <div class="receipt">
-        <!-- Header -->
         <div class="header">
             <div class="title">{{ $gymSettings->nama_gym ?? 'TRAXFIT GYM' }}</div>
             @if($gymSettings && $gymSettings->alamat)
@@ -215,7 +214,6 @@
             <div class="divider">✦ ✦ ✦ ✦ ✦</div>
         </div>
         
-        <!-- Transaction Info -->
         <div class="transaction-info">
             <div class="info-row">
                 <span class="info-label">No. Transaksi</span>
@@ -227,7 +225,7 @@
             </div>
             <div class="info-row">
                 <span class="info-label">Kasir</span>
-                <span class="info-value">{{ $transaction->user->nama }}</span>
+                <span class="info-value">{{ $transaction->user->nama ?? $transaction->user->name }}</span>
             </div>
             <div class="info-row">
                 <span class="info-label">Jenis</span>
@@ -243,12 +241,11 @@
             </div>
         </div>
 
-        <!-- Member Section -->
         <div class="member-section">
             <div class="member-title">👤 DATA MEMBER BARU</div>
             <div class="member-row">
                 <span>Kode Member</span>
-                <span class="font-mono font-bold">{{ $transaction->member->kode_member }}</span>
+                <span style="font-family: monospace; font-weight: bold;">{{ $transaction->member->kode_member }}</span>
             </div>
             <div class="member-row">
                 <span>Nama</span>
@@ -264,7 +261,6 @@
             </div>
         </div>
 
-        <!-- Membership Section -->
         <div class="membership-section">
             <div class="member-title">🎫 MEMBERSHIP</div>
             @php
@@ -292,7 +288,6 @@
             </div>
         </div>
         
-        <!-- Items -->
         @if($transaction->details->count() > 0)
         <table class="items">
             <thead>
@@ -316,7 +311,6 @@
         </table>
         @endif
         
-        <!-- Totals -->
         <div class="total-section">
             @php
                 $subtotalProduk = $transaction->details->sum('subtotal');
@@ -349,7 +343,6 @@
             </div>
         </div>
         
-        <!-- Footer -->
         <div class="footer">
             <div class="thank-you">SELAMAT BERGABUNG!</div>
             <div>Terima kasih telah menjadi member</div>
@@ -358,7 +351,6 @@
         </div>
     </div>
     
-    <!-- Buttons -->
     <div class="no-print" style="margin-top: 20px; text-align: center;">
         <button onclick="window.print()" class="print-button">
             <i class="fas fa-print"></i> Cetak Struk

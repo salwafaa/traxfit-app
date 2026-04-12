@@ -24,7 +24,6 @@ class GymSettingController extends Controller
             ]);
         }
         
-        // LOG: Admin melihat pengaturan gym
         try {
             Log::create([
                 'id_user' => auth()->id(),
@@ -47,7 +46,6 @@ class GymSettingController extends Controller
             'nama_gym' => 'required|string|max:255',
             'alamat' => 'nullable|string',
             'telepon' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
             'footer_struk' => 'nullable|string|max:255',
             'harga_visit' => 'required|numeric|min:0|max:10000000',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -65,7 +63,6 @@ class GymSettingController extends Controller
                 'nama_gym' => $request->nama_gym,
                 'alamat' => $request->alamat,
                 'telepon' => $request->telepon,
-                'email' => $request->email,
                 'footer_struk' => $request->footer_struk,
                 'harga_visit' => $request->harga_visit,
             ];
@@ -84,7 +81,6 @@ class GymSettingController extends Controller
             
             FacadesLog::info('Settings saved:', $setting->toArray());
 
-            // LOG AKTIVITAS - SEKARANG DIAKTIFKAN
             try {
                 Log::create([
                     'id_user' => auth()->id(),

@@ -156,16 +156,16 @@
                 <span>Menampilkan {{ $products->firstItem() ?? 0 }} - {{ $products->lastItem() ?? 0 }} dari {{ $products->total() }} produk</span>
             </div>
             
-            <div class="flex gap-2">
-                <a href="{{ route('owner.laporan.stok', array_merge(request()->query(), ['export' => 'pdf'])) }}" 
-                   class="bg-red-600 hover:bg-red-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center">
-                    <i class="fas fa-file-pdf mr-1 md:mr-2"></i> PDF
-                </a>
-                <a href="{{ route('owner.laporan.stok', array_merge(request()->query(), ['export' => 'excel'])) }}" 
-                   class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center">
-                    <i class="fas fa-file-excel mr-1 md:mr-2"></i> Excel
-                </a>
-            </div>
+           <div class="flex gap-2">
+    <a href="{{ route('owner.laporan.stok', array_merge(request()->query(), ['export' => 'pdf'])) }}" 
+       class="bg-red-600 hover:bg-red-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center">
+        <i class="fas fa-file-pdf mr-1 md:mr-2"></i> PDF
+    </a>
+    <a href="{{ route('owner.laporan.stok', array_merge(request()->query(), ['export' => 'excel'])) }}" 
+       class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center">
+        <i class="fas fa-file-excel mr-1 md:mr-2"></i> Excel
+    </a>
+</div>
         </div>
 
         <!-- Table Produk -->
@@ -254,125 +254,6 @@
         <div class="p-3 md:p-4 border-t border-gray-100">
             <div class="overflow-x-auto">
                 {{ $products->withQueryString()->links() }}
-            </div>
-        </div>
-        @endif
-    </div>
-
-    <!-- Paket Membership & Distribusi Stok -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <!-- Paket Membership -->
-        <div class="lg:col-span-1 bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-3 md:p-4 border-b border-gray-100">
-                <h3 class="text-sm md:text-base font-semibold text-gray-800">Paket Membership Aktif</h3>
-                <p class="text-xs md:text-sm text-gray-500 mt-0.5">Paket yang tersedia untuk member</p>
-            </div>
-            
-            <div class="divide-y divide-gray-100">
-                @forelse($membershipPackages->where('status', true) as $package)
-                <div class="p-3 md:p-4 hover:bg-gray-50 transition-colors">
-                    <div class="flex items-start">
-                        <div class="w-8 h-8 md:w-10 md:h-10 bg-yellow-50 rounded-xl flex items-center justify-center mr-3 flex-shrink-0">
-                            <i class="fas fa-crown text-[#27124A] text-sm md:text-base"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between mb-1">
-                                <h4 class="text-xs md:text-sm font-semibold text-gray-800 truncate">{{ $package->nama_paket }}</h4>
-                                <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Aktif</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 mt-2">
-                                <div>
-                                    <p class="text-xs text-gray-400">Harga</p>
-                                    <p class="text-xs md:text-sm font-medium text-[#27124A]">{{ $package->harga_formatted }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-400">Durasi</p>
-                                    <p class="text-xs md:text-sm font-medium text-gray-700">{{ $package->durasi_formatted }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="p-6 md:p-8 text-center">
-                    <div class="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-purple-50 rounded-full mb-3">
-                        <i class="fas fa-crown text-lg md:text-xl text-[#27124A]"></i>
-                    </div>
-                    <p class="text-xs md:text-sm text-gray-500">Tidak ada paket aktif</p>
-                </div>
-                @endforelse
-            </div>
-        </div>
-
-        <!-- Distribusi Stok -->
-        @if($products->isNotEmpty())
-        <div class="lg:col-span-2 bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-3 md:p-4 border-b border-gray-100">
-                <h3 class="text-sm md:text-base font-semibold text-gray-800">Distribusi Status Stok</h3>
-                <p class="text-xs md:text-sm text-gray-500 mt-0.5">Analisis kondisi stok produk</p>
-            </div>
-            
-            <div class="p-3 md:p-4">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-                    <!-- Tersedia -->
-                    <div class="bg-green-50/50 border border-green-100 rounded-lg md:rounded-xl p-3 md:p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs md:text-sm font-medium text-gray-600">Tersedia</span>
-                            <span class="text-base md:text-lg font-bold text-green-600">{{ $products->where('stok', '>', 5)->count() }}</span>
-                        </div>
-                        <div class="w-full h-1.5 md:h-2 bg-gray-200 rounded-full overflow-hidden">
-                            <div class="h-full bg-green-500 rounded-full" 
-                                 style="width: {{ ($products->where('stok', '>', 5)->count() / max($products->count(), 1)) * 100 }}%"></div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">{{ round(($products->where('stok', '>', 5)->count() / max($products->count(), 1)) * 100, 1) }}% dari total</p>
-                    </div>
-                    
-                    <!-- Menipis -->
-                    <div class="bg-yellow-50/50 border border-yellow-100 rounded-lg md:rounded-xl p-3 md:p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs md:text-sm font-medium text-gray-600">Menipis</span>
-                            <span class="text-base md:text-lg font-bold text-yellow-600">{{ $products->where('stok', '<=', 5)->where('stok', '>', 0)->count() }}</span>
-                        </div>
-                        <div class="w-full h-1.5 md:h-2 bg-gray-200 rounded-full overflow-hidden">
-                            <div class="h-full bg-yellow-500 rounded-full" 
-                                 style="width: {{ ($products->where('stok', '<=', 5)->where('stok', '>', 0)->count() / max($products->count(), 1)) * 100 }}%"></div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">{{ round(($products->where('stok', '<=', 5)->where('stok', '>', 0)->count() / max($products->count(), 1)) * 100, 1) }}% dari total</p>
-                    </div>
-                    
-                    <!-- Habis -->
-                    <div class="bg-red-50/50 border border-red-100 rounded-lg md:rounded-xl p-3 md:p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs md:text-sm font-medium text-gray-600">Habis</span>
-                            <span class="text-base md:text-lg font-bold text-red-600">{{ $products->where('stok', 0)->count() }}</span>
-                        </div>
-                        <div class="w-full h-1.5 md:h-2 bg-gray-200 rounded-full overflow-hidden">
-                            <div class="h-full bg-red-500 rounded-full" 
-                                 style="width: {{ ($products->where('stok', 0)->count() / max($products->count(), 1)) * 100 }}%"></div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">{{ round(($products->where('stok', 0)->count() / max($products->count(), 1)) * 100, 1) }}% dari total</p>
-                    </div>
-                </div>
-
-                <!-- Statistik Tambahan -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-gray-100">
-                    <div class="text-center">
-                        <p class="text-xs text-gray-400">Total Produk Aktif</p>
-                        <p class="text-sm md:text-base font-semibold text-gray-800">{{ $products->where('status', true)->count() }}</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-xs text-gray-400">Total Kategori</p>
-                        <p class="text-sm md:text-base font-semibold text-gray-800">{{ $categories->count() ?? 0 }}</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-xs text-gray-400">Paket Aktif</p>
-                        <p class="text-sm md:text-base font-semibold text-gray-800">{{ $membershipPackages->where('status', true)->count() ?? 0 }}</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-xs text-gray-400">Nilai per Produk</p>
-                        <p class="text-sm md:text-base font-semibold text-gray-800">Rp {{ number_format($totalNilaiStok / max($totalProduk, 1), 0, ',', '.') }}</p>
-                    </div>
-                </div>
             </div>
         </div>
         @endif

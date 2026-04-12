@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struk #{{ $transaction->nomor_unik }}</title>
     <style>
-        /* Sama seperti sebelumnya */
         @media print {
             body { 
                 font-family: 'Courier New', monospace;

@@ -9,7 +9,7 @@
 
 @section('content')
 <div class="space-y-4 md:space-y-6 w-full max-w-full overflow-hidden">
-    <!-- Stats Cards - Responsive Grid -->
+    <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 w-full">
         <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4 lg:p-5 min-w-0">
             <div class="flex items-center justify-between">
@@ -88,7 +88,7 @@
             </div>
         </div>
 
-        <!-- Filter - Responsive Grid -->
+        <!-- Filter -->
         <div class="p-3 md:p-4 lg:p-5 border-b border-gray-100 bg-gray-50/50">
             <form method="GET" action="{{ route('admin.transaksi.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 md:gap-3">
                 <div class="min-w-0">
@@ -154,7 +154,7 @@
             </form>
         </div>
 
-        <!-- Table - Responsive dengan overflow -->
+        <!-- Table -->
         <div class="overflow-x-auto w-full">
             <div class="inline-block min-w-full align-middle">
                 <table class="min-w-full divide-y divide-gray-100 table-auto">
@@ -204,12 +204,12 @@
                                         </div>
                                         <span class="text-xs text-gray-700 truncate max-w-[80px]">{{ $transaction->user->nama ?? '-' }}</span>
                                     </div>
-                                </td>
+                                 </td>
                                 <td class="px-2 md:px-3 py-2 md:py-3 whitespace-nowrap">
                                     <span class="px-2 py-1 text-xs rounded-lg font-medium bg-{{ $label[1] }}-50 text-{{ $label[1] }}-700 whitespace-nowrap">
                                         {{ $label[0] }}
                                     </span>
-                                </td>
+                                 </td>
                                 <td class="px-2 md:px-3 py-2 md:py-3 whitespace-nowrap hidden lg:table-cell">
                                     @if($transaction->member)
                                         <div class="flex items-center">
@@ -224,12 +224,12 @@
                                     @else
                                         <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs whitespace-nowrap">Non-Member</span>
                                     @endif
-                                </td>
+                                 </td>
                                 <td class="px-2 md:px-3 py-2 md:py-3 whitespace-nowrap">
                                     <span class="px-2 py-1 bg-blue-50 text-[#27124A] rounded-lg text-xs font-bold whitespace-nowrap">
                                         Rp {{ number_format($transaction->total_harga, 0, ',', '.') }}
                                     </span>
-                                </td>
+                                 </td>
                                 <td class="px-2 md:px-3 py-2 md:py-3 whitespace-nowrap hidden sm:table-cell">
                                     <div class="flex items-center">
                                         <div class="w-6 h-6 md:w-7 md:h-7 bg-gray-50 rounded-lg flex items-center justify-center mr-1 flex-shrink-0">
@@ -240,7 +240,7 @@
                                             <div class="text-xs text-gray-400">{{ $transaction->created_at->format('d/m/Y') }}</div>
                                         </div>
                                     </div>
-                                </td>
+                                 </td>
                                 <td class="px-2 md:px-3 py-2 md:py-3 whitespace-nowrap">
                                     <div class="flex items-center gap-1 md:gap-2">
                                         <a href="{{ route('admin.transaksi.show', $transaction->id) }}"
@@ -248,13 +248,8 @@
                                             title="Detail Transaksi">
                                             <i class="fas fa-eye text-xs"></i>
                                         </a>
-                                        <a href="{{ route('admin.transaksi.struk', $transaction->id) }}"
-                                            class="p-1 md:p-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition-all duration-300 border border-green-100"
-                                            title="Cetak Struk" target="_blank">
-                                            <i class="fas fa-print text-xs"></i>
-                                        </a>
                                     </div>
-                                </td>
+                                 </td>
                             </tr>
                         @empty
                             <tr>
@@ -264,7 +259,7 @@
                                     </div>
                                     <h4 class="text-sm md:text-base font-semibold text-gray-800 mb-1">Belum Ada Transaksi</h4>
                                     <p class="text-xs md:text-sm text-gray-400">Belum ada data transaksi dari kasir</p>
-                                </td>
+                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -280,40 +275,85 @@
                 </div>
             </div>
         @endif
-    </div>
-
-    <!-- Summary by Type - Responsive Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
-        @php
-            $jenisCount = [
-                'produk' => $transactions->where('jenis_transaksi', 'produk')->count(),
-                'visit' => $transactions->where('jenis_transaksi', 'visit')->count(),
-                'membership' => $transactions->where('jenis_transaksi', 'membership')->count(),
-                'produk_visit' => $transactions->where('jenis_transaksi', 'produk_visit')->count(),
-                'produk_membership' => $transactions->where('jenis_transaksi', 'produk_membership')->count(),
-            ];
-        @endphp
-
-        <div class="bg-blue-50 border border-blue-200 rounded-lg md:rounded-xl p-2 md:p-3 min-w-0">
-            <div class="text-xs md:text-sm text-blue-600 mb-0.5 truncate">Produk Only</div>
-            <div class="text-base md:text-lg lg:text-xl font-bold text-blue-800 truncate">{{ $jenisCount['produk'] }}</div>
         </div>
-        <div class="bg-green-50 border border-green-200 rounded-lg md:rounded-xl p-2 md:p-3 min-w-0">
-            <div class="text-xs md:text-sm text-green-600 mb-0.5 truncate">Visit Only</div>
-            <div class="text-base md:text-lg lg:text-xl font-bold text-green-800 truncate">{{ $jenisCount['visit'] }}</div>
-        </div>
-        <div class="bg-purple-50 border border-purple-200 rounded-lg md:rounded-xl p-2 md:p-3 min-w-0">
-            <div class="text-xs md:text-sm text-purple-600 mb-0.5 truncate">Membership</div>
-            <div class="text-base md:text-lg lg:text-xl font-bold text-purple-800 truncate">{{ $jenisCount['membership'] }}</div>
-        </div>
-        <div class="bg-orange-50 border border-orange-200 rounded-lg md:rounded-xl p-2 md:p-3 min-w-0">
-            <div class="text-xs md:text-sm text-orange-600 mb-0.5 truncate">P+Visit</div>
-            <div class="text-base md:text-lg lg:text-xl font-bold text-orange-800 truncate">{{ $jenisCount['produk_visit'] }}</div>
-        </div>
-        <div class="bg-red-50 border border-red-200 rounded-lg md:rounded-xl p-2 md:p-3 min-w-0">
-            <div class="text-xs md:text-sm text-red-600 mb-0.5 truncate">P+Member</div>
-            <div class="text-base md:text-lg lg:text-xl font-bold text-red-800 truncate">{{ $jenisCount['produk_membership'] }}</div>
-        </div>
-    </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                background: '#fff',
+                color: '#27124A',
+                confirmButtonColor: '#27124A',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'bg-[#27124A] hover:bg-[#3a1d6b] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300'
+                }
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: '{{ session('error') }}',
+                background: '#fff',
+                color: '#27124A',
+                confirmButtonColor: '#27124A',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'bg-[#27124A] hover:bg-[#3a1d6b] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300'
+                }
+            });
+        @endif
+
+        @if(session('warning'))
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian!',
+                text: '{{ session('warning') }}',
+                background: '#fff',
+                color: '#27124A',
+                confirmButtonColor: '#27124A',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'bg-[#27124A] hover:bg-[#3a1d6b] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300'
+                }
+            });
+        @endif
+
+        @if(session('info'))
+            Swal.fire({
+                icon: 'info',
+                title: 'Informasi',
+                text: '{{ session('info') }}',
+                background: '#fff',
+                color: '#27124A',
+                confirmButtonColor: '#27124A',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'bg-[#27124A] hover:bg-[#3a1d6b] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300'
+                }
+            });
+        @endif
+    });
+</script>
+@endpush
 @endsection

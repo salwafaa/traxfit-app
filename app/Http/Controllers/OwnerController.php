@@ -7,8 +7,11 @@ use App\Models\Member;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\GymSetting;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class OwnerController extends Controller
@@ -116,5 +119,100 @@ class OwnerController extends Controller
             'visitHariIni',
             'membershipBaru'
         ));
+    }
+
+    /**
+     * Halaman profil owner
+     */
+    public function profile()
+    {
+        $user = Auth::user();
+
+        try {
+            Log::create([
+                'id_user' => auth()->id(),
+                'role_user' => auth()->user()->role,
+                'activity' => 'View Profile',
+                'keterangan' => 'Owner melihat halaman profil',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+        }
+
+        return view('owner.profile', compact('user'));
+    }
+
+    /**
+     * Update profil owner
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'nama'     => 'required|string|max:255',
+            'username' => 'required|string|min:3|unique:users,username,' . $user->id,
+            'current_password' => 'nullable|string',
+            'password' => 'nullable|string|min:6|confirmed',
+        ], [
+            'nama.required'             => 'Nama wajib diisi.',
+            'username.required'         => 'Username wajib diisi.',
+            'username.min'              => 'Username minimal 3 karakter.',
+            'username.unique'           => 'Username sudah digunakan.',
+            'password.min'              => 'Password baru minimal 6 karakter.',
+            'password.confirmed'        => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        // Jika ingin ganti password, wajib isi password lama
+        if ($request->filled('password')) {
+            if (!$request->filled('current_password')) {
+                return back()
+                    ->withErrors(['current_password' => 'Password saat ini wajib diisi untuk mengganti password.'])
+                    ->withInput();
+            }
+
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()
+                    ->withErrors(['current_password' => 'Password saat ini tidak sesuai.'])
+                    ->withInput();
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            $data = [
+                'nama'     => $request->nama,
+                'username' => $request->username,
+            ];
+
+            if ($request->filled('password')) {
+                $data['password'] = Hash::make($request->password);
+            }
+
+            User::where('id', $user->id)->update($data);
+
+            try {
+                Log::create([
+                    'id_user' => auth()->id(),
+                    'role_user' => auth()->user()->role,
+                    'activity' => 'Update Profile',
+                    'keterangan' => 'Owner mengupdate profil sendiri',
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            }
+
+            DB::commit();
+
+            return redirect()->route('owner.profile')
+                ->with('success', 'Profil berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return redirect()->route('owner.profile')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 }

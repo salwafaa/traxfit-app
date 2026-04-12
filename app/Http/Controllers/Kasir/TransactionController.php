@@ -66,7 +66,7 @@ class TransactionController extends Controller
             ->get();
         $membershipPackages = MembershipPackage::where('status', true)->get();
         
-        // ===== PERBAIKAN: AMBIL HARGA VISIT DARI GYM SETTINGS =====
+        // ===== AMBIL HARGA VISIT DARI GYM SETTINGS =====
         $gymSettings = GymSetting::first();
         
         // Jika belum ada setting, buat default
@@ -78,8 +78,7 @@ class TransactionController extends Controller
             ]);
         }
         
-        $hargaVisit = $gymSettings->harga_visit ?? 25000; // Default 25000 jika belum diatur
-        // ==========================================================
+        $hargaVisit = $gymSettings->harga_visit ?? 25000;
         
         return view('kasir.transaksi.create', compact('nomorUnik', 'products', 'membershipPackages', 'hargaVisit'));
     }
@@ -101,11 +100,29 @@ class TransactionController extends Controller
             // Visit validation
             'harga_visit' => 'required_if:jenis_transaksi,visit,produk_visit|numeric|min:0',
             'tgl_visit' => 'required_if:jenis_transaksi,visit,produk_visit|date',
-            
-            // Membership validation
-            'id_paket' => 'required_if:jenis_transaksi,membership,produk_membership|exists:membership_packages,id',
-            'tgl_mulai_membership' => 'required_if:jenis_transaksi,membership,produk_membership|date',
         ]);
+
+        // ========== VALIDASI KHUSUS VISIT: HARUS HARI INI ==========
+        if (in_array($request->jenis_transaksi, ['visit', 'produk_visit'])) {
+            $tanggalVisit = Carbon::parse($request->tgl_visit);
+            $tanggalSekarang = Carbon::now();
+            
+            // Cek apakah tanggal visit sama dengan hari ini
+            if (!$tanggalVisit->isToday()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '❌ Visit hanya bisa dilakukan untuk HARI INI! Tidak bisa booking untuk tanggal ' . $tanggalVisit->format('d/m/Y')
+                ], 400);
+            }
+            
+            // Cek jam operasional (06:00 - 22:00)
+            if ($tanggalVisit->hour < 6 || $tanggalVisit->hour > 22) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '❌ Jam operasional gym adalah 06:00 - 22:00 WIB'
+                ], 400);
+            }
+        }
 
         // Validasi stok produk
         if (in_array($request->jenis_transaksi, ['produk', 'produk_visit', 'produk_membership'])) {
@@ -162,7 +179,7 @@ class TransactionController extends Controller
             // Data Visit
             if (in_array($request->jenis_transaksi, ['visit', 'produk_visit'])) {
                 $dataTambahan['harga_visit'] = $request->harga_visit;
-                $dataTambahan['tgl_visit'] = $request->tgl_visit;
+                $dataTambahan['tgl_visit'] = Carbon::parse($request->tgl_visit)->format('Y-m-d H:i:s');
             }
             
             // Data Membership
@@ -198,14 +215,14 @@ class TransactionController extends Controller
                 'id_user' => auth()->id(),
                 'id_member' => $memberId,
                 'nomor_unik' => Transaction::generateNomorUnik(),
-                'jenis_transaksi' => $request->jenis_transaksi, // BARU
+                'jenis_transaksi' => $request->jenis_transaksi,
                 'total_harga' => $request->total_harga,
                 'uang_bayar' => $request->uang_bayar,
                 'uang_kembali' => $request->uang_kembali,
                 'metode_bayar' => $request->metode_bayar,
                 'status_transaksi' => 'success',
                 'catatan' => $request->catatan,
-                'data_tambahan' => !empty($dataTambahan) ? $dataTambahan : null, // BARU
+                'data_tambahan' => !empty($dataTambahan) ? $dataTambahan : null,
             ]);
 
             // Simpan detail produk
@@ -359,10 +376,10 @@ class TransactionController extends Controller
     }
 
     public function getHargaVisit()
-{
-    $gymSettings = GymSetting::first();
-    return response()->json([
-        'harga_visit' => $gymSettings->harga_visit ?? 25000
-    ]);
-}
+    {
+        $gymSettings = GymSetting::first();
+        return response()->json([
+            'harga_visit' => $gymSettings->harga_visit ?? 25000
+        ]);
+    }
 }

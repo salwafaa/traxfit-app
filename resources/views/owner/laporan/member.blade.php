@@ -9,21 +9,110 @@
 
 @section('content')
 <div class="space-y-4 md:space-y-6 w-full max-w-full">
-    <!-- Header dengan Export -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Laporan Member</h1>
-            <p class="text-xs md:text-sm text-gray-500 mt-1">Informasi lengkap member gym dan aktivitasnya</p>
+    <!-- Header Stats - 6 Cards seperti transaksi -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 w-full">
+        <!-- Total Member -->
+        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex-1 pr-2">
+                    <p class="text-xs md:text-sm text-gray-500 mb-1">Total Member</p>
+                    <p class="text-xl md:text-2xl font-bold text-gray-800">{{ number_format($totalMember, 0, ',', '.') }}</p>
+                </div>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-users text-[#27124A] text-base md:text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-2 md:mt-3 flex items-center text-xs text-gray-500">
+                <span class="text-blue-500 mr-1">👥</span>
+                <span>Seluruh member</span>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <a href="{{ route('owner.laporan.member', array_merge(request()->query(), ['export' => 'pdf'])) }}" 
-               class="bg-red-600 hover:bg-red-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center shadow-sm">
-                <i class="fas fa-file-pdf mr-1 md:mr-2"></i> PDF
-            </a>
-            <a href="{{ route('owner.laporan.member', array_merge(request()->query(), ['export' => 'excel'])) }}" 
-               class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center shadow-sm">
-                <i class="fas fa-file-excel mr-1 md:mr-2"></i> Excel
-            </a>
+
+        <!-- Member Aktif -->
+        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex-1 pr-2">
+                    <p class="text-xs md:text-sm text-gray-500 mb-1">Member Aktif</p>
+                    <p class="text-xl md:text-2xl font-bold text-green-600">{{ number_format($memberAktif, 0, ',', '.') }}</p>
+                </div>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user-check text-[#27124A] text-base md:text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-2 md:mt-3 flex items-center text-xs text-gray-500">
+                <span class="text-green-500 mr-1">✅</span>
+                <span>Status aktif</span>
+            </div>
+        </div>
+
+        <!-- Akan Expired -->
+        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex-1 pr-2">
+                    <p class="text-xs md:text-sm text-gray-500 mb-1">Akan Expired</p>
+                    <p class="text-xl md:text-2xl font-bold text-yellow-600">{{ number_format($expiringSoon, 0, ',', '.') }}</p>
+                </div>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-yellow-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-clock text-[#27124A] text-base md:text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-2 md:mt-3 flex items-center text-xs text-gray-500">
+                <span class="text-yellow-500 mr-1">⏰</span>
+                <span>Expired ≤ 7 hari</span>
+            </div>
+        </div>
+
+        <!-- Member Expired -->
+        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex-1 pr-2">
+                    <p class="text-xs md:text-sm text-gray-500 mb-1">Member Expired</p>
+                    <p class="text-xl md:text-2xl font-bold text-red-600">{{ number_format($memberExpired, 0, ',', '.') }}</p>
+                </div>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user-times text-[#27124A] text-base md:text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-2 md:mt-3 flex items-center text-xs text-gray-500">
+                <span class="text-red-500 mr-1">❌</span>
+                <span>Sudah expired</span>
+            </div>
+        </div>
+
+        <!-- Member Pending -->
+        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex-1 pr-2">
+                    <p class="text-xs md:text-sm text-gray-500 mb-1">Member Pending</p>
+                    <p class="text-xl md:text-2xl font-bold text-purple-600">{{ number_format($memberPending, 0, ',', '.') }}</p>
+                </div>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-hourglass-half text-[#27124A] text-base md:text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-2 md:mt-3 flex items-center text-xs text-gray-500">
+                <span class="text-purple-500 mr-1">⏳</span>
+                <span>Menunggu aktivasi</span>
+            </div>
+        </div>
+
+        <!-- Persentase Aktif -->
+        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex-1 pr-2">
+                    <p class="text-xs md:text-sm text-gray-500 mb-1">Aktif %</p>
+                    <p class="text-xl md:text-2xl font-bold text-gray-800">
+                        {{ $totalMember > 0 ? round(($memberAktif / $totalMember) * 100, 1) : 0 }}%
+                    </p>
+                </div>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-pink-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-chart-pie text-[#27124A] text-base md:text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-2 md:mt-3 flex items-center text-xs text-gray-500">
+                <span class="text-pink-500 mr-1">📊</span>
+                <span>Persentase aktif</span>
+            </div>
         </div>
     </div>
 
@@ -33,112 +122,25 @@
             <i class="fas fa-info-circle text-blue-600 text-xs md:text-sm"></i>
         </div>
         <p class="text-xs md:text-sm text-blue-800">
-            <span class="font-semibold">Informasi:</span> Menampilkan data member gym. 
+            <span class="font-semibold">Informasi:</span> Menampilkan semua data member gym. 
             Gunakan filter untuk melihat data spesifik berdasarkan status, paket, atau periode.
         </p>
     </div>
 
-    <!-- Stats Cards - 6 Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
-        <!-- Total Member -->
-        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
-            <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500">Total Member</p>
-                <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-users text-[#27124A] text-sm"></i>
-                </div>
-            </div>
-            <p class="text-lg md:text-2xl font-bold text-gray-800">{{ number_format($totalMember, 0, ',', '.') }}</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <span class="text-blue-500 mr-1">👥</span> Seluruh member
-            </div>
-        </div>
-
-        <!-- Member Aktif -->
-        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
-            <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500">Member Aktif</p>
-                <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-user-check text-green-600 text-sm"></i>
-                </div>
-            </div>
-            <p class="text-lg md:text-2xl font-bold text-green-600">{{ number_format($memberAktif, 0, ',', '.') }}</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <span class="text-green-500 mr-1">✅</span> Status aktif
-            </div>
-        </div>
-
-        <!-- Akan Expired -->
-        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
-            <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500">Akan Expired</p>
-                <div class="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-clock text-yellow-600 text-sm"></i>
-                </div>
-            </div>
-            <p class="text-lg md:text-2xl font-bold text-yellow-600">{{ number_format($expiringSoon, 0, ',', '.') }}</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <span class="text-yellow-500 mr-1">⏰</span> Expired ≤ 7 hari
-            </div>
-        </div>
-
-        <!-- Member Expired -->
-        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
-            <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500">Member Expired</p>
-                <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-user-times text-red-600 text-sm"></i>
-                </div>
-            </div>
-            <p class="text-lg md:text-2xl font-bold text-red-600">{{ number_format($memberExpired, 0, ',', '.') }}</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <span class="text-red-500 mr-1">❌</span> Sudah expired
-            </div>
-        </div>
-
-        <!-- Member Pending -->
-        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
-            <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500">Member Pending</p>
-                <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-hourglass-half text-purple-600 text-sm"></i>
-                </div>
-            </div>
-            <p class="text-lg md:text-2xl font-bold text-purple-600">{{ number_format($memberPending, 0, ',', '.') }}</p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <span class="text-purple-500 mr-1">⏳</span> Menunggu aktivasi
-            </div>
-        </div>
-
-        <!-- Persentase Aktif -->
-        <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
-            <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500">Aktif %</p>
-                <div class="w-8 h-8 bg-pink-50 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-chart-pie text-[#27124A] text-sm"></i>
-                </div>
-            </div>
-            <p class="text-lg md:text-2xl font-bold text-gray-800">
-                {{ $totalMember > 0 ? round(($memberAktif / $totalMember) * 100, 1) : 0 }}%
-            </p>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-                <span class="text-pink-500 mr-1">📊</span> Persentase aktif
-            </div>
-        </div>
-    </div>
-
-    <!-- Filter Section - Menyatu dengan Card -->
+    <!-- Main Content - Filter & Table menyatu seperti transaksi -->
     <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden w-full">
-        <!-- Header Filter -->
-        <div class="p-3 md:p-4 border-b border-gray-100 bg-gray-50/50">
-            <h3 class="text-sm md:text-base font-semibold text-gray-800 flex items-center">
-                <i class="fas fa-filter mr-2 text-[#27124A]"></i>
-                Filter Member
-            </h3>
+        <!-- Header -->
+        <div class="p-3 md:p-4 border-b border-gray-100">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-sm md:text-base font-semibold text-gray-800">Laporan Member</h3>
+                    <p class="text-xs md:text-sm text-gray-500 mt-0.5">Informasi lengkap member gym dan aktivitasnya</p>
+                </div>
+            </div>
         </div>
-        
-        <!-- Form Filter -->
-        <div class="p-3 md:p-4">
+
+        <!-- Filter - Di dalam card yang sama -->
+        <div class="p-3 md:p-4 border-b border-gray-100 bg-gray-50/50">
             <form method="GET" action="{{ route('owner.laporan.member') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3">
                 <div>
                     <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1">Status</label>
@@ -183,150 +185,26 @@
                 </div>
             </form>
         </div>
-    </div>
 
-    <!-- Top Member Check-in & Statistik -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <!-- Top 10 Check-in Bulan Ini -->
-        <div class="lg:col-span-1 bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-3 md:p-4 border-b border-gray-100 bg-gradient-to-r from-yellow-50 to-orange-50">
-                <h3 class="text-sm md:text-base font-semibold text-gray-800 flex items-center">
-                    <i class="fas fa-trophy text-yellow-500 mr-2"></i>
-                    Top 10 Check-in Bulan Ini
-                </h3>
-                <p class="text-xs md:text-sm text-gray-500 mt-0.5">Member dengan aktivitas tertinggi</p>
+        <!-- Export & Info - Di dalam card yang sama -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3 md:p-4 border-b border-gray-100">
+            <div class="text-xs md:text-sm text-gray-500 bg-gray-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl">
+                <i class="fas fa-info-circle mr-1 md:mr-2 text-[#27124A]"></i>
+                <span>Menampilkan {{ $members->firstItem() ?? 0 }} - {{ $members->lastItem() ?? 0 }} dari {{ number_format($members->total(), 0, ',', '.') }} member</span>
             </div>
             
-            <div class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
-                @forelse($topCheckins as $index => $member)
-                <div class="p-3 md:p-4 hover:bg-gray-50 transition-colors duration-150">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 w-7 h-7 md:w-8 md:h-8 rounded-lg {{ $index < 3 ? 'bg-yellow-100' : 'bg-gray-100' }} flex items-center justify-center font-bold {{ $index < 3 ? 'text-yellow-600' : 'text-gray-600' }} text-xs md:text-sm">
-                            {{ $index + 1 }}
-                        </div>
-                        <div class="ml-2 md:ml-3 flex-1 min-w-0">
-                            <p class="text-xs md:text-sm font-semibold text-gray-800 truncate">{{ $member->nama }}</p>
-                            <p class="text-xs text-gray-500 truncate">{{ $member->package->nama_paket ?? 'Tanpa Paket' }}</p>
-                        </div>
-                        <div class="text-right ml-2 flex-shrink-0">
-                            <p class="text-sm md:text-base font-bold text-[#27124A]">{{ number_format($member->checkins_count, 0, ',', '.') }}</p>
-                            <p class="text-xs text-gray-400">check-in</p>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="p-6 md:p-8 text-center">
-                    <div class="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-gray-100 rounded-full mb-3">
-                        <i class="fas fa-trophy text-gray-400 text-lg md:text-xl"></i>
-                    </div>
-                    <p class="text-xs md:text-sm text-gray-400">Belum ada aktivitas check-in bulan ini</p>
-                </div>
-                @endforelse
+            <div class="flex gap-2">
+                <a href="{{ route('owner.laporan.member', array_merge(request()->query(), ['export' => 'pdf'])) }}" 
+                   class="bg-red-600 hover:bg-red-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center">
+                    <i class="fas fa-file-pdf mr-1 md:mr-2"></i> PDF
+                </a>
+                <a href="{{ route('owner.laporan.member', array_merge(request()->query(), ['export' => 'excel'])) }}" 
+                   class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center">
+                    <i class="fas fa-file-excel mr-1 md:mr-2"></i> Excel
+                </a>
             </div>
         </div>
-        
-        <!-- Statistik Member -->
-        <div class="lg:col-span-2 bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-3 md:p-4 border-b border-gray-100">
-                <h3 class="text-sm md:text-base font-semibold text-gray-800">Statistik Member</h3>
-                <p class="text-xs md:text-sm text-gray-500 mt-0.5">Analisis aktivitas member</p>
-            </div>
-            
-            <div class="p-3 md:p-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                    <!-- Rata-rata Check-in -->
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg md:rounded-xl p-4 md:p-5 border border-blue-100">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-chart-line text-blue-600 text-sm md:text-base"></i>
-                            </div>
-                            <span class="text-xl md:text-2xl font-bold text-blue-600">
-                                {{ $totalMember > 0 ? round($topCheckins->sum('checkins_count') / $totalMember, 1) : 0 }}
-                            </span>
-                        </div>
-                        <h4 class="text-xs md:text-sm font-semibold text-gray-800">Rata-rata Check-in</h4>
-                        <p class="text-xs text-gray-500 mt-0.5">Per member bulan ini</p>
-                        <div class="mt-3 pt-3 border-t border-blue-200">
-                            <div class="flex justify-between text-xs">
-                                <span class="text-gray-600">Total Check-in</span>
-                                <span class="font-bold text-blue-600">{{ number_format($topCheckins->sum('checkins_count'), 0, ',', '.') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Member Aktif Check-in -->
-                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg md:rounded-xl p-4 md:p-5 border border-green-100">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-users text-green-600 text-sm md:text-base"></i>
-                            </div>
-                            <span class="text-xl md:text-2xl font-bold text-green-600">{{ number_format($topCheckins->count(), 0, ',', '.') }}</span>
-                        </div>
-                        <h4 class="text-xs md:text-sm font-semibold text-gray-800">Member Aktif Check-in</h4>
-                        <p class="text-xs text-gray-500 mt-0.5">Melakukan check-in bulan ini</p>
-                        <div class="mt-3 pt-3 border-t border-green-200">
-                            <div class="flex justify-between text-xs">
-                                <span class="text-gray-600">Persentase</span>
-                                <span class="font-bold text-green-600">
-                                    {{ $totalMember > 0 ? round(($topCheckins->count() / $totalMember) * 100, 1) : 0 }}%
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Progress Bar Distribusi -->
-                <div class="mt-4 md:mt-5">
-                    <h4 class="text-xs md:text-sm font-semibold text-gray-800 mb-3">Distribusi Status Member</h4>
-                    <div class="space-y-3">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-600">Aktif</span>
-                                <span class="font-medium text-gray-800">{{ number_format($memberAktif, 0, ',', '.') }} member ({{ $totalMember > 0 ? round(($memberAktif / $totalMember) * 100, 1) : 0 }}%)</span>
-                            </div>
-                            <div class="w-full h-1.5 md:h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-green-500 rounded-full" 
-                                     style="width: {{ $totalMember > 0 ? ($memberAktif / $totalMember) * 100 : 0 }}%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-600">Akan Expired</span>
-                                <span class="font-medium text-gray-800">{{ number_format($expiringSoon, 0, ',', '.') }} member ({{ $totalMember > 0 ? round(($expiringSoon / $totalMember) * 100, 1) : 0 }}%)</span>
-                            </div>
-                            <div class="w-full h-1.5 md:h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-yellow-500 rounded-full" 
-                                     style="width: {{ $totalMember > 0 ? ($expiringSoon / $totalMember) * 100 : 0 }}%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-600">Expired</span>
-                                <span class="font-medium text-gray-800">{{ number_format($memberExpired, 0, ',', '.') }} member ({{ $totalMember > 0 ? round(($memberExpired / $totalMember) * 100, 1) : 0 }}%)</span>
-                            </div>
-                            <div class="w-full h-1.5 md:h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-red-500 rounded-full" 
-                                     style="width: {{ $totalMember > 0 ? ($memberExpired / $totalMember) * 100 : 0 }}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Tabel Member -->
-    <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden w-full">
-        <!-- Header Tabel -->
-        <div class="p-3 md:p-4 border-b border-gray-100">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <div>
-                    <h3 class="text-sm md:text-base font-semibold text-gray-800">Daftar Member</h3>
-                    <p class="text-xs md:text-sm text-gray-500 mt-0.5">Menampilkan {{ $members->firstItem() ?? 0 }} - {{ $members->lastItem() ?? 0 }} dari {{ number_format($members->total(), 0, ',', '.') }} member</p>
-                </div>
-            </div>
-        </div>
-        
         <!-- Table -->
         <div class="overflow-x-auto w-full">
             <table class="min-w-full divide-y divide-gray-100">
@@ -350,7 +228,7 @@
                     <tr class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="px-3 md:px-4 py-2 md:py-3 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="w-6 h-6 md:w-7 md:h-7 bg-purple-50 rounded-lg flex items-center justify-center mr-2 flex-shrink-0">
+                                <div class="w-6 h-6 md:w-7 md:h-7 bg-purple-50 rounded-lg flex items-center justify-center mr-1 flex-shrink-0">
                                     <i class="fas fa-user text-[#27124A] text-xs"></i>
                                 </div>
                                 <span class="text-xs md:text-sm font-medium text-gray-800">{{ $member->nama }}</span>
@@ -448,4 +326,4 @@
         @endif
     </div>
 </div>
-@endsection
+@endsection 

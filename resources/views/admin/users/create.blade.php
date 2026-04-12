@@ -17,7 +17,13 @@
             </div>
             <div class="ml-4">
                 <h3 class="text-lg font-bold text-white">Form Tambah User</h3>
-                <p class="text-sm text-white/90">Tambah user baru untuk akses sistem TraxFit</p>
+                <p class="text-sm text-white/90">
+                    @if(auth()->user()->role == 'admin')
+                        Tambah user baru dengan role Kasir
+                    @else
+                        Tambah user baru untuk akses sistem TraxFit
+                    @endif
+                </p>
             </div>
         </div>
     </div>
@@ -92,7 +98,8 @@
                     @enderror
                 </div>
                 
-                <!-- Role -->
+                <!-- Role - Untuk Admin langsung Kasir (hidden), untuk Owner bisa pilih -->
+                @if(auth()->user()->role == 'owner')
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700" for="role">
                         Role <span class="text-[#27124A]">*</span>
@@ -106,7 +113,6 @@
                             <option value="" disabled selected>Pilih Role</option>
                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                             <option value="kasir" {{ old('role') == 'kasir' ? 'selected' : '' }}>Kasir</option>
-                            <option value="owner" {{ old('role') == 'owner' ? 'selected' : '' }}>Owner</option>
                         </select>
                         <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
                             <i class="fas fa-chevron-down"></i>
@@ -118,6 +124,28 @@
                         </div>
                     @enderror
                 </div>
+                @else
+                <!-- Untuk Admin: role di-set sebagai kasir (hidden) -->
+                <input type="hidden" name="role" value="kasir">
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700" for="role_display">
+                        Role <span class="text-[#27124A]">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i class="fas fa-user-tag"></i>
+                        </div>
+                        <input type="text" id="role_display" 
+                               value="Kasir"
+                               disabled
+                               class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl bg-gray-50 text-gray-600 cursor-not-allowed">
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        <i class="fas fa-info-circle text-[#27124A] mr-1"></i>
+                        Role user ini adalah Kasir (tidak dapat diubah)
+                    </div>
+                </div>
+                @endif
                 
                 <!-- Status -->
                 <div class="md:col-span-2">

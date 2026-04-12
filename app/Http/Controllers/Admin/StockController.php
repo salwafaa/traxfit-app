@@ -8,6 +8,8 @@ use App\Models\StokLog;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StockLogExport;
 
 class StockController extends Controller
 {
@@ -120,5 +122,31 @@ class StockController extends Controller
     $products = Product::all();
     
     return view('admin.stock.log', compact('logs', 'totalMasuk', 'totalKeluar', 'products'));
+}
+
+public function export(Request $request)
+{
+    $query = StokLog::with(['product', 'user', 'product.category']);
+    
+    // Apply filters
+    if ($request->tipe) {
+        $query->where('tipe', $request->tipe);
+    }
+    
+    if ($request->product) {
+        $query->where('product_id', $request->product);
+    }
+    
+    if ($request->start_date) {
+        $query->whereDate('created_at', '>=', $request->start_date);
+    }
+    
+    if ($request->end_date) {
+        $query->whereDate('created_at', '<=', $request->end_date);
+    }
+    
+    $logs = $query->orderBy('created_at', 'desc')->get();
+    
+    return Excel::download(new StockLogExport($logs), 'log_stok_' . date('Y-m-d_His') . '.xlsx');
 }
 }

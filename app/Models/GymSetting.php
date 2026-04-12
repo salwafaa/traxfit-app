@@ -13,7 +13,6 @@ class GymSetting extends Model
         'nama_gym',
         'alamat',
         'telepon',
-        'email',
         'logo',
         'footer_struk',
         'harga_visit',
@@ -23,13 +22,11 @@ class GymSetting extends Model
         'harga_visit' => 'decimal:2',
     ];
 
-    // Helper function untuk format harga
     public function getHargaVisitFormattedAttribute()
     {
         return 'Rp ' . number_format($this->harga_visit, 0, ',', '.');
     }
 
-    // Helper function untuk mengambil setting pertama
     public static function getSetting()
     {
         $setting = self::first();
@@ -43,7 +40,6 @@ class GymSetting extends Model
         return $setting;
     }
 
-    // Helper untuk logo URL
     public function getLogoUrlAttribute()
     {
         return $this->logo ? Storage::url($this->logo) : null;

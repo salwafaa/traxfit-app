@@ -104,21 +104,33 @@
                 <!-- Role -->
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700" for="role">
-                        Role <span class="text-[#27124A]">*</span>
+                        Role 
+                        @if(auth()->user()->role == 'owner')
+                            <span class="text-[#27124A]">*</span>
+                        @else
+                            <span class="text-gray-400 text-xs">(Tidak dapat diubah)</span>
+                        @endif
                     </label>
                     <div class="relative">
                         <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                             <i class="fas fa-user-tag"></i>
                         </div>
-                        <select name="role" id="role" required
-                                class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:border-[#27124A] focus:ring-1 focus:ring-[#27124A] transition-colors duration-200 appearance-none">
-                            <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="kasir" {{ old('role', $user->role) == 'kasir' ? 'selected' : '' }}>Kasir</option>
-                            <option value="owner" {{ old('role', $user->role) == 'owner' ? 'selected' : '' }}>Owner</option>
-                        </select>
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
+                        @if(auth()->user()->role == 'owner')
+                            <select name="role" id="role" required
+                                    class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:border-[#27124A] focus:ring-1 focus:ring-[#27124A] transition-colors duration-200 appearance-none">
+                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="kasir" {{ old('role', $user->role) == 'kasir' ? 'selected' : '' }}>Kasir</option>
+                            </select>
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        @else
+                            <input type="text" 
+                                   value="{{ ucfirst($user->role) }}"
+                                   disabled
+                                   class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed">
+                            <input type="hidden" name="role" value="{{ $user->role }}">
+                        @endif
                     </div>
                     @error('role')
                         <div class="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">

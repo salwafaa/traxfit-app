@@ -38,8 +38,18 @@
     </div>
     
     <div class="p-6">
+        {{-- Parse data_tambahan: handle jika masih string JSON atau sudah array --}}
+        @php
+            $dataTambahan = $transaction->data_tambahan;
+            if (is_string($dataTambahan)) {
+                $dataTambahan = json_decode($dataTambahan, true) ?? [];
+            } elseif (is_object($dataTambahan)) {
+                $dataTambahan = json_decode(json_encode($dataTambahan), true) ?? [];
+            }
+            $paket = $dataTambahan['paket_membership'] ?? [];
+        @endphp
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Informasi Member -->
             <div class="lg:col-span-2">
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">👤 Data Member</h4>
@@ -59,7 +69,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Tanggal Lahir</label>
-                                <p class="text-gray-700">{{ $transaction->member->tgl_lahir->format('d/m/Y') }}</p>
+                                <p class="text-gray-700">{{ \Carbon\Carbon::parse($transaction->member->tgl_lahir)->format('d/m/Y') }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Jenis Identitas</label>
@@ -86,42 +96,40 @@
                     </div>
                 </div>
 
-                <!-- Detail Membership -->
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">🎫 Detail Membership</h4>
                     <div class="bg-green-50 rounded-xl p-5 border border-green-200">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Paket Membership</label>
-                                <p class="font-medium text-gray-800">{{ $transaction->data_tambahan['paket_membership']['nama'] ?? '-' }}</p>
+                                <p class="font-medium text-gray-800">{{ $paket['nama'] ?? '-' }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Durasi</label>
-                                <p class="text-gray-700">{{ $transaction->data_tambahan['paket_membership']['durasi_hari'] ?? 0 }} Hari</p>
+                                <p class="text-gray-700">{{ $paket['durasi_hari'] ?? 0 }} Hari</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Harga Paket</label>
-                                <p class="font-bold text-[#27124A]">Rp {{ number_format($transaction->data_tambahan['paket_membership']['harga'] ?? 0, 0, ',', '.') }}</p>
+                                <p class="font-bold text-[#27124A]">Rp {{ number_format($paket['harga'] ?? 0, 0, ',', '.') }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Status</label>
                                 <span class="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-xs font-medium">
-                                    {{ $transaction->member->is_active ? 'Aktif' : 'Expired' }}
+                                    {{ $transaction->member->status == 'active' ? 'Aktif' : 'Expired' }}
                                 </span>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Tanggal Mulai</label>
-                                <p class="text-gray-700">{{ isset($transaction->data_tambahan['tgl_mulai']) ? \Carbon\Carbon::parse($transaction->data_tambahan['tgl_mulai'])->format('d/m/Y H:i') : '-' }}</p>
+                                <p class="text-gray-700">{{ isset($dataTambahan['tgl_mulai']) ? \Carbon\Carbon::parse($dataTambahan['tgl_mulai'])->format('d/m/Y H:i') : '-' }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-600 mb-1">Tanggal Selesai</label>
-                                <p class="text-gray-700">{{ isset($transaction->data_tambahan['tgl_selesai']) ? \Carbon\Carbon::parse($transaction->data_tambahan['tgl_selesai'])->format('d/m/Y H:i') : '-' }}</p>
+                                <p class="text-gray-700">{{ isset($dataTambahan['tgl_selesai']) ? \Carbon\Carbon::parse($dataTambahan['tgl_selesai'])->format('d/m/Y H:i') : '-' }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Detail Produk -->
                 @if($transaction->details->count() > 0)
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">📦 Produk Tambahan</h4>
@@ -175,14 +183,12 @@
                 @endif
             </div>
             
-            <!-- Ringkasan Pembayaran -->
             <div>
                 <div class="bg-gray-50 border border-gray-100 rounded-xl p-6 sticky top-6">
                     <h4 class="font-semibold text-gray-800 mb-4">Ringkasan Pembayaran</h4>
                     
                     <div class="space-y-3 mb-6">
                         @php
-                            $paket = $transaction->data_tambahan['paket_membership'] ?? [];
                             $subtotalProduk = $transaction->details->sum('subtotal');
                         @endphp
 

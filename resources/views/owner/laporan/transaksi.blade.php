@@ -224,7 +224,7 @@
                         </td>
                         <td class="px-3 md:px-4 py-2 md:py-3 whitespace-nowrap hidden sm:table-cell">
                             <span class="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs flex items-center w-fit">
-                                <i class="fas fa-money-bill-wave mr-1"></i> Tunai
+                                <i class="fas fa-money-bill-wave mr-1"></i> {{ $transaction->metode_bayar == 'cash' ? 'Tunai' : 'QRIS' }}
                             </span>
                         </td>
                         <td class="px-3 md:px-4 py-2 md:py-3 whitespace-nowrap">

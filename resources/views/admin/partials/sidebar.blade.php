@@ -1,150 +1,52 @@
+{{-- resources/views/admin/partials/sidebar.blade.php --}}
+
 @php
-    $isCollapsed = false; // Akan di-handle oleh Alpine.js
+$navItems = [
+    ['route' => 'admin.dashboard',      'icon' => 'fa-tachometer-alt',  'label' => 'Dashboard'],
+    ['route' => 'admin.transaksi.index','icon' => 'fa-cash-register',   'label' => 'Kelola Transaksi'],
+    ['route' => 'admin.users.index',    'icon' => 'fa-users',           'label' => 'Kelola User'],
+    ['route' => 'admin.products.index', 'icon' => 'fa-box',             'label' => 'Kelola Produk'],
+    ['route' => 'admin.categories.index','icon'=> 'fa-tags',            'label' => 'Kelola Kategori'],
+    ['route' => 'admin.packages.index', 'icon' => 'fa-id-card',         'label' => 'Kelola Paket'],
+    ['route' => 'admin.members.index',  'icon' => 'fa-user-friends',    'label' => 'Kelola Member'],
+    ['route' => 'admin.stock.index',    'icon' => 'fa-warehouse',       'label' => 'Kelola Stok'],
+    ['route' => 'admin.settings.index', 'icon' => 'fa-cog',             'label' => 'Pengaturan Gym'],
+];
+
+$routePatterns = [
+    'admin.dashboard'       => 'admin.dashboard',
+    'admin.transaksi.index' => 'admin.transaksi.*',
+    'admin.users.index'     => 'admin.users.*',
+    'admin.products.index'  => 'admin.products.*',
+    'admin.categories.index'=> 'admin.categories.*',
+    'admin.packages.index'  => 'admin.packages.*',
+    'admin.members.index'   => 'admin.members.*',
+    'admin.stock.index'     => 'admin.stock.*',
+    'admin.settings.index'  => 'admin.settings.*',
+];
 @endphp
 
-<div class="space-y-1 px-3">
+@foreach($navItems as $item)
+@php $isActive = request()->routeIs($routePatterns[$item['route']] ?? $item['route']); @endphp
+<a href="{{ route($item['route']) }}"
+   class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 relative
+          {{ $isActive ? 'active text-white' : 'text-gray-300 hover:text-white hover:bg-primary-light' }}">
 
-    <!-- Dashboard -->
-    <a href="{{ route('admin.dashboard') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.dashboard') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Dashboard"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-tachometer-alt w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Dashboard
-        </span>
-        @if(request()->routeIs('admin.dashboard'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
+    {{-- Icon --}}
+    <div class="nav-icon-wrap flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200
+                {{ $isActive ? 'bg-accent/30' : 'bg-primary-dark group-hover:bg-secondary/40' }}">
+        <i class="fas {{ $item['icon'] }} text-sm {{ $isActive ? 'text-accent' : 'text-gray-400' }}"></i>
+    </div>
 
-    <!-- Kelola Transaksi -->
-    <a href="{{ route('admin.transaksi.index') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.transaksi.*') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Kelola Transaksi"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-cash-register w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Kelola Transaksi
-        </span>
-        @if(request()->routeIs('admin.transaksi.*'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
+    {{-- Label --}}
+    <span class="sb-label font-medium text-sm whitespace-nowrap overflow-hidden">{{ $item['label'] }}</span>
 
-    <!-- Kelola User -->
-    <a href="{{ route('admin.users.index') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.users.*') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Kelola User"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-users w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Kelola User
-        </span>
-        @if(request()->routeIs('admin.users.*'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
+    {{-- Chevron aktif --}}
+    @if($isActive)
+        <i class="sb-chevron fas fa-chevron-right ml-auto text-accent text-xs"></i>
+    @endif
 
-    <!-- Kelola Produk -->
-    <a href="{{ route('admin.products.index') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.products.*') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Kelola Produk"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-box w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Kelola Produk
-        </span>
-        @if(request()->routeIs('admin.products.*'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
-
-    <!-- Kelola Kategori -->
-    <a href="{{ route('admin.categories.index') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.categories.*') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Kelola Kategori"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-tags w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Kelola Kategori
-        </span>
-        @if(request()->routeIs('admin.categories.*'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
-
-    <!-- Kelola Paket Membership -->
-    <a href="{{ route('admin.packages.index') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.packages.*') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Kelola Paket"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-id-card w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Kelola Paket
-        </span>
-        @if(request()->routeIs('admin.packages.*'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
-
-    <!-- Kelola Member -->
-    <a href="{{ route('admin.members.index') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.members.*') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Kelola Member"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-user-friends w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Kelola Member
-        </span>
-        @if(request()->routeIs('admin.members.*'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
-
-    <!-- Kelola Stok -->
-    <a href="{{ route('admin.stock.index') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.stock.*') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Kelola Stok"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-warehouse w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Kelola Stok
-        </span>
-        @if(request()->routeIs('admin.stock.*'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
-
-    <!-- Settings / Pengaturan -->
-    <a href="{{ route('admin.settings.index') }}"
-       class="nav-item flex items-center {{ request()->routeIs('admin.settings.*') ? 'text-white bg-gradient-to-r from-primary-light to-secondary active' : 'text-gray-300 hover:text-white hover:bg-primary-light' }} px-3 py-3 rounded-xl transition-all duration-200 mb-2 group nav-tooltip"
-       data-tooltip-text="Pengaturan Gym"
-       data-tooltip="">
-        <div class="bg-primary-dark p-2 rounded-lg group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-200 flex-shrink-0">
-            <i class="fas fa-cog w-5 text-center"></i>
-        </div>
-        <span class="nav-label ml-4 font-medium whitespace-nowrap transition-opacity duration-200">
-            Pengaturan Gym
-        </span>
-        @if(request()->routeIs('admin.settings.*'))
-            <i class="nav-chevron fas fa-chevron-right ml-auto text-accent"></i>
-        @endif
-    </a>
-</div>
+    {{-- Tooltip (muncul hanya saat collapsed) --}}
+    <span class="sb-tooltip">{{ $item['label'] }}</span>
+</a>
+@endforeach

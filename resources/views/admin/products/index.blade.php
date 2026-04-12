@@ -97,32 +97,55 @@
         </div>
     </div>
     
+    <!-- Alert Messages with consistent spacing and close button -->
     @if(session('success'))
-    <div class="mx-6 mt-6 bg-green-50 border border-green-200 rounded-xl p-4">
+    <div class="mx-6 mt-6 mb-4 bg-green-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
         <div class="flex items-center">
             <div class="flex-shrink-0">
-                <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                <i class="fas fa-check-circle text-green-500 text-lg"></i>
             </div>
             <div class="ml-3">
                 <p class="text-green-700 font-medium">{{ session('success') }}</p>
             </div>
+            <button type="button" class="ml-auto text-green-400 hover:text-green-600" onclick="this.closest('.mx-6').style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
     @endif
     
     @if(session('error'))
-    <div class="mx-6 mt-6 bg-red-50 border border-red-200 rounded-xl p-4">
+    <div class="mx-6 mt-6 mb-4 bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-sm">
         <div class="flex items-center">
             <div class="flex-shrink-0">
-                <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+                <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
             </div>
             <div class="ml-3">
                 <p class="text-red-700 font-medium">{{ session('error') }}</p>
             </div>
+            <button type="button" class="ml-auto text-red-400 hover:text-red-600" onclick="this.closest('.mx-6').style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
     @endif
     
+    @if(session('warning'))
+    <div class="mx-6 mt-6 mb-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4 shadow-sm">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-lg"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-yellow-700 font-medium">{{ session('warning') }}</p>
+            </div>
+            <button type="button" class="ml-auto text-yellow-400 hover:text-yellow-600" onclick="this.closest('.mx-6').style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    @endif
+
     <!-- Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-100">
@@ -145,46 +168,46 @@
                             {{ $loop->iteration }}
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-normal break-words">
-                        <div class="flex items-start">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
                             <div class="flex-shrink-0 w-10 h-10 bg-[#27124A]/10 rounded-xl flex items-center justify-center mr-3">
                                 <i class="fas fa-box text-[#27124A]"></i>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-medium text-gray-800 break-words">{{ $product->nama_produk }}</h4>
+                            <div>
+                                <h4 class="font-medium text-gray-800">{{ $product->nama_produk }}</h4>
                                 @if($product->deskripsi)
-                                    <p class="text-xs text-gray-400 mt-1 break-words">{{ Str::limit($product->deskripsi, 50) }}</p>
+                                    <p class="text-xs text-gray-400 mt-1">{{ Str::limit($product->deskripsi, 50) }}</p>
                                 @endif
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-normal break-words">
-                        <span class="px-3 py-1.5 bg-purple-50 rounded-lg text-sm font-medium inline-flex items-center border border-purple-100 break-words">
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1.5 bg-purple-50 rounded-lg text-sm font-medium inline-flex items-center border border-purple-100">
                             <i class="fas fa-tag mr-2 text-xs text-[#27124A]"></i>
-                            <span class="break-words">{{ $product->category->nama_kategori ?? 'Tidak Berkategori' }}</span>
+                            <span>{{ $product->category->nama_kategori ?? 'Tidak Berkategori' }}</span>
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-normal break-words">
-                        <div class="bg-green-50 border border-green-100 rounded-xl p-3 min-w-0">
-                            <div class="font-bold text-[#27124A] break-words">Rp {{ number_format($product->harga, 0, ',', '.') }}</div>
+                    <td class="px-6 py-4">
+                        <div class="bg-green-50 border border-green-100 rounded-xl p-3">
+                            <div class="font-bold text-[#27124A]">Rp {{ number_format($product->harga, 0, ',', '.') }}</div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-normal break-words">
-                        <div class="flex items-start">
-                            <div class="w-8 h-8 {{ $product->stok > 10 ? 'bg-green-50' : ($product->stok > 0 ? 'bg-yellow-50' : 'bg-red-50') }} rounded-lg flex items-center justify-center mr-2 flex-shrink-0">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 {{ $product->stok > 10 ? 'bg-green-50' : ($product->stok > 0 ? 'bg-yellow-50' : 'bg-red-50') }} rounded-lg flex items-center justify-center mr-2">
                                 <i class="fas fa-cubes {{ $product->stok > 10 ? 'text-green-600' : ($product->stok > 0 ? 'text-yellow-600' : 'text-red-600') }} text-sm"></i>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="text-sm font-medium text-gray-700 break-words">{{ $product->stok }} pcs</div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-700">{{ $product->stok }} pcs</div>
                                 @if($product->stok <= 10 && $product->stok > 0)
-                                    <div class="text-xs text-yellow-600 break-words">Stok menipis</div>
+                                    <div class="text-xs text-yellow-600">Stok menipis</div>
                                 @elseif($product->stok == 0)
-                                    <div class="text-xs text-red-600 break-words">Stok habis</div>
+                                    <div class="text-xs text-red-600">Stok habis</div>
                                 @endif
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-normal break-words">
+                    <td class="px-6 py-4">
                         <form action="{{ route('admin.products.toggleStatus', $product->id) }}" method="POST" class="inline">
                             @csrf
                             @method('PUT')
@@ -202,13 +225,13 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center space-x-2">
                             <a href="{{ route('admin.products.edit', $product->id) }}" 
-                               class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-all duration-300 border border-blue-100 flex-shrink-0"
+                               class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-all duration-300 border border-blue-100"
                                title="Edit Produk">
                                 <i class="fas fa-edit text-sm"></i>
                             </a>
                             
                             <a href="{{ route('admin.stock.create', $product->id) }}" 
-                               class="p-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition-all duration-300 border border-green-100 flex-shrink-0"
+                               class="p-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition-all duration-300 border border-green-100"
                                title="Kelola Stok">
                                 <i class="fas fa-warehouse text-sm"></i>
                             </a>
@@ -217,8 +240,8 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" 
-                                        class="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-all duration-300 border border-red-100 flex-shrink-0"
-                                        onclick="return confirm('Yakin ingin menghapus produk {{ $product->nama_produk }}?')"
+                                        class="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-all duration-300 border border-red-100"
+                                        onclick="return confirm('Yakin ingin menghapus produk {{ $product->nama_produk }}? Tindakan ini tidak dapat dibatalkan.')"
                                         title="Hapus Produk">
                                     <i class="fas fa-trash text-sm"></i>
                                 </button>
@@ -228,7 +251,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="p-12 text-center">
+                    <td colspan="7" class="px-6 py-12 text-center">
                         <div class="inline-flex items-center justify-center w-20 h-20 bg-purple-50 rounded-full mb-4">
                             <i class="fas fa-box text-3xl text-[#27124A]"></i>
                         </div>
@@ -245,61 +268,6 @@
         </table>
     </div>
 </div>
-
-<!-- Product Summary -->
-@if($products->isNotEmpty())
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="p-6 border-b border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-800">Ringkasan Kategori Produk</h3>
-        <p class="text-sm text-gray-500 mt-1">Distribusi produk berdasarkan kategori</p>
-    </div>
-    
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @php
-                $categoriesSummary = [];
-                foreach($products as $product) {
-                    $categoryName = $product->category->nama_kategori ?? 'Tidak Berkategori';
-                    if (!isset($categoriesSummary[$categoryName])) {
-                        $categoriesSummary[$categoryName] = 0;
-                    }
-                    $categoriesSummary[$categoryName]++;
-                }
-            @endphp
-            
-            @foreach($categoriesSummary as $categoryName => $count)
-            <div class="bg-gray-50/50 border border-gray-100 rounded-xl p-5">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="min-w-0 flex-1">
-                        <h4 class="font-medium text-gray-800 break-words">{{ $categoryName }}</h4>
-                        <div class="flex items-center mt-1 flex-wrap">
-                            <span class="text-sm font-medium text-[#27124A] break-words">{{ $count }} produk</span>
-                            <span class="mx-2 text-gray-300 flex-shrink-0">•</span>
-                            <span class="text-sm text-gray-400 break-words">
-                                {{ number_format(($count / $products->count()) * 100, 1) }}%
-                            </span>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-tag text-[#27124A]"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Progress Bar -->
-                <div class="mb-2">
-                    <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#27124A] rounded-full" 
-                             style="width: {{ ($count / $products->count()) * 100 }}%"></div>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</div>
-@endif
 @endsection
 
 @push('styles')
@@ -329,20 +297,39 @@
         transition: all 0.2s ease;
     }
     
-    /* Word break utilities */
-    .break-words {
-        word-break: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto;
-    }
-    
-    td {
-        max-width: 300px;
+    /* Progress bar animation */
+    .progress-bar {
+        transition: width 0.6s ease;
     }
     
     /* Button transitions */
     button, a {
         transition: all 0.2s ease;
     }
+    
+    /* Alert close button hover */
+    [onclick*="this.closest"]:hover {
+        opacity: 0.7;
+    }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    // Auto-hide alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.border-l-4');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                if (alert) {
+                    alert.style.opacity = '0';
+                    alert.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => {
+                        if (alert) alert.style.display = 'none';
+                    }, 500);
+                }
+            }, 5000);
+        });
+    });
+</script>
 @endpush

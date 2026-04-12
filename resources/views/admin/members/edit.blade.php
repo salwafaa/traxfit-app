@@ -43,21 +43,21 @@
 <!-- Main Form -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
     <div class="p-6">
-        <form action="{{ route('admin.members.update', $member->id) }}" method="POST">
+        <form action="{{ route('admin.members.update', $member->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             
-            <!-- Section 1: Informasi Member -->
+            <!-- Section 1: Informasi Pribadi -->
             <div class="mb-8">
                 <div class="flex items-center mb-5">
                     <div class="w-1 h-6 bg-[#27124A] rounded-full mr-3"></div>
                     <h4 class="text-base font-semibold text-gray-800">
-                        <i class="fas fa-user-edit text-[#27124A] mr-2"></i>Informasi Pribadi
+                        <i class="fas fa-user-circle text-[#27124A] mr-2"></i>Informasi Pribadi
                     </h4>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <!-- Nama -->
+                    <!-- Nama Lengkap -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="nama">
                             Nama Lengkap <span class="text-red-500">*</span>
@@ -77,13 +77,13 @@
                         @enderror
                     </div>
                     
-                    <!-- Telepon -->
+                    <!-- Nomor Telepon -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="telepon">
                             Nomor Telepon
                         </label>
                         <div class="relative">
-                            <input type="text" name="telepon" id="telepon"
+                            <input type="tel" name="telepon" id="telepon"
                                    value="{{ old('telepon', $member->telepon) }}"
                                    class="w-full px-4 py-3 pl-10 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#27124A]/20 focus:border-[#27124A] transition-all duration-300"
                                    placeholder="0812xxxxxxxx">
@@ -98,7 +98,7 @@
                         @enderror
                     </div>
                     
-                    <!-- Alamat -->
+                    <!-- Alamat (Full width) -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="alamat">
                             Alamat
@@ -119,45 +119,154 @@
                 </div>
             </div>
             
-            <!-- Section 2: Membership -->
+            <!-- Section 2: Informasi Identitas -->
             <div class="mb-8">
                 <div class="flex items-center mb-5">
                     <div class="w-1 h-6 bg-[#27124A] rounded-full mr-3"></div>
                     <h4 class="text-base font-semibold text-gray-800">
-                        <i class="fas fa-id-card-alt text-[#27124A] mr-2"></i>Informasi Membership
+                        <i class="fas fa-id-card text-[#27124A] mr-2"></i>Informasi Identitas
                     </h4>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <!-- Jenis Member -->
+                    <!-- Jenis Identitas -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2" for="jenis_member">
-                            Jenis Member
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="jenis_identitas">
+                            Jenis Identitas
                         </label>
                         <div class="relative">
-                            <select name="jenis_member" id="jenis_member"
+                            <select name="jenis_identitas" id="jenis_identitas"
                                     class="w-full px-4 py-3 pl-10 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#27124A]/20 focus:border-[#27124A] transition-all duration-300 appearance-none">
-                                <option value="">Pilih Jenis Member</option>
-                                <option value="Regular" {{ old('jenis_member', $member->jenis_member) == 'Regular' ? 'selected' : '' }}>Regular</option>
-                                <option value="Premium" {{ old('jenis_member', $member->jenis_member) == 'Premium' ? 'selected' : '' }}>Premium</option>
-                                <option value="VIP" {{ old('jenis_member', $member->jenis_member) == 'VIP' ? 'selected' : '' }}>VIP</option>
-                                <option value="Student" {{ old('jenis_member', $member->jenis_member) == 'Student' ? 'selected' : '' }}>Student</option>
-                                <option value="Corporate" {{ old('jenis_member', $member->jenis_member) == 'Corporate' ? 'selected' : '' }}>Corporate</option>
+                                <option value="">Pilih Jenis Identitas</option>
+                                <option value="KTP" {{ old('jenis_identitas', $member->jenis_identitas) == 'KTP' ? 'selected' : '' }}>KTP</option>
+                                <option value="Passport" {{ old('jenis_identitas', $member->jenis_identitas) == 'Passport' ? 'selected' : '' }}>Passport</option>
+                                <option value="SIM" {{ old('jenis_identitas', $member->jenis_identitas) == 'SIM' ? 'selected' : '' }}>SIM</option>
+                                <option value="Other" {{ old('jenis_identitas', $member->jenis_identitas) == 'Other' ? 'selected' : '' }}>Lainnya</option>
                             </select>
                             <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                <i class="fas fa-crown text-gray-400 text-sm"></i>
+                                <i class="fas fa-id-card text-gray-400 text-sm"></i>
                             </div>
                             <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
                                 <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
                             </div>
                         </div>
-                        @error('jenis_member')
+                        @error('jenis_identitas')
                             <div class="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
                                 <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
                             </div>
                         @enderror
                     </div>
                     
+                    <!-- Nomor Identitas -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="no_identitas">
+                            Nomor Identitas
+                        </label>
+                        <div class="relative">
+                            <input type="text" name="no_identitas" id="no_identitas"
+                                   value="{{ old('no_identitas', $member->no_identitas) }}"
+                                   class="w-full px-4 py-3 pl-10 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#27124A]/20 focus:border-[#27124A] transition-all duration-300"
+                                   placeholder="Nomor KTP/Passport/SIM">
+                            <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-hashtag text-gray-400 text-sm"></i>
+                            </div>
+                        </div>
+                        @error('no_identitas')
+                            <div class="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                                <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    
+                    <!-- Tanggal Lahir -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="tgl_lahir">
+                            Tanggal Lahir
+                        </label>
+                        <div class="relative">
+                            <input type="date" name="tgl_lahir" id="tgl_lahir"
+                                   value="{{ old('tgl_lahir', $member->tgl_lahir ? $member->tgl_lahir->format('Y-m-d') : '') }}"
+                                   class="w-full px-4 py-3 pl-10 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#27124A]/20 focus:border-[#27124A] transition-all duration-300">
+                            <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-birthday-cake text-gray-400 text-sm"></i>
+                            </div>
+                        </div>
+                        @error('tgl_lahir')
+                            <div class="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                                <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    
+                    <!-- Foto Identitas -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="foto_identitas">
+                            Foto Identitas
+                        </label>
+                        <div class="relative">
+                            <input type="file" name="foto_identitas" id="foto_identitas" accept="image/jpeg,image/png,image/jpg"
+                                   class="w-full px-4 py-3 pl-10 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#27124A]/20 focus:border-[#27124A] transition-all duration-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#27124A] file:text-white hover:file:bg-[#3a1d6b]">
+                            <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-image text-gray-400 text-sm"></i>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i> Format: JPG, JPEG, PNG. Maksimal 2MB
+                        </p>
+                        @error('foto_identitas')
+                            <div class="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                                <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    
+                    <!-- Preview Foto Identitas -->
+                    @if($member->foto_identitas_url)
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Foto Identitas Saat Ini</label>
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <div class="flex items-start gap-4 flex-wrap">
+                                <div class="relative group">
+                                    <img src="{{ $member->foto_identitas_url }}" 
+                                         alt="Foto Identitas {{ $member->nama }}"
+                                         class="w-32 h-32 object-cover rounded-lg border border-gray-300 shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                                         onclick="window.open(this.src, '_blank')">
+                                    <button type="button" onclick="window.open('{{ $member->foto_identitas_url }}', '_blank')"
+                                            class="absolute bottom-1 right-1 bg-black bg-opacity-50 text-white p-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-600 mb-2">Foto identitas yang terdaftar saat ini</p>
+                                    <div class="flex gap-2">
+                                        <a href="{{ $member->foto_identitas_url }}" 
+                                           download
+                                           class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs hover:bg-blue-100 transition-colors">
+                                            <i class="fas fa-download"></i>
+                                            Download
+                                        </a>
+                                        <span class="text-xs text-gray-500 self-center">
+                                            Upload file baru untuk mengganti foto ini
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Section 3: Detail Membership -->
+            <div class="mb-8">
+                <div class="flex items-center mb-5">
+                    <div class="w-1 h-6 bg-[#27124A] rounded-full mr-3"></div>
+                    <h4 class="text-base font-semibold text-gray-800">
+                        <i class="fas fa-id-card-alt text-[#27124A] mr-2"></i>Detail Membership
+                    </h4>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <!-- Paket Membership -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="id_paket">
@@ -202,8 +311,8 @@
                                 <i class="fas fa-calendar text-gray-400 text-sm"></i>
                             </div>
                         </div>
-                        <div class="mt-2 text-sm text-gray-500">
-                            <i class="fas fa-info-circle mr-1"></i> Sisa hari: <span id="sisaHariDisplay" class="font-bold"></span>
+                        <div class="mt-2 text-sm">
+                            <i class="fas fa-clock mr-1"></i> Sisa hari: <span id="sisaHariDisplay" class="font-bold"></span>
                         </div>
                         @error('tgl_expired')
                             <div class="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
@@ -242,66 +351,6 @@
                 </div>
             </div>
             
-            <!-- Info Saat Ini -->
-            <div class="mb-8 bg-gray-50 border border-gray-200 rounded-xl p-5">
-                <h4 class="text-base font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-info-circle text-[#27124A] mr-2"></i>Informasi Saat Ini
-                </h4>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="bg-white p-4 rounded-xl border border-gray-200">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas fa-calendar-plus text-blue-600"></i>
-                            </div>
-                            <div>
-                                <div class="text-xs text-gray-500">Tanggal Daftar</div>
-                                <div class="font-medium text-gray-800">{{ $member->tgl_daftar_formatted }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-4 rounded-xl border border-gray-200">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas fa-box-open text-green-600"></i>
-                            </div>
-                            <div>
-                                <div class="text-xs text-gray-500">Paket Saat Ini</div>
-                                <div class="font-medium text-gray-800">{{ $member->package->nama_paket ?? '-' }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-4 rounded-xl border border-gray-200">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas fa-clock text-purple-600"></i>
-                            </div>
-                            <div>
-                                <div class="text-xs text-gray-500">Sisa Hari</div>
-                                <div class="font-medium {{ $member->sisa_hari_class }}">
-                                    {{ $member->sisa_hari_text }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-4 rounded-xl border border-gray-200">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 {{ $member->is_active ? 'bg-green-50' : 'bg-red-50' }} rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas {{ $member->is_active ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600' }}"></i>
-                            </div>
-                            <div>
-                                <div class="text-xs text-gray-500">Status</div>
-                                <div class="font-medium {{ $member->is_active ? 'text-green-700' : 'text-red-700' }}">
-                                    {{ $member->is_active ? 'Aktif' : ($member->status == 'expired' ? 'Expired' : 'Tidak Aktif') }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Action Buttons -->
             <div class="mt-10 pt-6 border-t border-gray-100">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -310,7 +359,7 @@
                         Pastikan perubahan data sudah sesuai dengan kebutuhan
                     </div>
                     <div class="flex flex-wrap gap-3">
-                        <a href="{{ route('admin.members.index') }}" 
+                        <a href="{{ route('admin.members.show', $member->id) }}" 
                            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all duration-300 flex items-center border border-gray-200">
                             <i class="fas fa-times mr-2"></i> Batal
                         </a>
@@ -320,10 +369,10 @@
                             @csrf
                             @method('PUT')
                             <button type="submit" 
-                                    class="px-5 py-2.5 {{ $member->status == 'active' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' }} text-white font-medium rounded-xl transition-all duration-300 flex items-center shadow-sm hover:shadow-md"
-                                    onclick="return confirm('Yakin ingin {{ $member->status == 'active' ? 'nonaktifkan' : 'aktifkan' }} member {{ $member->nama }}?')">
-                                <i class="fas fa-{{ $member->status == 'active' ? 'ban' : 'check-circle' }} mr-2"></i>
-                                {{ $member->status == 'active' ? 'Nonaktifkan' : 'Aktifkan' }}
+                                    class="px-5 py-2.5 {{ $member->is_active ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' }} text-white font-medium rounded-xl transition-all duration-300 flex items-center shadow-sm hover:shadow-md"
+                                    onclick="return confirm('Yakin ingin {{ $member->is_active ? 'nonaktifkan' : 'aktifkan' }} member {{ $member->nama }}?')">
+                                <i class="fas fa-{{ $member->is_active ? 'ban' : 'check-circle' }} mr-2"></i>
+                                {{ $member->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                             </button>
                         </form>
                         
@@ -372,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 sisaHariDisplay.textContent = 'Expired hari ini';
                 sisaHariDisplay.className = 'font-bold text-red-600';
             } else if (diffDays <= 7) {
-                sisaHariDisplay.textContent = diffDays + ' hari lagi (akan expired)';
+                sisaHariDisplay.textContent = diffDays + ' hari lagi (segera expired)';
                 sisaHariDisplay.className = 'font-bold text-yellow-600';
             } else {
                 sisaHariDisplay.textContent = diffDays + ' hari lagi';
@@ -398,20 +447,27 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (expiredDate < today) {
                 // Jika tanggal expired sudah lewat, set status ke expired
-                statusSelect.value = 'expired';
-            } else {
-                // Jika tanggal expired masih berlaku, biarkan user memilih
-                // Tapi kasih informasi
+                if (statusSelect.value !== 'expired') {
+                    statusSelect.value = 'expired';
+                    // Tampilkan notifikasi
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'mt-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded-lg';
+                    infoDiv.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Status otomatis diubah menjadi Expired karena tanggal expired sudah lewat.';
+                    statusSelect.parentElement.parentElement.appendChild(infoDiv);
+                    setTimeout(() => infoDiv.remove(), 3000);
+                }
             }
         }
     }
     
-    tglExpiredInput.addEventListener('change', function() {
-        updateSisaHari();
-        updateStatusBasedOnExpired();
-    });
-    
-    updateSisaHari(); // Panggil saat halaman dimuat
+    if (tglExpiredInput) {
+        tglExpiredInput.addEventListener('change', function() {
+            updateSisaHari();
+            updateStatusBasedOnExpired();
+        });
+        
+        updateSisaHari(); // Panggil saat halaman dimuat
+    }
     
     // Update sisa hari saat paket dipilih
     const paketSelect = document.getElementById('id_paket');
@@ -420,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedOption = this.options[this.selectedIndex];
             const durasi = selectedOption.getAttribute('data-durasi');
             
-            if (durasi && confirm('Apakah Anda ingin mengupdate tanggal expired berdasarkan paket yang dipilih?')) {
+            if (durasi && confirm('Apakah Anda ingin mengupdate tanggal expired berdasarkan paket yang dipilih?\n\nPerhitungan: Tanggal hari ini + ' + durasi + ' hari')) {
                 // Hitung tanggal expired baru berdasarkan durasi paket
                 const today = new Date();
                 const newExpired = new Date(today);
@@ -434,6 +490,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 tglExpiredInput.value = `${year}-${month}-${day}`;
                 updateSisaHari();
                 updateStatusBasedOnExpired();
+                
+                // Tampilkan notifikasi
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-pulse';
+                notification.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Tanggal expired diperbarui menjadi ' + newExpired.toLocaleDateString('id-ID');
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+            }
+        });
+    }
+    
+    // Preview foto sebelum upload
+    const fotoInput = document.getElementById('foto_identitas');
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validasi tipe file
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Format file tidak didukung. Gunakan JPG, JPEG, atau PNG.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validasi ukuran file (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file terlalu besar. Maksimal 2MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Cari atau buat elemen preview
+                    let previewContainer = document.querySelector('.foto-preview-container');
+                    if (!previewContainer) {
+                        const parent = fotoInput.closest('.relative').parentElement;
+                        previewContainer = document.createElement('div');
+                        previewContainer.className = 'foto-preview-container mt-3';
+                        parent.appendChild(previewContainer);
+                    }
+                    
+                    previewContainer.innerHTML = `
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <label class="block text-xs font-medium text-gray-600 mb-2">Preview Foto Baru:</label>
+                            <img src="${e.target.result}" alt="Preview" class="w-24 h-24 object-cover rounded-lg border border-gray-300">
+                            <p class="text-xs text-gray-500 mt-2">File: ${file.name} (${(file.size / 1024).toFixed(2)} KB)</p>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
             }
         });
     }

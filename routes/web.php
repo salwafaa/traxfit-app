@@ -17,6 +17,7 @@ use App\Http\Controllers\Kasir\MemberController as KasirMemberController;
 use App\Http\Controllers\Kasir\CheckinController as KasirCheckinController;
 use App\Http\Controllers\Kasir\ReportController as KasirReportController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
+use App\Http\Controllers\Owner\UserController as OwnerUserController;
 
 // Route Auth
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -31,7 +32,7 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
     // API Chart Data
     Route::get('/chart-data/{period}', [AdminController::class, 'chartData'])->name('chart-data');
     
-    // Kelola User
+    // Kelola User (Admin hanya bisa CRUD Kasir)
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -40,6 +41,8 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         Route::put('/{id}/status', [UserController::class, 'toggleStatus'])->name('toggleStatus');
+        Route::put('/{id}/restore', [UserController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [UserController::class, 'forceDelete'])->name('forceDelete');
     });
     
     // Kelola Produk
@@ -77,6 +80,7 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
     // Kelola Member (Admin hanya bisa edit, tidak bisa daftarkan)
     Route::prefix('members')->name('members.')->group(function () {
         Route::get('/', [AdminMemberController::class, 'index'])->name('index');
+        Route::get('/{id}', [AdminMemberController::class, 'show'])->name('show');
         Route::get('/{id}/edit', [AdminMemberController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AdminMemberController::class, 'update'])->name('update');
         Route::delete('/{id}', [AdminMemberController::class, 'destroy'])->name('destroy');
@@ -89,9 +93,10 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::get('/add/{product_id}', [StockController::class, 'create'])->name('create');
         Route::post('/add', [StockController::class, 'store'])->name('store');
         Route::get('/log', [StockController::class, 'log'])->name('log');
+        Route::get('/log/export', [StockController::class, 'export'])->name('log.export');
     });
 
-    // ===== BARU: KELOLA TRANSAKSI UNTUK ADMIN =====
+    // Kelola Transaksi untuk Admin
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('index');
         Route::get('/{id}', [App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('show');
@@ -101,10 +106,10 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
     });
 
     // Pengaturan Gym
-Route::prefix('settings')->name('settings.')->group(function () {
-    Route::get('/', [App\Http\Controllers\Admin\GymSettingController::class, 'index'])->name('index');
-    Route::put('/', [App\Http\Controllers\Admin\GymSettingController::class, 'update'])->name('update');
-});
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\GymSettingController::class, 'index'])->name('index');
+        Route::put('/', [App\Http\Controllers\Admin\GymSettingController::class, 'update'])->name('update');
+    });
 });
 
 // Route untuk role kasir
@@ -134,44 +139,29 @@ Route::middleware(['auth', 'checkRole:kasir'])->prefix('kasir')->name('kasir.')-
     
     // Kelola Member
     Route::prefix('member')->name('member.')->group(function () {
-        // Halaman utama member kasir
         Route::get('/', [KasirMemberController::class, 'index'])->name('index');
-        
-        // Daftar member baru
         Route::get('/daftar', [KasirMemberController::class, 'create'])->name('create');
         Route::post('/daftar', [KasirMemberController::class, 'store'])->name('store');
-        
-        // Edit member
         Route::get('/{id}/edit', [KasirMemberController::class, 'edit'])->name('edit');
         Route::put('/{id}', [KasirMemberController::class, 'update'])->name('update');
-        
-        // Perpanjang member
         Route::get('/{id}/perpanjang', [KasirMemberController::class, 'showRenew'])->name('showRenew');
-        Route::post('/{id}/perpanjang', [KasirMemberController::class, 'renew'])->name('renew');
-        
-        // Cek status member - GUNAKAN MemberController
+        Route::post('/{id}/renew', [KasirMemberController::class, 'renew'])->name('renew');
         Route::get('/cek', [App\Http\Controllers\Kasir\MemberController::class, 'cek'])->name('cek');
         Route::get('/cari', [App\Http\Controllers\Kasir\MemberController::class, 'cari'])->name('cari');
         Route::post('/{id}/perpanjang', [App\Http\Controllers\Kasir\MemberController::class, 'perpanjang'])->name('perpanjang');
+        Route::post('/daftar-baru', [App\Http\Controllers\Kasir\MemberController::class, 'daftarBaru'])->name('daftarBaru');
         Route::get('/packages', [App\Http\Controllers\Kasir\MemberController::class, 'getPackages'])->name('packages');
-        
-        // Hapus member
+        Route::get('/{id}/detail', [App\Http\Controllers\Kasir\MemberController::class, 'getMember'])->name('detail');
         Route::delete('/{id}', [KasirMemberController::class, 'destroy'])->name('destroy');
     });
     
-    // Check-in Member - GUNAKAN CheckinController
+    // Check-in Member
     Route::prefix('checkin')->name('checkin.')->group(function () {
         Route::get('/', [App\Http\Controllers\Kasir\CheckinController::class, 'index'])->name('index');
         Route::post('/', [App\Http\Controllers\Kasir\CheckinController::class, 'store'])->name('store');
         Route::get('/cari-member', [App\Http\Controllers\Kasir\CheckinController::class, 'cariMember'])->name('cari');
         Route::get('/riwayat', [App\Http\Controllers\Kasir\CheckinController::class, 'riwayat'])->name('riwayat');
         Route::get('/riwayat/export', [App\Http\Controllers\Kasir\CheckinController::class, 'export'])->name('export');
-    });
-    
-    // Report
-    Route::prefix('report')->name('report.')->group(function () {
-        Route::get('/transaksi', [KasirReportController::class, 'transaksi'])->name('transaksi');
-        Route::get('/cetak-ulang', [KasirReportController::class, 'cetakUlang'])->name('cetakUlang');
     });
 
     // Harga Visit
@@ -182,20 +172,30 @@ Route::middleware(['auth', 'checkRole:kasir'])->prefix('kasir')->name('kasir.')-
 Route::middleware(['auth', 'checkRole:owner'])->prefix('owner')->name('owner.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [OwnerController::class, 'dashboard'])->name('dashboard');
+
+    // ===== PROFIL OWNER =====
+    Route::get('/profile', [OwnerController::class, 'profile'])->name('profile');
+    Route::put('/profile', [OwnerController::class, 'updateProfile'])->name('profile.update');
+    
+    // ===== MANAGE USERS (CRUD Admin & Kasir) =====
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [OwnerUserController::class, 'index'])->name('index');
+        Route::get('/create', [OwnerUserController::class, 'create'])->name('create');
+        Route::post('/', [OwnerUserController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [OwnerUserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [OwnerUserController::class, 'update'])->name('update');
+        Route::delete('/{id}', [OwnerUserController::class, 'destroy'])->name('destroy');
+        Route::put('/{id}/toggle-status', [OwnerUserController::class, 'toggleStatus'])->name('toggleStatus');
+        Route::put('/{id}/restore', [OwnerUserController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [OwnerUserController::class, 'forceDelete'])->name('forceDelete');
+    });
     
     // Laporan
     Route::prefix('laporan')->name('laporan.')->group(function () {
-        // Laporan Transaksi
         Route::get('/transaksi', [OwnerReportController::class, 'transaksi'])->name('transaksi');
-            Route::get('/transaksi/{id}', [OwnerReportController::class, 'transaksiShow'])->name('transaksi.show');
-        
-        // Laporan Stok
+        Route::get('/transaksi/{id}', [OwnerReportController::class, 'transaksiShow'])->name('transaksi.show');
         Route::get('/stok', [OwnerReportController::class, 'stok'])->name('stok');
-        
-        // Laporan Aktivitas User
         Route::get('/aktivitas', [OwnerReportController::class, 'aktivitas'])->name('aktivitas');
-        
-        // Laporan Member Aktif
         Route::get('/member', [OwnerReportController::class, 'member'])->name('member');
     });
 });

@@ -23,14 +23,6 @@
                     <p class="text-xs md:text-sm text-gray-500 mt-0.5 truncate">{{ \Carbon\Carbon::parse($transaction->created_at)->format('d F Y H:i:s') }}</p>
                 </div>
             </div>
-            <div class="flex gap-2 flex-shrink-0">
-                <a href="{{ route('admin.transaksi.struk', $transaction->id) }}" 
-                   class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 md:py-2 px-3 md:px-4 rounded-lg md:rounded-xl transition-all duration-300 flex items-center shadow-sm hover:shadow-md text-xs md:text-sm whitespace-nowrap"
-                   target="_blank">
-                    <i class="fas fa-print mr-1 text-xs"></i>
-                    <span>Cetak Ulang</span>
-                </a>
-            </div>
         </div>
     </div>
     
@@ -118,72 +110,81 @@
                 </div>
                 @endif
 
-           <!-- Detail Membership -->
-@if($transaction->isMembershipOnly() || $transaction->isProdukDanMembership())
-@php
-    $dataMembership = $transaction->data_membership;
-    
-    // Fallback jika data masih kosong (untuk transaksi lama)
-    if (empty($dataMembership['harga_paket']) || $dataMembership['harga_paket'] == 0) {
-        // Cari paket berdasarkan ID yang tersimpan di member
-        $paket = null;
-        if ($transaction->member && $transaction->member->id_paket) {
-            $paket = \App\Models\MembershipPackage::find($transaction->member->id_paket);
-        }
-        
-        // Jika tidak ketemu, coba cari berdasarkan total harga
-        if (!$paket) {
-            $paket = \App\Models\MembershipPackage::where('harga', $transaction->total_harga)->first();
-        }
-        
-        $dataMembership = [
-            'id_paket' => $transaction->member->id_paket ?? null,
-            'nama_paket' => $paket ? $paket->nama_paket : ($transaction->member->nama_paket ?? 'Paket Membership'),
-            'durasi_hari' => $paket ? $paket->durasi_hari : 30,
-            'harga_paket' => $paket ? $paket->harga : ($transaction->total_harga ?? 0),
-            'tgl_mulai' => $transaction->created_at,
-            'tgl_selesai' => $transaction->member->tgl_expired ?? $transaction->created_at->addDays(30),
-        ];
-    }
-@endphp
-<div class="min-w-0">
-    <h4 class="text-sm md:text-base font-semibold text-gray-800 mb-2">🎫 Detail Membership</h4>
-    <div class="bg-purple-50 rounded-lg md:rounded-xl p-3 md:p-4 border border-purple-200">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
-            <div class="sm:col-span-2">
-                <label class="block text-xs text-gray-600 mb-1">Paket</label>
-                <p class="font-medium text-gray-800 text-xs md:text-sm break-words">
-                    {{ $dataMembership['nama_paket'] }}
-                </p>
-            </div>
-            <div class="min-w-0">
-                <label class="block text-xs text-gray-600 mb-1">Harga Paket</label>
-                <p class="font-medium text-gray-800 text-xs md:text-sm">
-                    Rp {{ number_format($dataMembership['harga_paket'], 0, ',', '.') }}
-                </p>
-            </div>
-            <div class="min-w-0">
-                <label class="block text-xs text-gray-600 mb-1">Durasi</label>
-                <p class="font-medium text-gray-800 text-xs md:text-sm">
-                    {{ $dataMembership['durasi_hari'] }} Hari
-                </p>
-            </div>
-            <div class="min-w-0">
-                <label class="block text-xs text-gray-600 mb-1">Tanggal Mulai</label>
-                <p class="font-medium text-gray-800 text-xs md:text-sm break-words">
-                    {{ isset($dataMembership['tgl_mulai']) ? \Carbon\Carbon::parse($dataMembership['tgl_mulai'])->format('d F Y H:i') : ($transaction->created_at ? $transaction->created_at->format('d F Y H:i') : '-') }}
-                </p>
-            </div>
-            <div class="min-w-0">
-                <label class="block text-xs text-gray-600 mb-1">Tanggal Selesai</label>
-                <p class="font-medium text-gray-800 text-xs md:text-sm break-words">
-                    {{ isset($dataMembership['tgl_selesai']) ? \Carbon\Carbon::parse($dataMembership['tgl_selesai'])->format('d F Y H:i') : ($transaction->member && $transaction->member->tgl_expired ? \Carbon\Carbon::parse($transaction->member->tgl_expired)->format('d F Y H:i') : '-') }}
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
+                <!-- Detail Membership -->
+                @if($transaction->isMembershipOnly() || $transaction->isProdukDanMembership())
+                @php
+                    $dataMembership = $transaction->data_membership;
+                    
+                    // Fallback jika data masih kosong (untuk transaksi lama)
+                    if (empty($dataMembership['harga_paket']) || $dataMembership['harga_paket'] == 0) {
+                        // Cari paket berdasarkan ID yang tersimpan di member
+                        $paket = null;
+                        if ($transaction->member && $transaction->member->id_paket) {
+                            $paket = \App\Models\MembershipPackage::find($transaction->member->id_paket);
+                        }
+                        
+                        // Jika tidak ketemu, coba cari berdasarkan total harga
+                        if (!$paket) {
+                            $paket = \App\Models\MembershipPackage::where('harga', $transaction->total_harga)->first();
+                        }
+                        
+                        $dataMembership = [
+                            'id_paket' => $transaction->member->id_paket ?? null,
+                            'nama_paket' => $paket ? $paket->nama_paket : ($transaction->member->nama_paket ?? 'Paket Membership'),
+                            'durasi_hari' => $paket ? $paket->durasi_hari : 30,
+                            'harga_paket' => $paket ? $paket->harga : ($transaction->total_harga ?? 0),
+                            'tgl_mulai' => $transaction->created_at,
+                            'tgl_selesai' => $transaction->member->tgl_expired ?? $transaction->created_at->addDays(30),
+                        ];
+                    }
+                @endphp
+                <div class="min-w-0">
+                    <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                        <h4 class="text-sm md:text-base font-semibold text-gray-800">🎫 Detail Membership</h4>
+                        @if($transaction->member)
+                        <a href="{{ route('admin.members.show', $transaction->member->id) }}" 
+                           class="inline-flex items-center px-2 md:px-3 py-1 md:py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-xs md:text-sm transition-all duration-300">
+                            <i class="fas fa-external-link-alt mr-1 text-xs"></i>
+                            Lihat Detail Member
+                        </a>
+                        @endif
+                    </div>
+                    <div class="bg-purple-50 rounded-lg md:rounded-xl p-3 md:p-4 border border-purple-200">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs text-gray-600 mb-1">Paket</label>
+                                <p class="font-medium text-gray-800 text-xs md:text-sm break-words">
+                                    {{ $dataMembership['nama_paket'] }}
+                                </p>
+                            </div>
+                            <div class="min-w-0">
+                                <label class="block text-xs text-gray-600 mb-1">Harga Paket</label>
+                                <p class="font-medium text-gray-800 text-xs md:text-sm">
+                                    Rp {{ number_format($dataMembership['harga_paket'], 0, ',', '.') }}
+                                </p>
+                            </div>
+                            <div class="min-w-0">
+                                <label class="block text-xs text-gray-600 mb-1">Durasi</label>
+                                <p class="font-medium text-gray-800 text-xs md:text-sm">
+                                    {{ $dataMembership['durasi_hari'] }} Hari
+                                </p>
+                            </div>
+                            <div class="min-w-0">
+                                <label class="block text-xs text-gray-600 mb-1">Tanggal Mulai</label>
+                                <p class="font-medium text-gray-800 text-xs md:text-sm break-words">
+                                    {{ isset($dataMembership['tgl_mulai']) ? \Carbon\Carbon::parse($dataMembership['tgl_mulai'])->format('d F Y H:i') : ($transaction->created_at ? $transaction->created_at->format('d F Y H:i') : '-') }}
+                                </p>
+                            </div>
+                            <div class="min-w-0">
+                                <label class="block text-xs text-gray-600 mb-1">Tanggal Selesai</label>
+                                <p class="font-medium text-gray-800 text-xs md:text-sm break-words">
+                                    {{ isset($dataMembership['tgl_selesai']) ? \Carbon\Carbon::parse($dataMembership['tgl_selesai'])->format('d F Y H:i') : ($transaction->member && $transaction->member->tgl_expired ? \Carbon\Carbon::parse($transaction->member->tgl_expired)->format('d F Y H:i') : '-') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Detail Produk -->
                 @if($transaction->details && $transaction->details->count() > 0)
@@ -248,10 +249,17 @@
                     
                     @if($transaction->member)
                     <div class="mb-3 md:mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                        <h5 class="font-semibold text-[#27124A] mb-2 flex items-center text-xs md:text-sm">
-                            <i class="fas fa-user-circle mr-1.5 text-xs"></i>
-                            Informasi Member
-                        </h5>
+                        <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                            <h5 class="font-semibold text-[#27124A] flex items-center text-xs md:text-sm">
+                                <i class="fas fa-user-circle mr-1.5 text-xs"></i>
+                                Informasi Member
+                            </h5>
+                            <a href="{{ route('admin.members.show', $transaction->member->id) }}" 
+                               class="text-purple-600 hover:text-purple-700 text-xs flex items-center">
+                                <i class="fas fa-external-link-alt mr-1"></i>
+                                Detail
+                            </a>
+                        </div>
                         <div class="space-y-1.5">
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-gray-600">Nama</span>
@@ -315,4 +323,66 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                background: '#fff',
+                color: '#27124A',
+                confirmButtonColor: '#27124A',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'bg-[#27124A] hover:bg-[#3a1d6b] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300'
+                }
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: '{{ session('error') }}',
+                background: '#fff',
+                color: '#27124A',
+                confirmButtonColor: '#27124A',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'bg-[#27124A] hover:bg-[#3a1d6b] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300'
+                }
+            });
+        @endif
+
+        @if(session('warning'))
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian!',
+                text: '{{ session('warning') }}',
+                background: '#fff',
+                color: '#27124A',
+                confirmButtonColor: '#27124A',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'bg-[#27124A] hover:bg-[#3a1d6b] text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300'
+                }
+            });
+        @endif
+    });
+</script>
+@endpush
 @endsection

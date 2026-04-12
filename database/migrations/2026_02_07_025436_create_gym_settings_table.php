@@ -13,13 +13,9 @@ return new class extends Migration
             $table->string('nama_gym');
             $table->text('alamat')->nullable();
             $table->string('telepon')->nullable();
-            $table->string('email')->nullable(); // TAMBAHKAN EMAIL
-            $table->string('logo')->nullable(); // TAMBAHKAN LOGO
+            $table->string('logo')->nullable();
             $table->text('footer_struk')->nullable();
-            
-            // HAPUS 'after' karena ini CREATE TABLE, bukan ALTER TABLE
             $table->decimal('harga_visit', 10, 2)->default(25000)->comment('Harga visit harian');
-            
             $table->timestamps();
         });
     }

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - TraxFit Gym</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -22,309 +22,216 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== SCROLLBAR ===== */
-        .scrollbar-thin {
-            scrollbar-width: thin;
-            scrollbar-color: #4b5563 #27124A;
+        /* ===== SIDEBAR COLLAPSIBLE ===== */
+        #sidebar {
+            width: 240px;
+            transition: width 0.25s ease;
+            overflow: hidden;
+            flex-shrink: 0;
         }
-        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        #sidebar.collapsed { width: 68px; }
+
+        #sidebar.collapsed .sb-label,
+        #sidebar.collapsed .sb-chevron,
+        #sidebar.collapsed .sb-brand { display: none; }
+
+        #sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        #sidebar.collapsed .sb-header-inner { justify-content: center; }
+        #sidebar.collapsed #toggleBtn { margin-left: 0; }
+        #toggleIcon { transition: transform 0.25s ease; }
+        #sidebar.collapsed #toggleIcon { transform: rotate(180deg); }
+
+        /* Tooltip */
+        .sb-tooltip {
+            position: absolute;
+            left: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1D0C36;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 5px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 999;
+            border: 0.5px solid rgba(139, 92, 246, 0.3);
+        }
+        #sidebar.collapsed .nav-item:hover .sb-tooltip { opacity: 1; }
+
+        #main-content {
+            margin-left: 240px;
+            transition: margin-left 0.25s ease;
+            min-width: 0;
+            flex: 1;
+        }
+
+        /* Scrollbar */
+        .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #4b5563 #27124A; }
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: #1D0C36; }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background-color: #6D28D9;
-            border-radius: 3px;
-        }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #6D28D9; border-radius: 3px; }
 
         html { scroll-behavior: smooth; }
 
-        /* ===== NAV ITEM ===== */
-        .nav-item {
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        .nav-item.active {
-            background: linear-gradient(to right, #3A1B6E, #6D28D9);
-            color: white;
-        }
-        .nav-item.active i { color: #8B5CF6; }
+        .nav-item { transition: all 0.15s ease; }
+        .nav-item.active { background: linear-gradient(to right, #3A1B6E, #6D28D9); }
 
-        /* ===== SIDEBAR TRANSITION ===== */
-        #sidebar {
-            transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
-            width: 256px; /* w-64 */
-        }
-        #sidebar.collapsed {
-            width: 80px; /* w-20 */
+        .modal-enter { animation: modalFadeIn 0.2s ease-out; }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* ===== MAIN CONTENT TRANSITION ===== */
-        #mainContent {
-            transition: margin-left 0.3s ease-in-out;
-            margin-left: 256px;
-        }
-        #mainContent.collapsed {
-            margin-left: 80px;
-        }
-
-        /* ===== TOOLTIP saat collapsed ===== */
-        .nav-tooltip {
-            position: relative;
-        }
-        .nav-tooltip[data-tooltip]:not([data-tooltip=""]):hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            left: calc(100% + 8px);
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #1D0C36;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            white-space: nowrap;
-            z-index: 999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            pointer-events: none;
-            border: 1px solid #3A1B6E;
-        }
-
-        /* ===== MOBILE ===== */
-        @media (max-width: 768px) {
-            #sidebar {
-                transform: translateX(-100%);
-                width: 256px !important;
-                position: fixed;
-                z-index: 40;
-            }
-            #sidebar.mobile-open {
-                transform: translateX(0);
-            }
-            #mainContent {
-                margin-left: 0 !important;
-            }
-            .nav-tooltip[data-tooltip]:not([data-tooltip=""]):hover::after {
-                display: none;
-            }
-        }
-
-        /* ===== OVERLAY MOBILE ===== */
-        #mobileOverlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 30;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        #mobileOverlay.active {
-            display: block;
-            opacity: 1;
-        }
-
-        /* ===== COLLAPSED ICON CENTERING ===== */
-        #sidebar.collapsed .nav-item {
-            justify-content: center;
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
-        }
-        #sidebar.collapsed .sidebar-logo-text,
-        #sidebar.collapsed .nav-label,
-        #sidebar.collapsed .nav-chevron,
-        #sidebar.collapsed .toggle-label {
-            display: none !important;
-        }
-        #sidebar.collapsed .sidebar-logo {
-            justify-content: center;
-        }
-        #sidebar.collapsed #toggleIcon {
-            transform: rotate(180deg);
-        }
+        .user-avatar-btn { transition: all 0.2s ease; }
+        .user-avatar-btn:hover { transform: scale(1.05); box-shadow: 0 0 0 3px #8B5CF6; }
     </style>
-    @stack('styles')
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen overflow-hidden">
 
-        <!-- ===== SIDEBAR ===== -->
-        <div id="sidebar"
-             class="bg-primary text-white flex flex-col fixed h-full z-20 shadow-lg overflow-hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-primary text-white flex flex-col fixed h-full z-20 shadow-lg">
 
-            <!-- Logo -->
-            <div class="p-5 border-b border-primary-dark flex-shrink-0">
-                <div class="sidebar-logo flex items-center space-x-3">
-                    <img src="{{ asset('images/logo/trax.png') }}" alt="TraxFit Logo"
-                         class="w-10 h-10 object-contain flex-shrink-0">
-                    <div class="sidebar-logo-text overflow-hidden">
-                        <h1 class="text-xl font-bold tracking-tight">TraxFit</h1>
-                        <p class="text-gray-400 text-xs mt-0.5">Gym Management</p>
+            <!-- Header: Logo + Toggle -->
+            <div class="border-b border-primary-dark px-3 py-3.5" style="min-height: 60px;">
+                <div class="sb-header-inner flex items-center gap-3">
+                    <img src="{{ asset('images/logo/trax.png') }}" alt="TraxFit Logo" class="w-9 h-9 object-contain flex-shrink-0">
+                    <div class="sb-brand overflow-hidden">
+                        <h1 class="text-sm font-bold tracking-tight whitespace-nowrap">TraxFit</h1>
+                        <p class="text-gray-400 text-xs whitespace-nowrap">Gym Management</p>
                     </div>
+                    <button id="toggleBtn" onclick="toggleSidebar()"
+                        class="ml-auto flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                        style="background: rgba(255,255,255,0.08);"
+                        onmouseover="this.style.background='rgba(255,255,255,0.15)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                        <i id="toggleIcon" class="fas fa-chevron-left text-gray-400" style="font-size: 11px;"></i>
+                    </button>
                 </div>
             </div>
 
             <!-- Navigation -->
-            <nav class="flex-1 overflow-y-auto scrollbar-thin py-4">
+            <nav class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin py-3 px-2">
                 @yield('sidebar')
             </nav>
-
-            <!-- Toggle Button Desktop -->
-            <div class="p-4 border-t border-primary-dark flex-shrink-0">
-                <button onclick="toggleSidebar()"
-                        class="w-full py-2 px-3 rounded-lg bg-primary-light hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 text-sm">
-                    <i id="toggleIcon" class="fas fa-chevron-left transition-transform duration-300"></i>
-                    <span class="toggle-label">Perkecil</span>
-                </button>
-            </div>
         </div>
 
-        <!-- Mobile Overlay -->
-        <div id="mobileOverlay" onclick="closeMobileMenu()"></div>
-
-        <!-- ===== MAIN CONTENT ===== -->
-        <div id="mainContent" class="flex-1 flex flex-col h-screen overflow-hidden">
+        <!-- Main Content -->
+        <div id="main-content" class="flex flex-col h-screen">
 
             <!-- Top Bar -->
-            <div class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-                <div class="px-4 sm:px-8 py-3 flex justify-between items-center">
-
-                    <!-- Left: Mobile Menu Button & Title -->
-                    <div class="flex items-center space-x-3">
-                        <!-- Tombol hamburger hanya muncul di mobile -->
-                        <button onclick="openMobileMenu()"
-                                class="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600 focus:outline-none">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                        <div>
-                            <h1 class="text-lg sm:text-xl font-semibold text-gray-800">@yield('page-title')</h1>
-                            <p class="text-xs text-gray-500 mt-0.5 hidden sm:block">
-                                Dashboard / @yield('page-title')
-                            </p>
-                        </div>
+            <div class="bg-white shadow-sm border-b border-gray-200 flex-shrink-0">
+                <div class="px-6 py-3 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-lg font-semibold text-gray-800">@yield('page-title')</h1>
+                        <p class="text-xs text-gray-500 mt-0.5">Dashboard / @yield('page-title')</p>
                     </div>
 
-                    <!-- Right: User Info & Logout -->
-                    <div class="flex items-center space-x-2 sm:space-x-4">
-                        <!-- Date -->
-                        <div class="hidden sm:flex text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <div class="text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg">
                             <i class="far fa-calendar mr-2 text-accent"></i>{{ now()->format('d M Y') }}
                         </div>
 
-                        <!-- User Profile -->
-                        <div class="flex items-center space-x-2 sm:space-x-3">
-                            <div class="text-right hidden sm:block">
+                        <div class="flex items-center space-x-2">
+                            <div class="text-right">
                                 <div class="text-sm font-medium text-gray-700">{{ Auth::user()->nama }}</div>
                                 <div class="text-xs text-gray-500">{{ ucfirst(Auth::user()->role) }}</div>
                             </div>
-                            <div class="w-8 h-8 bg-gradient-to-r from-accent to-secondary rounded-full flex items-center justify-center text-white flex-shrink-0">
-                                <i class="fas fa-user text-sm"></i>
-                            </div>
+                            @if(Auth::user()->role === 'owner')
+                                <a href="{{ route('owner.profile') }}" title="Edit Profil"
+                                   class="user-avatar-btn w-8 h-8 bg-gradient-to-r from-accent to-secondary rounded-full flex items-center justify-center text-white">
+                                    <i class="fas fa-user text-sm"></i>
+                                </a>
+                            @else
+                                <div class="w-8 h-8 bg-gradient-to-r from-accent to-secondary rounded-full flex items-center justify-center text-white">
+                                    <i class="fas fa-user text-sm"></i>
+                                </div>
+                            @endif
                         </div>
 
-                        <!-- Logout -->
-                        <form method="POST" action="{{ route('logout') }}" class="inline" id="logoutForm">
+                        <form method="POST" action="{{ route('logout') }}" id="logoutForm" class="inline">
                             @csrf
-                            <button type="button" id="logoutBtn"
-                                    class="p-2 rounded-xl hover:bg-red-50 text-gray-600 hover:text-red-600 transition-colors">
-                                <i class="fas fa-sign-out-alt text-xl"></i>
+                            <button type="button" id="logoutBtn" class="p-2 rounded-xl hover:bg-red-50 text-gray-600 hover:text-red-600 transition-colors">
+                                <i class="fas fa-sign-out-alt text-lg"></i>
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- Page Content -->
-            <main class="flex-1 overflow-y-auto p-3 sm:p-6 bg-gray-50">
-                <div class="bg-white rounded-xl shadow-sm p-3 sm:p-6">
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <div class="bg-white rounded-xl shadow-sm p-6">
                     @yield('content')
                 </div>
             </main>
         </div>
     </div>
 
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 modal-enter">
+            <div class="p-6">
+                <div class="flex justify-center mb-4">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-sign-out-alt text-red-600 text-2xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-xl font-semibold text-center text-gray-800 mb-2">Konfirmasi Logout</h3>
+                <p class="text-center text-gray-600 mb-6">Apakah Anda yakin ingin keluar dari sistem?</p>
+                <div class="flex gap-3">
+                    <button type="button" id="cancelLogoutBtn" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">Batal</button>
+                    <button type="button" id="confirmLogoutBtn" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">Keluar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @yield('scripts')
 
-    <!-- Alpine.js -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
     <script>
-        // ===== SIDEBAR STATE =====
-        let isCollapsed = false;
-        let isMobile = window.innerWidth < 768;
-
-        // Load saved state
-        const saved = localStorage.getItem('sidebarCollapsed');
-        if (saved !== null && !isMobile) {
-            isCollapsed = JSON.parse(saved);
-            applySidebarState();
-        }
-
-        function applySidebarState() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const navItems = document.querySelectorAll('.nav-item');
-
-            if (isCollapsed && !isMobile) {
-                sidebar.classList.add('collapsed');
-                mainContent.classList.add('collapsed');
-            } else {
-                sidebar.classList.remove('collapsed');
-                mainContent.classList.remove('collapsed');
-            }
-
-            // Update tooltip visibility on nav items
-            updateTooltips();
-        }
-
-        function updateTooltips() {
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                const tooltip = item.getAttribute('data-tooltip-text');
-                if (tooltip) {
-                    item.setAttribute('data-tooltip', isCollapsed && !isMobile ? tooltip : '');
-                }
-            });
-        }
+        const sidebar     = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
 
         function toggleSidebar() {
-            if (!isMobile) {
-                isCollapsed = !isCollapsed;
-                localStorage.setItem('sidebarCollapsed', JSON.stringify(isCollapsed));
-                applySidebarState();
+            const collapsed = sidebar.classList.toggle('collapsed');
+            mainContent.style.marginLeft = collapsed ? '68px' : '240px';
+            localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+        }
+
+        // Restore state
+        (function () {
+            if (localStorage.getItem('sidebarCollapsed') === '1') {
+                sidebar.classList.add('collapsed');
+                mainContent.style.marginLeft = '68px';
             }
-        }
+        })();
 
-        function openMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            sidebar.classList.add('mobile-open');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            sidebar.classList.remove('mobile-open');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        // Responsive check
-        window.addEventListener('resize', () => {
-            const wasMobile = isMobile;
-            isMobile = window.innerWidth < 768;
-            if (wasMobile !== isMobile) {
-                if (isMobile) {
-                    closeMobileMenu();
-                }
-                applySidebarState();
-            }
+        // Logout Modal
+        const logoutModal = document.getElementById('logoutModal');
+        document.getElementById('logoutBtn')?.addEventListener('click', () => {
+            logoutModal.classList.replace('hidden', 'flex');
         });
-
-        // Logout confirmation
-        document.getElementById('logoutBtn')?.addEventListener('click', function() {
-            if (confirm('Apakah Anda yakin ingin logout?')) {
-                document.getElementById('logoutForm').submit();
-            }
+        document.getElementById('cancelLogoutBtn')?.addEventListener('click', () => {
+            logoutModal.classList.replace('flex', 'hidden');
+        });
+        logoutModal?.addEventListener('click', (e) => {
+            if (e.target === logoutModal) logoutModal.classList.replace('flex', 'hidden');
+        });
+        document.getElementById('confirmLogoutBtn')?.addEventListener('click', () => {
+            document.getElementById('logoutForm').submit();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && logoutModal.classList.contains('flex'))
+                logoutModal.classList.replace('flex', 'hidden');
         });
     </script>
 </body>

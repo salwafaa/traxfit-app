@@ -196,11 +196,6 @@
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center flex-wrap gap-2 mb-1">
                                     <span class="font-mono font-medium text-[#27124A] bg-[#27124A]/10 px-2 py-0.5 rounded text-xs break-words">{{ $member->kode_member }}</span>
-                                    @if($member->jenis_member)
-                                    <span class="px-2 py-0.5 text-xs rounded-full bg-purple-50 text-purple-700 border border-purple-200 break-words">
-                                        {{ $member->jenis_member }}
-                                    </span>
-                                    @endif
                                 </div>
                                 <div class="font-medium text-gray-800 break-words">{{ $member->nama }}</div>
                                 @if($member->telepon)
@@ -257,6 +252,13 @@
                     
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center space-x-2">
+                            <!-- Detail Button (Baru) -->
+                            <a href="{{ route('admin.members.show', $member->id) }}" 
+                               class="p-2 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-all duration-300 border border-purple-100 flex-shrink-0"
+                               title="Lihat Detail Member">
+                                <i class="fas fa-eye text-sm"></i>
+                            </a>
+                            
                             <!-- Edit Button -->
                             <a href="{{ route('admin.members.edit', $member->id) }}" 
                                class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-all duration-300 border border-blue-100 flex-shrink-0"
@@ -299,47 +301,6 @@
                 @endforelse
             </tbody>
         </table>
-    </div>
-</div>
-
-<!-- Information Card -->
-<div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-2xl shadow-sm p-6 mb-8">
-    <div class="flex items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-[#27124A] rounded-xl flex items-center justify-center shadow-sm">
-            <i class="fas fa-info-circle text-white text-xl"></i>
-        </div>
-        <div class="ml-5 flex-1 min-w-0">
-            <h3 class="text-base font-semibold text-gray-800 mb-3 break-words">Informasi untuk Admin</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0 w-6 h-6 bg-[#27124A]/10 rounded-full flex items-center justify-center mr-3">
-                        <i class="fas fa-ban text-[#27124A] text-xs"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h4 class="font-medium text-gray-800 mb-1 break-words">Pendaftaran Baru</h4>
-                        <p class="text-xs text-gray-600 break-words">Admin <strong>tidak dapat mendaftarkan member baru</strong>. Silakan hubungi kasir.</p>
-                    </div>
-                </div>
-                <div class="flex items-start">
-                    <div class="flex-shrink-0 w-6 h-6 bg-[#27124A]/10 rounded-full flex items-center justify-center mr-3">
-                        <i class="fas fa-edit text-[#27124A] text-xs"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h4 class="font-medium text-gray-800 mb-1 break-words">Edit Data</h4>
-                        <p class="text-xs text-gray-600 break-words">Admin dapat mengedit data member, mengubah paket, dan memperbaiki tanggal expired.</p>
-                    </div>
-                </div>
-                <div class="flex items-start">
-                    <div class="flex-shrink-0 w-6 h-6 bg-[#27124A]/10 rounded-full flex items-center justify-center mr-3">
-                        <i class="fas fa-sync-alt text-[#27124A] text-xs"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h4 class="font-medium text-gray-800 mb-1 break-words">Manajemen Status</h4>
-                        <p class="text-xs text-gray-600 break-words">Admin dapat mengaktifkan/nonaktifkan member dan menghapus data member.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

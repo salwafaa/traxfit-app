@@ -23,7 +23,7 @@
 #modal-sukses { animation: fadeIn 0.2s ease; }
 </style>
 
-{{-- ===== STATS — disamakan dengan desain riwayat ===== --}}
+{{-- ===== STATS ===== --}}
 <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
 
     {{-- Total Member --}}
@@ -190,9 +190,14 @@
                         <p class="text-xs text-gray-400">{{ $m['kode_member'] }}</p>
                     </div>
                 </div>
+                {{-- Badge status — tampilkan ikon khusus jika via transaksi --}}
                 <span class="badge-status text-xs font-medium px-2 py-1 rounded-lg
                     {{ $m['status_badge'] == 'success' ? 'bg-green-100 text-green-700' : ($m['status_badge'] == 'warning' ? 'bg-yellow-100 text-yellow-700' : ($m['status_badge'] == 'danger' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-700')) }}">
-                    {{ $m['status_text'] }}
+                    @if($m['checked_in_today'] && $m['via_transaksi'])
+                        <i class="fas fa-receipt mr-1"></i>Check-in (Transaksi)
+                    @else
+                        {{ $m['status_text'] }}
+                    @endif
                 </span>
             </div>
 
@@ -228,11 +233,21 @@
                         Check-in Sekarang
                     </button>
                 @elseif($m['checked_in_today'])
-                    <button disabled
-                            class="w-full py-2.5 bg-green-100 text-green-600 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
-                        <i class="fas fa-check-circle"></i>
-                        Sudah Check-in
-                    </button>
+                    {{-- Bedakan tampilan tombol: check-in manual vs via transaksi --}}
+                    @if($m['via_transaksi'])
+                        <button disabled
+                                class="w-full py-2.5 bg-blue-50 text-blue-600 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed"
+                                title="Check-in otomatis karena transaksi membership hari ini">
+                            <i class="fas fa-receipt"></i>
+                            Check-in via Transaksi
+                        </button>
+                    @else
+                        <button disabled
+                                class="w-full py-2.5 bg-green-100 text-green-600 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+                            <i class="fas fa-check-circle"></i>
+                            Sudah Check-in
+                        </button>
+                    @endif
                 @else
                     <button disabled
                             class="w-full py-2.5 bg-red-100 text-red-400 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
@@ -243,7 +258,6 @@
             </div>
         </div>
         @empty
-        {{-- Belum ada member sama sekali di database --}}
         <div class="col-span-full text-center py-16">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-50 rounded-full mb-4">
                 <i class="fas fa-users text-2xl text-[#27124A]"></i>
@@ -253,7 +267,6 @@
         </div>
         @endforelse
 
-        {{-- Pesan kosong saat filter/search tidak ada hasil — tersembunyi secara default --}}
         <div id="emptyFilter" class="col-span-full text-center py-16" style="display:none;">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-50 rounded-full mb-4">
                 <i class="fas fa-search text-2xl text-[#27124A]"></i>
@@ -291,6 +304,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Member</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Paket</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Kasir</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Keterangan</th>
                     </tr>
                 </thead>
                 <tbody id="bodyTableToday" class="divide-y divide-gray-50">
@@ -303,6 +317,17 @@
                         </td>
                         <td class="px-4 py-3 text-gray-600">{{ $ci->member->package->nama_paket ?? '-' }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $ci->kasir->nama ?? '-' }}</td>
+                        <td class="px-4 py-3">
+                            @if($ci->via_transaksi)
+                                <span class="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-lg font-medium">
+                                    <i class="fas fa-receipt"></i> Via Transaksi
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 text-xs bg-green-50 text-green-600 px-2 py-1 rounded-lg font-medium">
+                                    <i class="fas fa-hand-pointer"></i> Manual
+                                </span>
+                            @endif
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -348,16 +373,10 @@
 (function () {
     'use strict';
 
-    /* -------------------------------------------------------
-       CONFIG
-    ------------------------------------------------------- */
     var CSRF    = '{{ csrf_token() }}';
     var URL_CI  = '{{ route("kasir.checkin.store") }}';
     var KASIR   = '{{ addslashes(auth()->user()->nama ?? auth()->user()->name ?? "Kasir") }}';
 
-    /* -------------------------------------------------------
-       HELPERS
-    ------------------------------------------------------- */
     function esc(str) {
         var d = document.createElement('div');
         d.textContent = (str == null) ? '' : String(str);
@@ -449,7 +468,8 @@
                         '<td class="px-4 py-3"><p class="font-medium text-gray-800">' + esc(json.checkin.nama) +
                             '</p><p class="text-xs text-gray-400">' + esc(json.checkin.kode_member) + '</p></td>' +
                         '<td class="px-4 py-3 text-gray-600">' + esc(json.checkin.paket) + '</td>' +
-                        '<td class="px-4 py-3 text-gray-600">' + esc(KASIR) + '</td>';
+                        '<td class="px-4 py-3 text-gray-600">' + esc(KASIR) + '</td>' +
+                        '<td class="px-4 py-3"><span class="inline-flex items-center gap-1 text-xs bg-green-50 text-green-600 px-2 py-1 rounded-lg font-medium"><i class="fas fa-hand-pointer"></i> Manual</span></td>';
                     tbody.insertBefore(tr, tbody.firstChild);
                     setTimeout(function () { tr.style.backgroundColor = ''; }, 3000);
                 }
@@ -502,10 +522,8 @@
             }
         });
 
-        /* Tampilkan/sembunyikan pesan kosong filter */
         var emp = document.getElementById('emptyFilter');
         if (emp) {
-            /* Hanya tampilkan jika memang ada member di database tapi hasil filter kosong */
             if (tampil === 0 && cards.length > 0) {
                 emp.style.display = 'block';
             } else {
@@ -518,13 +536,11 @@
        EVENT LISTENERS
     ------------------------------------------------------- */
 
-    /* Modal tutup */
     document.getElementById('btnTutupModal').addEventListener('click', tutupModal);
     document.getElementById('overlaySukses').addEventListener('click', function (e) {
         if (e.target === this) tutupModal();
     });
 
-    /* Filter tab — event delegation pada #tabContainer */
     document.getElementById('tabContainer').addEventListener('click', function (e) {
         var btn = e.target.closest('.filter-btn');
         if (!btn) return;
@@ -534,10 +550,8 @@
         terapkanFilter();
     });
 
-    /* Search */
     document.getElementById('inputCari').addEventListener('input', terapkanFilter);
 
-    /* Reset */
     document.getElementById('btnReset').addEventListener('click', function () {
         document.getElementById('inputCari').value = '';
         filterAktif = 'semua';
@@ -547,7 +561,6 @@
         terapkanFilter();
     });
 
-    /* TOMBOL CHECK-IN — event delegation pada #gridMember */
     document.getElementById('gridMember').addEventListener('click', function (e) {
         var btn = e.target.closest('.checkin-btn');
         if (!btn || btn.disabled) return;

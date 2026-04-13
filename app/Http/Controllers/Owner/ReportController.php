@@ -120,7 +120,11 @@ class ReportController extends Controller
      */
     private function exportTransaksiExcel($transactions, $request)
     {
-        return Excel::download(new TransactionExport($transactions), 'laporan_transaksi_' . Carbon::now()->format('Ymd_His') . '.xlsx');
+        $filterInfo = $this->getPeriodeText($request);
+        return Excel::download(
+            new TransactionExport($transactions, $filterInfo),
+            'laporan_transaksi_' . Carbon::now()->format('Ymd_His') . '.xlsx'
+        );
     }
     
     /**

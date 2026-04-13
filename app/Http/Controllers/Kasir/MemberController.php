@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Kasir;
 
 use App\Http\Controllers\Controller;
 use App\Models\Member;
+use App\Models\MemberCheckin;
 use App\Models\MembershipPackage;
 use App\Models\Log;
 use Illuminate\Http\Request;
@@ -69,30 +70,25 @@ class MemberController extends Controller
             $sisaHari = $expired ? $today->diffInDays($expired, false) : 0;
 
             if ($member->status == 'active' && $expired && $expired >= $today) {
-                if ($sisaHari <= 7) {
-                    $status = 'Akan Expired';
-                    $isActive = true;
-                } else {
-                    $status = 'Aktif';
-                    $isActive = true;
-                }
+                $status   = $sisaHari <= 7 ? 'Akan Expired' : 'Aktif';
+                $isActive = true;
             } else {
-                $status = 'Expired';
+                $status   = 'Expired';
                 $isActive = false;
             }
 
             return [
-                'id'          => $member->id,
-                'kode'        => $member->kode_member,
-                'nama'        => $member->nama,
-                'telepon'     => $member->telepon ?? '-',
-                'paket'       => $member->package ? $member->package->nama_paket : '-',
-                'tgl_daftar'  => $member->tgl_daftar ? Carbon::parse($member->tgl_daftar)->format('d/m/Y') : '-',
-                'tgl_expired' => $member->tgl_expired ? Carbon::parse($member->tgl_expired)->format('d/m/Y') : '-',
-                'status'      => $status,
-                'sisa_hari'   => $sisaHari >= 0 ? $sisaHari : abs($sisaHari),
-                'is_active'   => $isActive,
-                'jenis_member'=> $member->jenis_member ?? 'Regular',
+                'id'           => $member->id,
+                'kode'         => $member->kode_member,
+                'nama'         => $member->nama,
+                'telepon'      => $member->telepon ?? '-',
+                'paket'        => $member->package ? $member->package->nama_paket : '-',
+                'tgl_daftar'   => $member->tgl_daftar ? Carbon::parse($member->tgl_daftar)->format('d/m/Y') : '-',
+                'tgl_expired'  => $member->tgl_expired ? Carbon::parse($member->tgl_expired)->format('d/m/Y') : '-',
+                'status'       => $status,
+                'sisa_hari'    => $sisaHari >= 0 ? $sisaHari : abs($sisaHari),
+                'is_active'    => $isActive,
+                'jenis_member' => $member->jenis_member ?? 'Regular',
             ];
         });
 
@@ -100,29 +96,25 @@ class MemberController extends Controller
     }
 
     /**
-     * API Get Member Detail (WAJIB ADA untuk tombol Detail)
+     * API Get Member Detail
      * Route: GET /kasir/member/{id}/detail
      */
     public function getMember($id)
     {
         try {
-            $member = Member::with('package')->findOrFail($id);
-            $today = now()->startOfDay();
+            $member  = Member::with('package')->findOrFail($id);
+            $today   = now()->startOfDay();
             $expired = $member->tgl_expired
                 ? Carbon::parse($member->tgl_expired)->startOfDay()
                 : null;
 
             if ($member->status == 'active' && $expired && $expired >= $today) {
                 $sisaHari = $today->diffInDays($expired);
-                if ($sisaHari <= 7) {
-                    $status = 'Akan Expired';
-                } else {
-                    $status = 'Aktif';
-                }
+                $status   = $sisaHari <= 7 ? 'Akan Expired' : 'Aktif';
                 $isActive = true;
             } else {
                 $sisaHari = $expired ? abs($today->diffInDays($expired, false)) : 0;
-                $status = 'Expired';
+                $status   = 'Expired';
                 $isActive = false;
             }
 
@@ -161,7 +153,9 @@ class MemberController extends Controller
     }
 
     /**
-     * Proses perpanjangan member
+     * Proses perpanjangan member.
+     * Setelah perpanjangan berhasil, otomatis membuat record check-in hari ini
+     * (jika belum ada) karena member dianggap hadir saat melakukan transaksi.
      */
     public function perpanjang(Request $request, $id)
     {
@@ -171,14 +165,15 @@ class MemberController extends Controller
 
         DB::beginTransaction();
         try {
-            $member = Member::findOrFail($id);
+            $member  = Member::findOrFail($id);
             $package = MembershipPackage::findOrFail($request->id_paket);
 
-            $today = now()->startOfDay();
+            $today   = now()->startOfDay();
             $expired = $member->tgl_expired
                 ? Carbon::parse($member->tgl_expired)->startOfDay()
                 : null;
 
+            // Tentukan base date perpanjangan
             if ($member->status == 'active' && $expired && $expired >= $today) {
                 $baseDate = Carbon::parse($member->tgl_expired);
             } else {
@@ -195,20 +190,28 @@ class MemberController extends Controller
                 ]);
             });
 
+            // ── AUTO CHECK-IN ─────────────────────────────────────────────
+            // Member yang memperpanjang hari ini otomatis dianggap check-in
+            $checkinOtomatis = MemberCheckin::buatCheckinOtomatis($member->id, auth()->id());
+            // ─────────────────────────────────────────────────────────────
+
             Log::create([
                 'id_user'    => auth()->id(),
                 'role_user'  => auth()->user()->role,
                 'activity'   => 'Renew Member',
                 'keterangan' => 'Kasir memperpanjang member: ' . $member->nama
-                    . ' (' . $member->kode_member . ') dengan paket ' . $package->nama_paket,
+                    . ' (' . $member->kode_member . ') dengan paket ' . $package->nama_paket
+                    . ($checkinOtomatis ? ' | Auto check-in dibuat.' : ' | Check-in sudah ada sebelumnya.'),
             ]);
 
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Member berhasil diperpanjang hingga ' . $tglExpiredBaru->format('d/m/Y'),
-                'member'  => [
+                'success'          => true,
+                'message'          => 'Member berhasil diperpanjang hingga ' . $tglExpiredBaru->format('d/m/Y')
+                                    . '. Check-in hari ini otomatis tercatat. ✅',
+                'auto_checkin'     => $checkinOtomatis !== null,
+                'member'           => [
                     'id'      => $member->id,
                     'kode'    => $member->kode_member,
                     'nama'    => $member->nama,
@@ -225,7 +228,8 @@ class MemberController extends Controller
     }
 
     /**
-     * Proses pendaftaran member baru
+     * Proses pendaftaran member baru.
+     * Member baru yang daftar hari ini otomatis mendapat check-in hari ini.
      */
     public function daftarBaru(Request $request)
     {
@@ -237,7 +241,7 @@ class MemberController extends Controller
 
         DB::beginTransaction();
         try {
-            $package = MembershipPackage::findOrFail($request->id_paket);
+            $package    = MembershipPackage::findOrFail($request->id_paket);
             $tglExpired = now()->addDays($package->durasi_hari);
 
             $member = null;
@@ -255,33 +259,42 @@ class MemberController extends Controller
                 ]);
             });
 
+            // Generate kode member jika belum ada
             if (empty($member->kode_member)) {
-                $year = date('Y');
+                $year  = date('Y');
                 $month = date('m');
-                $last = Member::whereYear('created_at', $year)
+                $last  = Member::whereYear('created_at', $year)
                     ->whereMonth('created_at', $month)
                     ->where('id', '!=', $member->id)
                     ->orderBy('id', 'desc')
                     ->first();
-                $num = $last ? str_pad(intval(substr($last->kode_member, -4)) + 1, 4, '0', STR_PAD_LEFT) : '0001';
+                $num = $last
+                    ? str_pad(intval(substr($last->kode_member, -4)) + 1, 4, '0', STR_PAD_LEFT)
+                    : '0001';
                 $member->kode_member = 'MBR-' . $year . $month . '-' . $num;
                 $member->saveQuietly();
             }
+
+            // ── AUTO CHECK-IN ─────────────────────────────────────────────
+            // Member baru yang daftar hari ini otomatis mendapat check-in
+            MemberCheckin::buatCheckinOtomatis($member->id, auth()->id());
+            // ─────────────────────────────────────────────────────────────
 
             Log::create([
                 'id_user'    => auth()->id(),
                 'role_user'  => auth()->user()->role,
                 'activity'   => 'Register New Member',
                 'keterangan' => 'Kasir mendaftarkan member baru: ' . $member->nama
-                    . ' (' . $member->kode_member . ')',
+                    . ' (' . $member->kode_member . ') | Auto check-in dibuat.',
             ]);
 
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Member berhasil didaftarkan',
-                'member'  => [
+                'success'      => true,
+                'message'      => 'Member berhasil didaftarkan. Check-in hari ini otomatis tercatat. ✅',
+                'auto_checkin' => true,
+                'member'       => [
                     'id'      => $member->id,
                     'kode'    => $member->kode_member,
                     'nama'    => $member->nama,

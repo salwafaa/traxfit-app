@@ -146,7 +146,7 @@
     <div class="table-responsive">
         <table>
             <thead>
-                32<tr style="background-color: #27124A;">
+                <tr style="background-color: #27124A;">
                     <th style="color: white;">No. Invoice</th>
                     <th style="color: white;">Tanggal</th>
                     <th style="color: white;">Jam</th>
@@ -188,18 +188,66 @@
                         {{ $jenisText }}
                     </td>
                     <td style="font-size: 8px;">
-                        @if(!empty($transaction->data_tambahan))
-                            @if($transaction->isVisitOnly() || $transaction->isProdukDanVisit())
-                                Visit: Rp {{ number_format($transaction->data_tambahan['harga_visit'] ?? 0, 0, ',', '.') }}
-                                @if(isset($transaction->data_tambahan['tgl_visit']))
-                                    <br>Tgl: {{ \Carbon\Carbon::parse($transaction->data_tambahan['tgl_visit'])->format('d/m/Y') }}
+                        @php
+                            $dt = $transaction->data_tambahan ?? [];
+                            // Normalise format membership dari dua controller yang berbeda
+                            $paketNested = $dt['paket_membership'] ?? null;
+                            $namaPaket   = $paketNested['nama']       ?? $dt['nama_paket']  ?? null;
+                            $hargaPaket  = $paketNested['harga']      ?? $dt['harga_paket'] ?? null;
+                            $durasiHari  = $paketNested['durasi_hari'] ?? $dt['durasi_hari'] ?? null;
+                            $tglMulai    = $dt['tgl_mulai']   ?? null;
+                            $tglSelesai  = $dt['tgl_selesai'] ?? null;
+                            $hargaVisit  = $dt['harga_visit'] ?? null;
+                            $tglVisit    = $dt['tgl_visit']   ?? null;
+                        @endphp
+
+                        {{-- VISIT --}}
+                        @if($transaction->isVisitOnly() || $transaction->isProdukDanVisit())
+                            @if($hargaVisit !== null)
+                                Visit: Rp {{ number_format((float)$hargaVisit, 0, ',', '.') }}
+                            @endif
+                            @if($tglVisit)
+                                <br>Tgl: {{ \Carbon\Carbon::parse($tglVisit)->format('d/m/Y') }}
+                            @endif
+                        @endif
+
+                        {{-- MEMBERSHIP --}}
+                        @if($transaction->isMembershipOnly() || $transaction->isProdukDanMembership())
+                            @if($namaPaket)
+                                Paket: {{ $namaPaket }}
+                            @endif
+                            @if($hargaPaket !== null)
+                                <br>Harga: Rp {{ number_format((float)$hargaPaket, 0, ',', '.') }}
+                            @endif
+                            @if($durasiHari)
+                                <br>Durasi: {{ $durasiHari }} hari
+                            @endif
+                            @if($tglMulai)
+                                <br>Mulai: {{ \Carbon\Carbon::parse($tglMulai)->format('d/m/Y') }}
+                            @endif
+                            @if($tglSelesai)
+                                <br>Selesai: {{ \Carbon\Carbon::parse($tglSelesai)->format('d/m/Y') }}
+                            @endif
+                            @if(!empty($dt['is_renewal']))
+                                <br><em>Perpanjangan</em>
+                            @endif
+                        @endif
+
+                        {{-- PRODUK (semua jenis yang mengandung produk) --}}
+                        @if($transaction->details->isNotEmpty())
+                            @if($transaction->isProdukOnly() || $transaction->isProdukDanVisit() || $transaction->isProdukDanMembership())
+                                @if(!$transaction->isVisitOnly() && !$transaction->isMembershipOnly())
+                                    <br>
                                 @endif
+                                @foreach($transaction->details as $detail)
+                                    {{ $detail->product->nama_produk ?? 'Produk' }} x{{ $detail->qty }}
+                                    (Rp {{ number_format($detail->subtotal, 0, ',', '.') }})
+                                    @if(!$loop->last)<br>@endif
+                                @endforeach
                             @endif
-                            @if($transaction->isMembershipOnly() || $transaction->isProdukDanMembership())
-                                Paket: {{ $transaction->data_tambahan['nama_paket'] ?? '-' }}
-                                <br>Rp {{ number_format($transaction->data_tambahan['harga_paket'] ?? 0, 0, ',', '.') }}
-                            @endif
-                        @else
+                        @endif
+
+                        @if(empty($dt) && $transaction->details->isEmpty())
                             -
                         @endif
                     </td>

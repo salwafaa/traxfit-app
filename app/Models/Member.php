@@ -67,13 +67,8 @@ class Member extends Model
             }
         });
 
-        /**
-         * FIX: Auto-update status expired hanya jika status belum di-set ke 'active'
-         * secara eksplisit pada operasi yang sama (contoh: perpanjangan).
-         * Cek isDirty('status') agar tidak override nilai baru yang dikirim controller.
-         */
         static::saving(function ($member) {
-            // Jika controller sedang mengubah status ke 'active', jangan di-override
+            // Jangan override status jika memang sedang di-set ke 'active'
             if ($member->isDirty('status') && $member->status === 'active') {
                 return;
             }
@@ -129,10 +124,6 @@ class Member extends Model
             ->whereDate('tgl_expired', '>=', now()->toDateString());
     }
 
-    /**
-     * FIX: Scope expired dibungkus where() agar tidak bocor ke query lain
-     * akibat orWhereDate tanpa grup.
-     */
     public function scopeExpired($query)
     {
         return $query->where(function ($q) {
@@ -143,9 +134,6 @@ class Member extends Model
 
     // ─── Computed Attributes ─────────────────────────────────────────────────
 
-    /**
-     * Cek apakah member aktif (status active DAN belum expired)
-     */
     public function getIsActiveAttribute()
     {
         if (!$this->tgl_expired) {
@@ -158,9 +146,6 @@ class Member extends Model
         return $this->status === 'active' && $expired >= $today;
     }
 
-    /**
-     * Sisa hari: positif = belum expired, negatif = sudah expired
-     */
     public function getSisaHariAttribute()
     {
         if (!$this->tgl_expired) {

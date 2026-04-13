@@ -1,5 +1,3 @@
-{{-- resources/views/owner/partials/sidebar.blade.php --}}
-
 @php
 $navItems = [
     ['route' => 'owner.dashboard',          'icon' => 'fa-tachometer-alt', 'label' => 'Dashboard'],

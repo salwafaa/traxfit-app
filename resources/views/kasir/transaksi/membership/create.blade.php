@@ -10,7 +10,6 @@
 @section('content')
 <div class="space-y-6 w-full max-w-full">
 
-    {{-- ===================== PAGE HEADER ===================== --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div class="flex items-center gap-3">
             <a href="{{ route('kasir.transaksi.index') }}"
@@ -40,7 +39,6 @@
         </div>
     </div>
 
-    {{-- ===================== BANNER PERPANJANGAN ===================== --}}
     @if($isRenewMode && $preloadMember)
     <div class="bg-green-50 border border-green-200 rounded-2xl p-4 flex items-center gap-3">
         <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -53,13 +51,10 @@
     </div>
     @endif
 
-    {{-- ===================== MAIN GRID ===================== --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {{-- ============ KOLOM KIRI (span 2) ============ --}}
         <div class="lg:col-span-2 space-y-6">
 
-            {{-- ---- CARD: JENIS MEMBERSHIP ---- --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center gap-3">
@@ -97,7 +92,6 @@
                 </div>
             </div>
 
-            {{-- ---- CARD: DATA MEMBER ---- --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center justify-between">
@@ -129,7 +123,6 @@
                     <form id="memberForm" class="space-y-5">
                         @csrf
 
-                        {{-- Baris 1: Nama + No. Telepon --}}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
@@ -156,7 +149,6 @@
                             </div>
                         </div>
 
-                        {{-- Baris 2: Tanggal Lahir + Jenis Identitas --}}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
@@ -181,7 +173,6 @@
                             </div>
                         </div>
 
-                        {{-- Baris 3: Nomor Identitas + Foto Identitas --}}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
@@ -217,7 +208,6 @@
                             </div>
                         </div>
 
-                        {{-- Baris 4: Alamat (full width) --}}
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
                                 Alamat Lengkap <span class="text-red-500">*</span>
@@ -232,7 +222,6 @@
                 </div>
             </div>
 
-            {{-- ---- CARD: PAKET MEMBERSHIP ---- --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center gap-3">
@@ -275,7 +264,6 @@
                 </div>
             </div>
 
-            {{-- ---- CARD: PRODUK TAMBAHAN ---- --}}
             <div id="produkSection" style="display:none;" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center gap-3">
@@ -348,7 +336,6 @@
                 </div>
             </div>
 
-            {{-- ---- CARD: KERANJANG ---- --}}
             <div id="cartSection" style="display:none;" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center gap-3">
@@ -379,9 +366,8 @@
                 </div>
             </div>
 
-        </div>{{-- end kolom kiri --}}
+        </div>
 
-        {{-- ============ KOLOM KANAN (span 1) ============ --}}
         <div class="lg:col-span-1">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-6">
 
@@ -399,7 +385,6 @@
 
                 <div class="p-6 space-y-5">
 
-                    {{-- Info Paket Terpilih --}}
                     <div id="selectedPackageInfo" style="display:none;" class="bg-[#27124A]/5 border border-[#27124A]/15 rounded-xl p-4">
                         <h4 class="text-xs font-semibold text-[#27124A] uppercase tracking-wide mb-3">Paket Dipilih</h4>
                         <div class="space-y-2">
@@ -418,7 +403,6 @@
                         </div>
                     </div>
 
-                    {{-- Tanggal Mulai (readonly, hari ini) --}}
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
                             Tanggal Mulai <span class="text-red-500">*</span>
@@ -432,7 +416,6 @@
                         </p>
                     </div>
 
-                    {{-- Tanggal Selesai (otomatis sesuai paket) --}}
                     <div id="expiredInfo" style="display:none;" class="bg-blue-50 border border-blue-100 rounded-xl p-4">
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Tanggal Selesai</span>
@@ -440,7 +423,6 @@
                         </div>
                     </div>
 
-                    {{-- Rincian Biaya --}}
                     <div class="space-y-2 border-t border-gray-100 pt-4">
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Harga Paket</span>
@@ -452,7 +434,6 @@
                         </div>
                     </div>
 
-                    {{-- Total --}}
                     <div class="bg-[#27124A] rounded-xl px-4 py-3 flex justify-between items-center">
                         <span class="font-bold text-white/80 text-sm">TOTAL</span>
                         <span class="font-bold text-2xl text-white" id="total">Rp 0</span>
@@ -462,7 +443,6 @@
                     <input type="hidden" id="id_paket" value="">
                     <input type="hidden" id="harga_paket" value="0">
 
-                    {{-- Uang Bayar --}}
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Uang Bayar</label>
                         <div class="relative">
@@ -484,13 +464,11 @@
                         </div>
                     </div>
 
-                    {{-- Uang Kembali --}}
                     <div class="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-700">Uang Kembali</span>
                         <span id="uang_kembali" style="font-weight:700; font-size:1.15rem; color:#4b5563;">Rp 0</span>
                     </div>
 
-                    {{-- Catatan --}}
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">
                             Catatan <span class="text-gray-400 font-normal normal-case">(Opsional)</span>
@@ -500,7 +478,6 @@
                             placeholder="Tambahkan catatan..."></textarea>
                     </div>
 
-                    {{-- Tombol Aksi --}}
                     <div class="space-y-2.5">
                         <button type="button" id="btnSimpan"
                             class="w-full inline-flex items-center justify-center gap-2 bg-[#27124A] hover:bg-[#3a1d6b] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
@@ -516,12 +493,11 @@
 
                 </div>
             </div>
-        </div>{{-- end kolom kanan --}}
+        </div>
 
     </div>
 </div>
 
-{{-- ===================== MODAL SUKSES ===================== --}}
 <div id="successModal" style="
     display: none;
     position: fixed;
@@ -611,7 +587,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ===== STATE =====
     let cart = [];
     let selectedPackage    = null;
     let jenisTransaksi     = 'membership';
@@ -625,7 +600,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const CREATE_URL         = '{{ route("kasir.transaksi.membership.create") }}';
     const CSRF_TOKEN         = '{{ csrf_token() }}';
 
-    // ===== ELEMENTS =====
     const el = {
         jenisCards:            document.querySelectorAll('.jenis-membership-card'),
         jenisTransaksiInput:   document.getElementById('jenis_transaksi'),
@@ -675,7 +649,6 @@ document.addEventListener('DOMContentLoaded', function () {
         btnTransaksiBaru:      document.getElementById('btnTransaksiBaru'),
     };
 
-    // ===== HELPERS =====
     const fmt   = n => 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(n || 0));
     const parse = v => parseInt((v || '').toString().replace(/\D/g, '')) || 0;
     const esc   = t => { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
@@ -687,7 +660,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return d.toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
     }
 
-    // Kunci tgl_mulai ke hari ini (readonly, tidak bisa diubah)
     function lockTglMulaiToToday() {
         if (!el.tglMulai) return;
         const now = new Date();
@@ -695,11 +667,9 @@ document.addEventListener('DOMContentLoaded', function () {
         el.tglMulai.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
     }
 
-    // ===== MODAL =====
     function showModal() { if (el.successModal) el.successModal.style.display = 'flex'; }
     function hideModal() { if (el.successModal) el.successModal.style.display = 'none'; }
 
-    // ===== JENIS TRANSAKSI =====
     function selectJenis(jenis) {
         el.jenisCards.forEach(c => c.classList.remove('selected'));
         document.getElementById(jenis === 'membership' ? 'jenis-membership' : 'jenis-produk-membership')?.classList.add('selected');
@@ -712,7 +682,6 @@ document.addEventListener('DOMContentLoaded', function () {
         calculateTotals();
     }
 
-    // ===== PACKAGE =====
     function selectPackage(pkg) {
         selectedPackage = pkg;
         if (el.selectedPackageInfo)   el.selectedPackageInfo.style.display   = 'block';
@@ -732,7 +701,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (el.expiredInfo) el.expiredInfo.style.display = 'block';
     }
 
-    // ===== CART =====
     function addToCart(p) {
         const i = cart.findIndex(x => x.id === p.id);
         if (i !== -1) {
@@ -797,7 +765,6 @@ document.addEventListener('DOMContentLoaded', function () {
         renderCart();
     }
 
-    // ===== TOTALS =====
     function calculateTotals() {
         const sp  = cart.reduce((s, i) => s + i.harga * i.qty, 0);
         const hp  = selectedPackage ? selectedPackage.harga : 0;
@@ -825,7 +792,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ===== VALIDATE =====
     function validateForm() {
         const checks = [
             [el.nama,           !el.nama?.value.trim(),        '❌ Nama harus diisi'],
@@ -847,7 +813,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return true;
     }
 
-    // ===== SAVE =====
     async function saveTransaction() {
         if (!validateForm()) return;
         const tot   = calculateTotals();
@@ -913,7 +878,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ===== TOMBOL MODAL =====
     el.btnCetakStruk?.addEventListener('click', function () {
         if (!savedTransactionId) { alert('ID transaksi belum tersedia'); return; }
         window.open(MEMBERSHIP_URL + '/' + savedTransactionId + '/struk', '_blank');
@@ -925,7 +889,6 @@ document.addEventListener('DOMContentLoaded', function () {
     el.btnTransaksiBaru?.addEventListener('click', function () { window.location.href = CREATE_URL; });
     el.successModal?.addEventListener('click', function (e) { if (e.target === el.successModal) hideModal(); });
 
-    // ===== EVENT LISTENERS =====
     el.jenisCards.forEach(c => c.addEventListener('click', function () { selectJenis(this.dataset.jenis); }));
 
     el.selectPackageBtns.forEach(btn => {
@@ -965,19 +928,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Nomor Telepon: angka saja, maks 14 digit
     el.telepon?.addEventListener('input', function () {
         this.value = this.value.replace(/\D/g, '').slice(0, 14);
     });
     el.telepon?.addEventListener('keypress', e => { if (!/\d/.test(e.key)) e.preventDefault(); });
 
-    // Nomor Identitas: angka saja
     el.noIdentitas?.addEventListener('input', function () {
         this.value = this.value.replace(/\D/g, '');
     });
     el.noIdentitas?.addEventListener('keypress', e => { if (!/\d/.test(e.key)) e.preventDefault(); });
 
-    // Uang Bayar: angka saja
     el.uangBayar?.addEventListener('input', updateKembali);
     el.uangBayar?.addEventListener('keypress', e => { if (!/\d/.test(e.key)) e.preventDefault(); });
 
@@ -995,7 +955,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (confirm('Batalkan transaksi? Semua data akan hilang.')) window.location.href = TRANSAKSI_URL;
     });
 
-    // ===== INIT =====
     renderCart();
     selectJenis('membership');
     lockTglMulaiToToday();

@@ -21,7 +21,6 @@
             overflow-x: hidden;
         }
         
-        /* Logo TRAX FIT besar di background (style dari yang pertama) */
         .background-logo {
             position: fixed;
             top: 50%;
@@ -72,7 +71,6 @@
             margin: 20px 0;
         }
 
-        /* Second layer logo lebih kecil untuk efek depth */
         .background-logo-2 {
             position: fixed;
             top: 50%;
@@ -328,7 +326,6 @@
             z-index: 2;
         }
 
-        /* Decorative line */
         .decor-line {
             width: 100%;
             height: 1px;
@@ -336,7 +333,6 @@
             margin: 1.8rem 0 1rem;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 640px) {
             .background-logo .trax {
                 letter-spacing: 10px;
@@ -353,14 +349,12 @@
     </style>
 </head>
 <body>
-    <!-- Logo TRAX FIT besar di background (style keren dari yang pertama) -->
     <div class="background-logo">
         <div class="trax">TRAX</div>
         <div class="separator"></div>
         <div class="fit">FIT</div>
     </div>
 
-    <!-- Second layer untuk efek depth -->
     <div class="background-logo-2">
         <div class="trax">TRAX</div>
         <div class="fit">FIT</div>
@@ -369,7 +363,6 @@
     <div class="min-h-screen flex items-center justify-center p-4 relative">
         <div class="login-card w-full max-w-sm rounded-2xl p-6">
             <div class="card-content">
-                <!-- Small Logo -->
                 <div class="small-logo">
                     <img src="{{ asset('images/logo/TRAX.png') }}" 
                          alt="TraxFit Gym" 
@@ -390,7 +383,6 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     
-                    <!-- Username -->
                     <div class="input-group">
                         <i class="fas fa-user input-icon"></i>
                         <input type="text" 
@@ -402,7 +394,6 @@
                                value="{{ old('username') }}">
                     </div>
 
-                    <!-- Password -->
                     <div class="input-group">
                         <i class="fas fa-lock input-icon"></i>
                         <input type="password" 
@@ -418,23 +409,19 @@
                         </button>
                     </div>
 
-                    <!-- Remember Me -->
                     <div class="checkbox-wrapper">
                         <input type="checkbox" name="remember" id="remember" class="checkbox-custom">
                         <label for="remember" class="checkbox-label">Ingat Saya</label>
                     </div>
 
-                    <!-- Login Button -->
                     <button type="submit" class="gradient-button">
                         <i class="fas fa-sign-in-alt mr-2"></i>
                         MASUK
                     </button>
                 </form>
 
-                <!-- Decorative line -->
                 <div class="decor-line"></div>
 
-                <!-- Footer -->
                 <div class="footer">
                     © 2024 TraxFit Gym
                 </div>
@@ -458,7 +445,6 @@
             }
         }
 
-        // Auto-focus username
         document.getElementById('username').focus();
     </script>
 </body>

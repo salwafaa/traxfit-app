@@ -8,9 +8,7 @@
 @endsection
 
 @section('content')
-<!-- Header Stats -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <!-- Total User -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -23,7 +21,6 @@
         </div>
     </div>
     
-    <!-- User Aktif -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -36,7 +33,6 @@
         </div>
     </div>
     
-    <!-- Total Admin -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -49,7 +45,6 @@
         </div>
     </div>
     
-    <!-- Total Kasir -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -63,7 +58,6 @@
     </div>
 </div>
 
-<!-- Main Content -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
     <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -80,7 +74,6 @@
         </div>
     </div>
     
-    <!-- Alert Messages -->
     @if(session('success'))
     <div class="mx-6 mt-6 mb-4 bg-green-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
         <div class="flex items-center">
@@ -113,7 +106,6 @@
     </div>
     @endif
 
-    <!-- Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
@@ -188,14 +180,12 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center space-x-2">
-                            <!-- Edit Button -->
                             <a href="{{ route('owner.users.edit', $user->id) }}" 
                                class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-all duration-300 border border-blue-100"
                                title="Edit User">
                                 <i class="fas fa-edit text-sm"></i>
                             </a>
                             
-                            <!-- Delete Button -->
                             <form action="{{ route('owner.users.destroy', $user->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
@@ -248,7 +238,6 @@
 
 @push('scripts')
 <script>
-    // Auto-hide alerts after 5 seconds
     document.addEventListener('DOMContentLoaded', function() {
         const alerts = document.querySelectorAll('[class*="border-l-4"]');
         alerts.forEach(alert => {

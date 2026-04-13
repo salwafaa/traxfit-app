@@ -10,7 +10,6 @@
 @section('content')
 <div class="max-w-2xl mx-auto">
 
-    {{-- Card Header: Avatar & Info --}}
     <div style="background: #27124A; border-radius: 16px 16px 0 0; padding: 2rem 2rem 1.5rem;">
         <div class="flex items-center gap-4">
             <div style="width:60px; height:60px; border-radius:50%; background: linear-gradient(135deg,#6D28D9,#8B5CF6); display:flex; align-items:center; justify-content:center; border: 2.5px solid rgba(255,255,255,0.2); flex-shrink:0;">
@@ -32,10 +31,8 @@
         @endif
     </div>
 
-    {{-- Card Body --}}
     <div style="background:#fff; border-radius:0 0 16px 16px; border:0.5px solid #DDD6FE; border-top:none; padding:1.75rem 2rem 2rem;">
 
-        {{-- Alert sukses --}}
         @if(session('success'))
         <div style="display:flex; align-items:center; gap:10px; background:#F0FDF4; border:0.5px solid #BBF7D0; color:#166534; border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:1.25rem;">
             <i class="fas fa-check-circle" style="color:#16A34A; font-size:15px; flex-shrink:0;"></i>
@@ -43,7 +40,6 @@
         </div>
         @endif
 
-        {{-- Alert error --}}
         @if(session('error'))
         <div style="display:flex; align-items:center; gap:10px; background:#FEF2F2; border:0.5px solid #FECACA; color:#991B1B; border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:1.25rem;">
             <i class="fas fa-exclamation-circle" style="color:#DC2626; font-size:15px; flex-shrink:0;"></i>
@@ -55,7 +51,6 @@
             @csrf
             @method('PUT')
 
-            {{-- Informasi Akun --}}
             <div style="background:#F5F3FF; border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; border:0.5px solid #DDD6FE;">
                 <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:#6D28D9; display:flex; align-items:center; gap:7px; margin-bottom:1rem;">
                     <i class="fas fa-id-card" style="font-size:12px;"></i>
@@ -89,7 +84,6 @@
                 </div>
             </div>
 
-            {{-- Ganti Password --}}
             <div style="background:#F5F3FF; border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; border:0.5px solid #DDD6FE;">
                 <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:#6D28D9; display:flex; align-items:center; gap:7px; margin-bottom:4px;">
                     <i class="fas fa-lock" style="font-size:12px;"></i>
@@ -142,7 +136,6 @@
                 </div>
             </div>
 
-            {{-- Tombol Aksi --}}
             <div class="flex gap-3 mt-6">
                 <button type="submit" class="profile-btn-save">
                     <i class="fas fa-save" style="font-size:14px;"></i>

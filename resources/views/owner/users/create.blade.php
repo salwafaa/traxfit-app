@@ -8,7 +8,6 @@
 @endsection
 
 @section('content')
-<!-- Header -->
 <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-6">
     <div class="px-6 py-5 bg-[#27124A]">
         <div class="flex items-center">
@@ -23,14 +22,12 @@
     </div>
 </div>
 
-<!-- Main Form -->
 <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-8">
     <div class="p-8">
         <form action="{{ route('owner.users.store') }}" method="POST">
             @csrf
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Username -->
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700" for="username">
                         Username <span class="text-red-500">*</span>
@@ -51,7 +48,6 @@
                     @enderror
                 </div>
                 
-                <!-- Password -->
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700" for="password">
                         Password <span class="text-red-500">*</span>
@@ -71,7 +67,6 @@
                     @enderror
                 </div>
                 
-                <!-- Nama Lengkap -->
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700" for="nama">
                         Nama Lengkap <span class="text-red-500">*</span>
@@ -92,7 +87,6 @@
                     @enderror
                 </div>
                 
-                <!-- Role -->
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700" for="role">
                         Role <span class="text-red-500">*</span>
@@ -122,7 +116,6 @@
                     @enderror
                 </div>
                 
-                <!-- Status -->
                 <div class="md:col-span-2">
                     <div class="flex items-center p-5 bg-gray-50 rounded-xl border-2 border-gray-200 hover:border-[#27124A] transition-all duration-300">
                         <div class="relative">
@@ -137,7 +130,6 @@
                 </div>
             </div>
             
-            <!-- Action Buttons -->
             <div class="mt-10 pt-8 border-t border-gray-200">
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('owner.users.index') }}" 

@@ -9,9 +9,7 @@
 
 @section('content')
 <div class="space-y-4 md:space-y-6 w-full max-w-full">
-    <!-- Header Stats - 6 Cards seperti transaksi -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 w-full">
-        <!-- Total Member -->
         <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 pr-2">
@@ -28,7 +26,6 @@
             </div>
         </div>
 
-        <!-- Member Aktif -->
         <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 pr-2">
@@ -45,7 +42,6 @@
             </div>
         </div>
 
-        <!-- Akan Expired -->
         <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 pr-2">
@@ -62,7 +58,6 @@
             </div>
         </div>
 
-        <!-- Member Expired -->
         <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 pr-2">
@@ -79,7 +74,6 @@
             </div>
         </div>
 
-        <!-- Member Pending -->
         <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 pr-2">
@@ -96,7 +90,6 @@
             </div>
         </div>
 
-        <!-- Persentase Aktif -->
         <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 pr-2">
@@ -116,7 +109,6 @@
         </div>
     </div>
 
-    <!-- Info Section -->
     <div class="bg-blue-50 border border-blue-200 rounded-xl md:rounded-2xl p-3 md:p-4 flex items-center">
         <div class="w-6 h-6 md:w-8 md:h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2 md:mr-3 flex-shrink-0">
             <i class="fas fa-info-circle text-blue-600 text-xs md:text-sm"></i>
@@ -127,9 +119,7 @@
         </p>
     </div>
 
-    <!-- Main Content - Filter & Table menyatu seperti transaksi -->
     <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden w-full">
-        <!-- Header -->
         <div class="p-3 md:p-4 border-b border-gray-100">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div class="min-w-0 flex-1">
@@ -139,7 +129,6 @@
             </div>
         </div>
 
-        <!-- Filter - Di dalam card yang sama -->
         <div class="p-3 md:p-4 border-b border-gray-100 bg-gray-50/50">
             <form method="GET" action="{{ route('owner.laporan.member') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3">
                 <div>
@@ -186,7 +175,6 @@
             </form>
         </div>
 
-        <!-- Export & Info - Di dalam card yang sama -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3 md:p-4 border-b border-gray-100">
             <div class="text-xs md:text-sm text-gray-500 bg-gray-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl">
                 <i class="fas fa-info-circle mr-1 md:mr-2 text-[#27124A]"></i>
@@ -205,7 +193,6 @@
             </div>
         </div>
 
-        <!-- Table -->
         <div class="overflow-x-auto w-full">
             <table class="min-w-full divide-y divide-gray-100">
                 <thead class="bg-gray-50">
@@ -316,7 +303,6 @@
             </table>
         </div>
         
-        <!-- Pagination -->
         @if($members->hasPages())
         <div class="p-3 md:p-4 border-t border-gray-100">
             <div class="overflow-x-auto">

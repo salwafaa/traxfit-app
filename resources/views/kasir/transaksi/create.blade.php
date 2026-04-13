@@ -10,7 +10,6 @@
 @section('content')
 <div class="space-y-6 w-full max-w-full">
 
-    {{-- ===================== PAGE HEADER ===================== --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div class="flex items-center gap-3">
             <a href="{{ route('kasir.transaksi.index') }}"
@@ -32,13 +31,10 @@
         </div>
     </div>
 
-    {{-- ===================== MAIN GRID ===================== --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {{-- ============ KOLOM KIRI (span 2) ============ --}}
         <div class="lg:col-span-2 space-y-6">
 
-            {{-- ---- CARD: PILIH JENIS TRANSAKSI ---- --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center gap-3">
@@ -54,7 +50,6 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-                        {{-- Produk Only --}}
                         <div class="jenis-transaksi-card group border-2 border-gray-200 rounded-xl p-5 cursor-pointer transition-all duration-200 hover:border-[#27124A] hover:bg-[#27124A]/5 text-center"
                              data-jenis="produk" id="jenis-produk">
                             <div class="w-14 h-14 bg-[#27124A]/10 rounded-full flex items-center justify-center mx-auto mb-3 transition-colors duration-200">
@@ -65,7 +60,6 @@
                             <span class="text-xs px-3 py-1 bg-[#27124A]/10 text-[#27124A] rounded-full font-medium">Klik untuk mulai</span>
                         </div>
 
-                        {{-- Visit Only --}}
                         <div class="jenis-transaksi-card group border-2 border-gray-200 rounded-xl p-5 cursor-pointer transition-all duration-200 hover:border-[#27124A] hover:bg-[#27124A]/5 text-center"
                              data-jenis="visit" id="jenis-visit">
                             <div class="w-14 h-14 bg-[#27124A]/10 rounded-full flex items-center justify-center mx-auto mb-3 transition-colors duration-200">
@@ -76,7 +70,6 @@
                             <span class="text-xs px-3 py-1 bg-[#27124A]/10 text-[#27124A] rounded-full font-medium">Klik untuk mulai</span>
                         </div>
 
-                        {{-- Produk + Visit --}}
                         <div class="jenis-transaksi-card group border-2 border-gray-200 rounded-xl p-5 cursor-pointer transition-all duration-200 hover:border-[#27124A] hover:bg-[#27124A]/5 text-center"
                              data-jenis="produk_visit" id="jenis-produk-visit">
                             <div class="w-14 h-14 bg-[#27124A]/10 rounded-full flex items-center justify-center mx-auto mb-3 transition-colors duration-200">
@@ -91,7 +84,6 @@
                 </div>
             </div>
 
-            {{-- ---- CARD: DAFTAR PRODUK ---- --}}
             <div id="produkSection" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center gap-3">
@@ -105,7 +97,6 @@
                     </div>
                 </div>
 
-                {{-- Search --}}
                 <div class="px-6 pt-5">
                     <div class="relative">
                         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[#27124A]/40 text-sm"></i>
@@ -115,7 +106,6 @@
                     </div>
                 </div>
 
-                {{-- Grid Produk --}}
                 <div class="p-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[420px] overflow-y-auto pr-1 custom-scrollbar">
                         @forelse($products as $product)
@@ -170,7 +160,6 @@
                 </div>
             </div>
 
-            {{-- ---- CARD: KERANJANG ---- --}}
             <div id="cartSection" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center justify-between">
@@ -214,7 +203,6 @@
                 </div>
             </div>
 
-            {{-- ---- CARD: DATA VISIT ---- --}}
             <div id="visitSection" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hidden">
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center gap-3">
@@ -230,7 +218,6 @@
                 <div class="p-6 space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                        {{-- Harga Visit --}}
                         <div class="bg-[#27124A]/5 rounded-xl p-5 border border-[#27124A]/15">
                             <div class="flex items-start justify-between">
                                 <div>
@@ -248,7 +235,6 @@
                             <input type="hidden" id="harga_visit" value="{{ $hargaVisit ?? 25000 }}">
                         </div>
 
-                        {{-- Tanggal Visit --}}
                         <div class="bg-amber-50 rounded-xl p-5 border border-amber-100">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1 min-w-0 pr-3">
@@ -269,7 +255,6 @@
                         </div>
                     </div>
 
-                    {{-- Kebijakan Visit --}}
                     <div class="bg-red-50 rounded-xl p-4 border border-red-200">
                         <div class="flex items-start gap-3">
                             <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -284,13 +269,11 @@
                 </div>
             </div>
 
-        </div>{{-- end kolom kiri --}}
+        </div>
 
-        {{-- ============ KOLOM KANAN (span 1) ============ --}}
         <div class="lg:col-span-1">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-6">
 
-                {{-- Card Header --}}
                 <div class="px-6 py-4 border-b border-[#27124A]/10 bg-gradient-to-r from-[#27124A]/5 to-white">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-[#27124A]/10 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -305,7 +288,6 @@
 
                 <div class="p-6 space-y-5">
 
-                    {{-- Jenis Transaksi Badge --}}
                     <div id="infoJenisTransaksi" class="hidden">
                         <div class="bg-[#27124A]/10 border border-[#27124A]/20 rounded-xl px-4 py-2.5 flex items-center gap-2">
                             <i class="fas fa-tag text-[#27124A] text-sm"></i>
@@ -313,7 +295,6 @@
                         </div>
                     </div>
 
-                    {{-- Rincian Biaya --}}
                     <div class="space-y-2 border-b border-gray-100 pb-4">
                         <div id="subtotalProdukRow" class="flex justify-between items-center hidden">
                             <span class="text-sm text-gray-600">Subtotal Produk</span>
@@ -325,7 +306,6 @@
                         </div>
                     </div>
 
-                    {{-- Total --}}
                     <div class="bg-[#27124A] rounded-xl px-4 py-3 flex justify-between items-center">
                         <span class="font-bold text-white/80 text-sm">TOTAL</span>
                         <span class="font-bold text-2xl text-white" id="total">Rp 0</span>
@@ -333,7 +313,6 @@
 
                     <input type="hidden" id="jenis_transaksi" name="jenis_transaksi" value="">
 
-                    {{-- Uang Bayar --}}
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Uang Bayar</label>
                         <div class="relative">
@@ -354,13 +333,11 @@
                         </div>
                     </div>
 
-                    {{-- Uang Kembali --}}
                     <div class="bg-gray-50 rounded-xl px-4 py-3 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-700">Uang Kembali</span>
                         <span class="font-bold text-xl text-green-600" id="uang_kembali">Rp 0</span>
                     </div>
 
-                    {{-- Catatan --}}
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Catatan <span class="text-gray-400 font-normal normal-case">(Opsional)</span></label>
                         <textarea id="catatan" rows="2"
@@ -368,7 +345,6 @@
                             placeholder="Tambahkan catatan..."></textarea>
                     </div>
 
-                    {{-- Tombol Aksi --}}
                     <div class="space-y-2.5">
                         <button type="button" id="btnSimpan"
                             class="w-full inline-flex items-center justify-center gap-2 bg-[#27124A] hover:bg-[#3a1d6b] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
@@ -384,12 +360,11 @@
 
                 </div>
             </div>
-        </div>{{-- end kolom kanan --}}
+        </div>
 
     </div>
 </div>
 
-{{-- ===================== MODAL SUKSES ===================== --}}
 <div id="successModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm animate-fade-in-up overflow-hidden">
         <div class="h-1.5 bg-gradient-to-r from-[#27124A] to-[#6d3ea0]"></div>
@@ -473,11 +448,9 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ============ STATE ============
     let cart = [];
     let jenisTransaksi = '';
 
-    // ============ DOM ELEMENTS ============
     const elements = {
         jenisCards:          document.querySelectorAll('.jenis-transaksi-card'),
         jenisTransaksiInput: document.getElementById('jenis_transaksi'),
@@ -512,7 +485,6 @@ document.addEventListener('DOMContentLoaded', function() {
         btnUangPas:          document.getElementById('btnUangPas')
     };
 
-    // ============ HELPERS ============
     function formatCurrency(amount) {
         return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(amount || 0));
     }
@@ -571,7 +543,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ============ CART ============
     function renderCart() {
         if (!elements.cartItems) return;
         elements.cartItems.innerHTML = '';
@@ -710,7 +681,6 @@ document.addEventListener('DOMContentLoaded', function() {
         calculateTotals();
     }
 
-    // ============ FILTER PRODUK ============
     function filterProducts() {
         const search = elements.searchProduct?.value.toLowerCase().trim() || '';
         document.querySelectorAll('.product-card').forEach(card => {
@@ -718,7 +688,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ============ VALIDASI VISIT ============
     function validateVisit() {
         if (!jenisTransaksi.includes('visit')) return true;
         if (!elements.tglVisit?.value) { alert('❌ Tanggal visit harus diisi'); return false; }
@@ -731,7 +700,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    // ============ SAVE TRANSAKSI ============
     async function saveTransaction() {
         if (!jenisTransaksi)                                  { alert('❌ Pilih jenis transaksi terlebih dahulu'); return; }
         if (!validateVisit())                                  return;
@@ -807,7 +775,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setCurrentDateTimeForVisit();
     }
 
-    // ============ EVENT LISTENERS ============
     elements.jenisCards.forEach(c => c.addEventListener('click', function() { selectJenisTransaksi(this.dataset.jenis); }));
 
     elements.addToCartBtns.forEach(b => { b.removeEventListener('click', onAddToCartClick); b.addEventListener('click', onAddToCartClick); });
@@ -841,7 +808,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) { this.style.display = 'none'; this.classList.add('hidden'); }
     });
 
-    // ============ INIT ============
     renderCart();
     setCurrentDateTimeForVisit();
 });

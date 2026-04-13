@@ -190,7 +190,6 @@
                     <td style="font-size: 8px;">
                         @php
                             $dt = $transaction->data_tambahan ?? [];
-                            // Normalise format membership dari dua controller yang berbeda
                             $paketNested = $dt['paket_membership'] ?? null;
                             $namaPaket   = $paketNested['nama']       ?? $dt['nama_paket']  ?? null;
                             $hargaPaket  = $paketNested['harga']      ?? $dt['harga_paket'] ?? null;
@@ -201,7 +200,6 @@
                             $tglVisit    = $dt['tgl_visit']   ?? null;
                         @endphp
 
-                        {{-- VISIT --}}
                         @if($transaction->isVisitOnly() || $transaction->isProdukDanVisit())
                             @if($hargaVisit !== null)
                                 Visit: Rp {{ number_format((float)$hargaVisit, 0, ',', '.') }}
@@ -211,7 +209,6 @@
                             @endif
                         @endif
 
-                        {{-- MEMBERSHIP --}}
                         @if($transaction->isMembershipOnly() || $transaction->isProdukDanMembership())
                             @if($namaPaket)
                                 Paket: {{ $namaPaket }}
@@ -233,7 +230,6 @@
                             @endif
                         @endif
 
-                        {{-- PRODUK (semua jenis yang mengandung produk) --}}
                         @if($transaction->details->isNotEmpty())
                             @if($transaction->isProdukOnly() || $transaction->isProdukDanVisit() || $transaction->isProdukDanMembership())
                                 @if(!$transaction->isVisitOnly() && !$transaction->isMembershipOnly())

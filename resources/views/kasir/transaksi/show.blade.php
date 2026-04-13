@@ -9,27 +9,10 @@
 
 @section('content')
 
-{{-- 
-    ============================================================
-    NORMALISASI data_tambahan membership
-    Dua controller menyimpan struktur berbeda:
-    
-    TransactionController (via kasir umum):
-        data_tambahan['nama_paket'], ['harga_paket'], ['durasi_hari'], ['tgl_mulai'], ['tgl_selesai']
-    
-    MembershipTransactionController:
-        data_tambahan['paket_membership']['nama'], ['paket_membership']['harga'],
-        data_tambahan['paket_membership']['durasi_hari'], ['tgl_mulai'], ['tgl_selesai']
-    
-    Kita normalisasi ke satu variabel $ms agar blade tidak duplikat.
-    ============================================================
---}}
 @php
     $dt = $transaction->data_tambahan ?? [];
 
-    // Deteksi format mana yang dipakai
     if (!empty($dt['paket_membership']) && is_array($dt['paket_membership'])) {
-        // Format MembershipTransactionController
         $ms = [
             'nama_paket'  => $dt['paket_membership']['nama']        ?? '-',
             'harga_paket' => $dt['paket_membership']['harga']        ?? 0,
@@ -39,7 +22,6 @@
             'is_renewal'  => $dt['is_renewal']  ?? false,
         ];
     } else {
-        // Format TransactionController (kasir umum)
         $ms = [
             'nama_paket'  => $dt['nama_paket']  ?? '-',
             'harga_paket' => $dt['harga_paket'] ?? 0,
@@ -50,7 +32,6 @@
         ];
     }
 
-    // Fallback: kalau nama_paket masih kosong, coba ambil dari relasi member->package
     if (($ms['nama_paket'] === '-' || $ms['nama_paket'] === '') && $transaction->member?->package) {
         $pkg = $transaction->member->package;
         $ms['nama_paket']  = $pkg->nama_paket  ?? '-';
@@ -93,9 +74,7 @@
     
     <div class="p-6">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Informasi Transaksi -->
             <div class="lg:col-span-2">
-                <!-- Info Transaksi -->
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">Informasi Transaksi</h4>
                     <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
@@ -151,7 +130,6 @@
                     </div>
                 </div>
 
-                <!-- Detail Visit -->
                 @if($transaction->isVisitOnly() || $transaction->isProdukDanVisit())
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">🏃‍♂️ Detail Visit</h4>
@@ -172,7 +150,6 @@
                 </div>
                 @endif
 
-                <!-- Detail Membership — menggunakan $ms yang sudah dinormalisasi -->
                 @if($transaction->isMembershipOnly() || $transaction->isProdukDanMembership())
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">
@@ -212,7 +189,6 @@
                 </div>
                 @endif
 
-                <!-- Detail Produk -->
                 @if($transaction->details->count() > 0)
                 <div class="mb-6">
                     <h4 class="font-semibold text-gray-800 mb-3">📦 Detail Produk</h4>
@@ -266,7 +242,6 @@
                 @endif
             </div>
             
-            <!-- Ringkasan Pembayaran -->
             <div>
                 <div class="bg-gray-50 border border-gray-100 rounded-xl p-6 sticky top-6">
                     <h4 class="font-semibold text-gray-800 mb-4">Ringkasan Pembayaran</h4>

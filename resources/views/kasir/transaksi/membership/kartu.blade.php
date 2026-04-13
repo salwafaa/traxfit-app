@@ -40,7 +40,6 @@
             gap: 28px;
         }
 
-        /* ===================== CARD ===================== */
         .card {
             width: 85.6mm;
             height: 54mm;
@@ -107,7 +106,6 @@
             background: radial-gradient(circle, rgba(100,60,180,0.3) 0%, transparent 70%);
         }
 
-        /* dot grid — right side texture */
         .dot-grid {
             position: absolute;
             top: 36px; right: 0; bottom: 24px;
@@ -119,13 +117,11 @@
         }
         .dot-grid svg { width: 100%; height: 100%; }
 
-        /* corner bracket accents */
         .corner-accent { position: absolute; z-index: 3; pointer-events: none; }
         .corner-tl { top: 37px; left: 0; }
         .corner-br { bottom: 24px; right: 0; }
         .corner-accent svg { width: 20px; height: 20px; }
 
-        /* ===================== HEADER ===================== */
         .card-header {
             position: absolute;
             top: 8px; left: 14px; right: 14px;
@@ -170,14 +166,12 @@
             z-index: 5;
         }
 
-        /* ===================== BODY ===================== */
         .card-body {
             position: absolute;
             top: 42px; left: 14px; right: 14px; bottom: 26px;
             display: flex; gap: 0; z-index: 5; align-items: stretch;
         }
 
-        /* avatar column */
         .member-avatar-col {
             width: 44px; flex-shrink: 0;
             display: flex; flex-direction: column;
@@ -203,14 +197,12 @@
             background: linear-gradient(to bottom, rgba(201,168,76,0.3), transparent);
         }
 
-        /* vertical dividers */
         .v-divider {
             width: 1px;
             background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.28), transparent);
             margin: 4px 9px; flex-shrink: 0;
         }
 
-        /* member info */
         .member-info {
             flex: 1; display: flex; flex-direction: column;
             justify-content: space-between; min-width: 0; padding: 3px 0;
@@ -235,7 +227,6 @@
             width: 9px; text-align: center; flex-shrink: 0;
         }
 
-        /* right column */
         .card-right {
             width: 56px; flex-shrink: 0;
             display: flex; flex-direction: column;
@@ -271,7 +262,6 @@
             color: white; display: block; line-height: 1.2; white-space: nowrap;
         }
 
-        /* ===================== FOOTER ===================== */
         .card-footer {
             position: absolute; bottom: 0; left: 0; right: 0; height: 24px;
             background: rgba(0,0,0,0.28);
@@ -288,7 +278,6 @@
         .barcode-wrap { opacity: 0.28; }
         .barcode-text { font-family: 'Libre Barcode 39', cursive; font-size: 15px; color: white; letter-spacing: -2px; }
 
-        /* ===================== PRINT ===================== */
         .print-btn {
             display: inline-flex; align-items: center; gap: 8px;
             background: var(--deep); color: white; border: none;
@@ -311,7 +300,6 @@
         <div class="orb orb-3"></div>
         <div class="gold-line"></div>
 
-        {{-- Dot grid texture --}}
         <div class="dot-grid">
             <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
                 <defs>
@@ -323,7 +311,6 @@
             </svg>
         </div>
 
-        {{-- Corner bracket accents --}}
         <div class="corner-accent corner-tl">
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M1 19 L1 1 L19 1" stroke="rgba(201,168,76,0.4)" stroke-width="1.2" stroke-linecap="round"/>
@@ -335,7 +322,6 @@
             </svg>
         </div>
 
-        {{-- Header --}}
         <div class="card-header">
             <div class="gym-logo-area">
                 <div class="gym-emblem">
@@ -350,10 +336,8 @@
 
         <div class="header-divider"></div>
 
-        {{-- Body --}}
         <div class="card-body">
 
-            {{-- Avatar column --}}
             <div class="member-avatar-col">
                 <div class="member-avatar">
                     <span class="avatar-initials">
@@ -365,7 +349,6 @@
 
             <div class="v-divider"></div>
 
-            {{-- Member info --}}
             <div class="member-info">
                 <div>
                     <div class="member-name">{{ $transaction->member->nama }}</div>
@@ -389,7 +372,6 @@
 
             <div class="v-divider"></div>
 
-            {{-- Right: chip + package --}}
             <div class="card-right">
                 <div class="chip"></div>
                 <div class="package-pill">
@@ -399,7 +381,6 @@
             </div>
         </div>
 
-        {{-- Footer --}}
         <div class="card-footer">
             <div class="footer-left">
                 <div class="footer-dot"></div>
@@ -412,7 +393,6 @@
         </div>
     </div>
 
-    {{-- Print controls --}}
     <div class="no-print" style="text-align:center;">
         <button onclick="window.print()" class="print-btn">
             <i class="fas fa-print"></i>&nbsp; Cetak Kartu Member

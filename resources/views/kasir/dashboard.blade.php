@@ -9,7 +9,6 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Welcome Message - Clean and Simple -->
     <div class="bg-gradient-to-r from-[#27124A] to-[#3a1d6b] rounded-2xl shadow-lg overflow-hidden">
         <div class="p-6 md:p-8">
             <div class="flex items-center justify-between">
@@ -34,9 +33,7 @@
         </div>
     </div>
 
-    <!-- Key Stats - Only 3 Most Important Cards for Cashier -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <!-- Transaksi Hari Ini -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -52,7 +49,6 @@
             </div>
         </div>
 
-        <!-- Check-in Hari Ini -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -68,7 +64,6 @@
             </div>
         </div>
 
-        <!-- Total Member Aktif -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -85,9 +80,7 @@
         </div>
     </div>
 
-    <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Transaksi Hari Ini -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                 <div>
@@ -131,7 +124,6 @@
             </div>
         </div>
         
-        <!-- Check-in Hari Ini -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                 <div>
@@ -176,7 +168,6 @@
         </div>
     </div>
 
-    <!-- Quick Actions - Simplified -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-4 border-b border-gray-100">
             <h3 class="text-sm font-semibold text-gray-800">Aksi Cepat</h3>

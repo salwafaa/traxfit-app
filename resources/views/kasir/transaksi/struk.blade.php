@@ -195,7 +195,6 @@
 </head>
 <body>
     <div class="receipt">
-        <!-- Header -->
         <div class="header">
             <div class="title">{{ $gymSettings->nama_gym ?? 'TRAXFIT GYM' }}</div>
             @if($gymSettings && $gymSettings->alamat)
@@ -207,7 +206,6 @@
             <div class="divider">✦ ✦ ✦ ✦ ✦</div>
         </div>
         
-        <!-- Transaction Info -->
         <div class="transaction-info">
             <div class="info-row">
                 <span class="info-label">No. Transaksi</span>
@@ -244,7 +242,6 @@
             @endif
         </div>
 
-        <!-- Visit Section -->
         @if($transaction->isVisitOnly() || $transaction->isProdukDanVisit())
         <div class="service-section">
             <div class="service-title">🏃‍♂️ VISIT GYM</div>
@@ -259,7 +256,6 @@
         </div>
         @endif
 
-        <!-- Membership Section -->
         @if($transaction->isMembershipOnly() || $transaction->isProdukDanMembership())
         <div class="service-section">
             <div class="service-title">🎫 MEMBERSHIP</div>
@@ -286,7 +282,6 @@
         </div>
         @endif
         
-        <!-- Items -->
         @if($transaction->details->count() > 0)
         <table class="items">
             <thead>
@@ -310,7 +305,6 @@
         </table>
         @endif
         
-        <!-- Totals -->
         <div class="total-section">
             @php
                 $subtotalProduk = $transaction->details->sum('subtotal');
@@ -353,7 +347,6 @@
             </div>
         </div>
         
-        <!-- Footer -->
         <div class="footer">
             <div class="thank-you">TERIMA KASIH</div>
             <div>Atas kunjungan Anda</div>
@@ -362,7 +355,6 @@
         </div>
     </div>
     
-    <!-- Print Button -->
     <div class="no-print" style="margin-top: 20px; text-align: center;">
         <button onclick="window.print()" class="print-button">
             <i class="fas fa-print"></i> Cetak Struk

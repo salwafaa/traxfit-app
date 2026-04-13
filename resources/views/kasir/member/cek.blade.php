@@ -10,10 +10,8 @@
 @section('content')
 <div class="space-y-6 w-full max-w-full">
 
-    {{-- ===== STATS ===== --}}
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full">
 
-        {{-- Total Aktif --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0 pr-3">
@@ -30,7 +28,6 @@
             </div>
         </div>
 
-        {{-- Expired Hari Ini --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0 pr-3">
@@ -47,7 +44,6 @@
             </div>
         </div>
 
-        {{-- Akan Expired --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 col-span-2 lg:col-span-1">
             <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0 pr-3">
@@ -66,10 +62,8 @@
 
     </div>
 
-    {{-- ===== CARD UTAMA ===== --}}
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
-        {{-- Header --}}
         <div class="px-5 py-4 border-b border-gray-100">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
@@ -79,7 +73,6 @@
             </div>
         </div>
 
-        {{-- Search & Filter --}}
         <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/60">
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-1">
@@ -108,7 +101,6 @@
             </p>
         </div>
 
-        {{-- Grid member --}}
         <div id="membersList" class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 
             @forelse($allMembers as $member)
@@ -157,7 +149,6 @@
                      data-telp="{{ strtolower($member->telepon ?? '') }}"
                      data-status="{{ $statusKey }}">
 
-                    {{-- Card Header --}}
                     <div class="flex items-center justify-between px-4 pt-4 pb-3">
                         <div class="flex items-center gap-3 min-w-0">
                             <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
@@ -175,7 +166,6 @@
 
                     <hr class="border-gray-100">
 
-                    {{-- Status bar --}}
                     <div class="px-4 pt-3">
                         <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50">
                             <i class="fas {{ $iconStatus }} text-sm shrink-0"></i>
@@ -189,7 +179,6 @@
                         </div>
                     </div>
 
-                    {{-- Info rows --}}
                     <div class="px-4 py-3 flex flex-col gap-1.5 text-xs text-gray-500">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-box w-4 text-center text-purple-400"></i>
@@ -209,7 +198,6 @@
                         </div>
                     </div>
 
-                    {{-- Card Footer --}}
                     @if(!$isActive || $statusLabel == 'Akan Expired')
                     <div class="px-4 pb-4">
                         <a href="{{ route('kasir.transaksi.membership.create') }}?member_id={{ $member->id }}&mode=renew"
@@ -232,7 +220,6 @@
 
         </div>
 
-        {{-- Empty search result — di luar grid supaya tidak ikut dihitung sebagai card --}}
         <div id="emptyResult" style="display:none;" class="text-center py-16 text-gray-400 px-6">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-50 rounded-full mb-4">
                 <i class="fas fa-user-slash text-2xl text-[#27124A]"></i>
@@ -245,12 +232,10 @@
 
 </div>
 
-{{-- ===== JAVASCRIPT — inline di sini, bukan @push, supaya pasti jalan setelah DOM siap ===== --}}
 <script>
 (function () {
     'use strict';
 
-    /* Ambil semua elemen yang diperlukan */
     var searchInput  = document.getElementById('searchInput');
     var filterStatus = document.getElementById('filterStatus');
     var resetBtn     = document.getElementById('resetBtn');
@@ -258,7 +243,6 @@
     var emptyResult  = document.getElementById('emptyResult');
     var visibleCount = document.getElementById('visibleCount');
 
-    /* Ambil semua card satu kali saja */
     var allCards = membersList
         ? Array.from(membersList.querySelectorAll('.member-card'))
         : [];
@@ -291,17 +275,13 @@
             }
         });
 
-        /* Update counter */
         if (visibleCount) visibleCount.textContent = visible;
 
-        /* Tampilkan pesan kosong hanya jika ada data tapi tidak ada yang cocok */
         if (emptyResult) {
             emptyResult.style.display = (total > 0 && visible === 0) ? 'block' : 'none';
         }
     }
 
-    /* Pasang event listener langsung — tidak perlu DOMContentLoaded
-       karena script ini ada di bawah elemen-elemen terkait */
     if (searchInput)  searchInput.addEventListener('input',  doFilter);
     if (filterStatus) filterStatus.addEventListener('change', doFilter);
 

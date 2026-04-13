@@ -10,10 +10,8 @@
 @section('content')
 <div class="space-y-6 w-full max-w-full">
 
-    {{-- ===================== HEADER STATS ===================== --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
 
-        {{-- Total Transaksi --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0 pr-3">
@@ -30,7 +28,6 @@
             </div>
         </div>
 
-        {{-- Total Pendapatan --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0 pr-3">
@@ -49,7 +46,6 @@
             </div>
         </div>
 
-        {{-- Transaksi Member --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0 pr-3">
@@ -68,7 +64,6 @@
             </div>
         </div>
 
-        {{-- Transaksi Non-Member --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0 pr-3">
@@ -89,10 +84,8 @@
 
     </div>
 
-    {{-- ===================== MAIN CARD ===================== --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden w-full">
 
-        {{-- ---- Card Header ---- --}}
         <div class="px-5 py-4 border-b border-gray-100">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
@@ -117,7 +110,6 @@
             </div>
         </div>
 
-        {{-- ---- Filter ---- --}}
         <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/60">
             <form method="GET" action="{{ route('kasir.transaksi.index') }}">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -164,7 +156,6 @@
             </form>
         </div>
 
-        {{-- ---- Info Row ---- --}}
         <div class="px-5 py-3 border-b border-gray-100 flex items-center">
             <p class="text-sm text-gray-500">
                 <i class="fas fa-info-circle mr-1.5 text-[#27124A]"></i>
@@ -178,7 +169,6 @@
             </p>
         </div>
 
-        {{-- ---- Table ---- --}}
         <div class="overflow-x-auto w-full">
             <table class="min-w-full divide-y divide-gray-100 text-sm">
                 <thead class="bg-gray-50">
@@ -196,14 +186,12 @@
                     @forelse($transactions as $transaction)
                         <tr class="hover:bg-gray-50/60 transition-colors duration-150">
 
-                            {{-- No --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center text-xs font-semibold text-gray-600">
                                     {{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}
                                 </div>
                             </td>
 
-                            {{-- No. Transaksi --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <a href="{{ route('kasir.transaksi.show', $transaction->id) }}"
                                     class="inline-flex items-center gap-2 font-mono font-semibold text-[#27124A] hover:text-[#3a1d6b] text-xs">
@@ -214,7 +202,6 @@
                                 </a>
                             </td>
 
-                            {{-- Member --}}
                             <td class="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
                                 @if($transaction->member)
                                     <div class="flex items-center gap-2">
@@ -231,14 +218,12 @@
                                 @endif
                             </td>
 
-                            {{-- Total --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <span class="inline-block px-2.5 py-1 bg-blue-50 text-[#27124A] rounded-lg text-xs font-bold">
                                     Rp {{ number_format($transaction->total_harga, 0, ',', '.') }}
                                 </span>
                             </td>
 
-                            {{-- Pembayaran --}}
                             <td class="px-4 py-3 whitespace-nowrap hidden sm:table-cell">
                                 <div class="flex items-center gap-2">
                                     <div class="w-7 h-7 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -251,7 +236,6 @@
                                 </div>
                             </td>
 
-                            {{-- Waktu --}}
                             <td class="px-4 py-3 whitespace-nowrap hidden md:table-cell">
                                 <div class="flex items-center gap-2">
                                     <div class="w-7 h-7 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -262,9 +246,8 @@
                                         <div class="text-xs text-gray-400 leading-tight">{{ $transaction->created_at->format('d/m/Y') }}</div>
                                     </div>
                                 </div>
-                            </td>
+                             </td>
 
-                            {{-- Aksi --}}
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="flex items-center gap-1.5">
                                     <a href="{{ route('kasir.transaksi.show', $transaction->id) }}"
@@ -285,7 +268,7 @@
                                     </a>
                                     @endif
                                 </div>
-                            </td>
+                             </td>
 
                         </tr>
                     @empty
@@ -315,7 +298,6 @@
             </table>
         </div>
 
-        {{-- ---- Pagination ---- --}}
         @if($transactions->hasPages())
         <div class="px-5 py-4 border-t border-gray-100">
             {{ $transactions->withQueryString()->links() }}
@@ -332,7 +314,6 @@
         transition: background-color 0.15s ease;
     }
 
-    /* Pagination */
     .pagination {
         display: flex;
         justify-content: center;
@@ -366,7 +347,6 @@
         border-color: #cbd5e0;
     }
 
-    /* Scrollbar */
     .overflow-x-auto::-webkit-scrollbar { height: 5px; }
     .overflow-x-auto::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
     .overflow-x-auto::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }

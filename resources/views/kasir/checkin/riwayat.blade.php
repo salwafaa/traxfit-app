@@ -9,10 +9,8 @@
 
 @section('content')
 
-{{-- ===== STATS ===== --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
-    {{-- Total Check-in --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -29,7 +27,6 @@
         </div>
     </div>
 
-    {{-- Member Unik --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -46,7 +43,6 @@
         </div>
     </div>
 
-    {{-- Rata-rata Harian --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -63,7 +59,6 @@
         </div>
     </div>
 
-    {{-- Rentang Tanggal --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -90,10 +85,8 @@
 
 </div>
 
-{{-- ===== CARD UTAMA ===== --}}
 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
-    {{-- Header --}}
     <div class="px-5 py-4 border-b border-gray-100">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -107,7 +100,6 @@
         </div>
     </div>
 
-    {{-- Filter --}}
     <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/60">
         <form method="GET" action="{{ route('kasir.checkin.riwayat') }}" id="filterForm">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -161,7 +153,6 @@
         </form>
     </div>
 
-    {{-- Results --}}
     <div class="p-5">
         @if($checkins->isEmpty())
         <div class="text-center py-16">
@@ -173,7 +164,6 @@
         </div>
         @else
 
-        {{-- Info Row --}}
         <div class="mb-4 flex items-center">
             <p class="text-sm text-gray-500">
                 <i class="fas fa-info-circle mr-1.5 text-[#27124A]"></i>
@@ -258,7 +248,6 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
         @if($checkins->hasPages())
         <div class="mt-5 border-t border-gray-100 pt-4">
             {{ $checkins->withQueryString()->links() }}

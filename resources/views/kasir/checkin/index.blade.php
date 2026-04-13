@@ -9,9 +9,6 @@
 
 @section('content')
 
-{{-- =============================================
-     STYLE
-     ============================================= --}}
 <style>
 .member-card { transition: all 0.2s ease; }
 .member-card.hidden-card { display: none !important; }
@@ -23,10 +20,8 @@
 #modal-sukses { animation: fadeIn 0.2s ease; }
 </style>
 
-{{-- ===== STATS ===== --}}
 <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
 
-    {{-- Total Member --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -43,7 +38,6 @@
         </div>
     </div>
 
-    {{-- Aktif --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -60,7 +54,6 @@
         </div>
     </div>
 
-    {{-- Sudah Check-in --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -77,7 +70,6 @@
         </div>
     </div>
 
-    {{-- Akan Expired --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -94,7 +86,6 @@
         </div>
     </div>
 
-    {{-- Expired --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-3">
@@ -113,10 +104,8 @@
 
 </div>
 
-{{-- ===== CARD UTAMA ===== --}}
 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
-    {{-- Header --}}
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 p-6 border-b border-gray-100">
         <div>
             <h3 class="text-lg font-semibold text-gray-800">Daftar Semua Member</h3>
@@ -128,7 +117,6 @@
         </a>
     </div>
 
-    {{-- Search --}}
     <div class="p-6 border-b border-gray-100 bg-purple-50/40">
         <div class="flex flex-col sm:flex-row gap-3 max-w-2xl">
             <div class="relative flex-1">
@@ -143,7 +131,6 @@
         </div>
     </div>
 
-    {{-- Filter tabs --}}
     <div id="tabContainer" class="flex flex-wrap gap-2 px-6 py-3 border-b border-gray-100">
         <button class="filter-btn aktif px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-700"
                 data-filter="semua">
@@ -167,7 +154,6 @@
         </button>
     </div>
 
-    {{-- Grid member --}}
     <div id="gridMember" class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
 
         @forelse($membersWithStatus as $m)
@@ -177,7 +163,6 @@
              data-kode="{{ strtolower($m['kode_member']) }}"
              data-telp="{{ strtolower($m['telepon']) }}">
 
-            {{-- Nama & badge --}}
             <div class="flex justify-between items-start mb-3">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center
@@ -190,7 +175,6 @@
                         <p class="text-xs text-gray-400">{{ $m['kode_member'] }}</p>
                     </div>
                 </div>
-                {{-- Badge status — tampilkan ikon khusus jika via transaksi --}}
                 <span class="badge-status text-xs font-medium px-2 py-1 rounded-lg
                     {{ $m['status_badge'] == 'success' ? 'bg-green-100 text-green-700' : ($m['status_badge'] == 'warning' ? 'bg-yellow-100 text-yellow-700' : ($m['status_badge'] == 'danger' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-700')) }}">
                     @if($m['checked_in_today'] && $m['via_transaksi'])
@@ -201,7 +185,6 @@
                 </span>
             </div>
 
-            {{-- Info --}}
             <div class="space-y-1.5 mb-4 text-xs text-gray-500">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-phone w-4 text-gray-300"></i>
@@ -223,7 +206,6 @@
                 </div>
             </div>
 
-            {{-- Tombol aksi --}}
             <div class="pt-3 border-t border-gray-100">
                 @if($m['can_checkin'])
                     <button type="button"
@@ -233,7 +215,6 @@
                         Check-in Sekarang
                     </button>
                 @elseif($m['checked_in_today'])
-                    {{-- Bedakan tampilan tombol: check-in manual vs via transaksi --}}
                     @if($m['via_transaksi'])
                         <button disabled
                                 class="w-full py-2.5 bg-blue-50 text-blue-600 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed"
@@ -277,7 +258,6 @@
     </div>
 </div>
 
-{{-- ===== CHECK-IN HARI INI ===== --}}
 <div class="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
     <div class="flex justify-between items-center p-6 border-b border-gray-100">
         <div>
@@ -336,7 +316,6 @@
     </div>
 </div>
 
-{{-- ===== MODAL SUKSES ===== --}}
 <div id="overlaySukses"
      style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9999; align-items:center; justify-content:center;">
     <div id="modal-sukses" class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
@@ -354,7 +333,6 @@
     </div>
 </div>
 
-{{-- ===== TOAST ERROR ===== --}}
 <div id="toastError"
      style="display:none; position:fixed; bottom:1.5rem; right:1.5rem; z-index:9999;">
     <div class="flex items-center gap-3 bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-xl shadow-lg min-w-[280px]">
@@ -366,9 +344,6 @@
     </div>
 </div>
 
-{{-- =============================================
-     JAVASCRIPT
-     ============================================= --}}
 <script>
 (function () {
     'use strict';
@@ -408,9 +383,6 @@
         document.getElementById('overlaySukses').style.display = 'flex';
     }
 
-    /* -------------------------------------------------------
-       CHECK-IN
-    ------------------------------------------------------- */
     function lakukanCheckin(memberId, btn) {
         if (!memberId) { tampilError('ID member tidak valid.'); return; }
         if (!confirm('Yakin check-in member ini?')) return;
@@ -436,12 +408,10 @@
         })
         .then(function (json) {
             if (json.success) {
-                /* Update tombol */
                 btn.innerHTML = '<i class="fas fa-check-circle"></i>&nbsp;Sudah Check-in';
                 btn.className = 'w-full py-2.5 bg-green-100 text-green-600 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed';
                 btn.disabled  = true;
 
-                /* Update badge card */
                 var card = btn.closest('.member-card');
                 if (card) {
                     card.setAttribute('data-status', 'checked-in');
@@ -452,7 +422,6 @@
                     }
                 }
 
-                /* Tambah baris di tabel hari ini */
                 var emptyToday   = document.getElementById('emptyToday');
                 var wrapperTable = document.getElementById('wrapperTableToday');
                 var tbody        = document.getElementById('bodyTableToday');
@@ -489,9 +458,6 @@
         });
     }
 
-    /* -------------------------------------------------------
-       FILTER & SEARCH
-    ------------------------------------------------------- */
     var filterAktif = 'semua';
 
     function terapkanFilter() {
@@ -531,10 +497,6 @@
             }
         }
     }
-
-    /* -------------------------------------------------------
-       EVENT LISTENERS
-    ------------------------------------------------------- */
 
     document.getElementById('btnTutupModal').addEventListener('click', tutupModal);
     document.getElementById('overlaySukses').addEventListener('click', function (e) {

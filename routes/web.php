@@ -19,20 +19,16 @@ use App\Http\Controllers\Kasir\ReportController as KasirReportController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\Owner\UserController as OwnerUserController;
 
-// Route Auth
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Route untuk role admin
 Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
-    // API Chart Data
     Route::get('/chart-data/{period}', [AdminController::class, 'chartData'])->name('chart-data');
     
-    // Kelola User (Admin hanya bisa CRUD Kasir)
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -45,7 +41,6 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::delete('/{id}/force-delete', [UserController::class, 'forceDelete'])->name('forceDelete');
     });
     
-    // Kelola Produk
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
@@ -56,7 +51,6 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::put('/{id}/status', [ProductController::class, 'toggleStatus'])->name('toggleStatus');
     });
     
-    // Kelola Kategori
     Route::prefix('categories')->name('categories.')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->name('index');
         Route::get('/create', [CategoryController::class, 'create'])->name('create');
@@ -66,7 +60,6 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('destroy');
     });
     
-    // Kelola Paket Membership
     Route::prefix('membership-packages')->name('packages.')->group(function () {
         Route::get('/', [MembershipPackageController::class, 'index'])->name('index');
         Route::get('/create', [MembershipPackageController::class, 'create'])->name('create');
@@ -77,7 +70,6 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::put('/{id}/status', [MembershipPackageController::class, 'toggleStatus'])->name('toggleStatus');
     });
     
-    // Kelola Member (Admin hanya bisa edit, tidak bisa daftarkan)
     Route::prefix('members')->name('members.')->group(function () {
         Route::get('/', [AdminMemberController::class, 'index'])->name('index');
         Route::get('/{id}', [AdminMemberController::class, 'show'])->name('show');
@@ -87,7 +79,6 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::put('/{id}/toggle-status', [AdminMemberController::class, 'toggleStatus'])->name('toggleStatus');
     });
     
-    // Kelola Stok
     Route::prefix('stock')->name('stock.')->group(function () {
         Route::get('/', [StockController::class, 'index'])->name('index');
         Route::get('/add/{product_id}', [StockController::class, 'create'])->name('create');
@@ -96,7 +87,6 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::get('/log/export', [StockController::class, 'export'])->name('log.export');
     });
 
-    // Kelola Transaksi untuk Admin
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('index');
         Route::get('/{id}', [App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('show');
@@ -105,7 +95,6 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
         Route::get('/statistics', [App\Http\Controllers\Admin\TransactionController::class, 'statistics'])->name('statistics');
     });
 
-    // Pengaturan Gym
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\GymSettingController::class, 'index'])->name('index');
         Route::put('/', [App\Http\Controllers\Admin\GymSettingController::class, 'update'])->name('update');
@@ -114,10 +103,8 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
 
 // Route untuk role kasir
 Route::middleware(['auth', 'checkRole:kasir'])->prefix('kasir')->name('kasir.')->group(function () {
-    // Dashboard
     Route::get('/dashboard', [KasirController::class, 'dashboard'])->name('dashboard');
     
-    // Transaksi
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
         Route::get('/', [KasirTransactionController::class, 'index'])->name('index');
         Route::get('/baru', [KasirTransactionController::class, 'create'])->name('create');
@@ -127,7 +114,6 @@ Route::middleware(['auth', 'checkRole:kasir'])->prefix('kasir')->name('kasir.')-
         Route::get('/cari-produk', [KasirTransactionController::class, 'cariProduk'])->name('cariProduk');
         Route::get('/cari-member', [KasirTransactionController::class, 'cariMember'])->name('cariMember');
         
-        // Routes untuk membership transaction
         Route::prefix('membership')->name('membership.')->group(function () {
             Route::get('/baru', [App\Http\Controllers\Kasir\MembershipTransactionController::class, 'create'])->name('create');
             Route::post('/', [App\Http\Controllers\Kasir\MembershipTransactionController::class, 'store'])->name('store');
@@ -137,7 +123,6 @@ Route::middleware(['auth', 'checkRole:kasir'])->prefix('kasir')->name('kasir.')-
         });
     });
     
-    // Kelola Member
     Route::prefix('member')->name('member.')->group(function () {
         Route::get('/', [KasirMemberController::class, 'index'])->name('index');
         Route::get('/daftar', [KasirMemberController::class, 'create'])->name('create');
@@ -155,7 +140,6 @@ Route::middleware(['auth', 'checkRole:kasir'])->prefix('kasir')->name('kasir.')-
         Route::delete('/{id}', [KasirMemberController::class, 'destroy'])->name('destroy');
     });
     
-    // Check-in Member
     Route::prefix('checkin')->name('checkin.')->group(function () {
         Route::get('/', [App\Http\Controllers\Kasir\CheckinController::class, 'index'])->name('index');
         Route::post('/', [App\Http\Controllers\Kasir\CheckinController::class, 'store'])->name('store');
@@ -164,20 +148,16 @@ Route::middleware(['auth', 'checkRole:kasir'])->prefix('kasir')->name('kasir.')-
         Route::get('/riwayat/export', [App\Http\Controllers\Kasir\CheckinController::class, 'export'])->name('export');
     });
 
-    // Harga Visit
     Route::get('harga-visit', [App\Http\Controllers\Kasir\TransactionController::class, 'getHargaVisit'])->name('transaksi.hargaVisit');
 });
 
 // Route untuk role owner
 Route::middleware(['auth', 'checkRole:owner'])->prefix('owner')->name('owner.')->group(function () {
-    // Dashboard
     Route::get('/dashboard', [OwnerController::class, 'dashboard'])->name('dashboard');
 
-    // ===== PROFIL OWNER =====
     Route::get('/profile', [OwnerController::class, 'profile'])->name('profile');
     Route::put('/profile', [OwnerController::class, 'updateProfile'])->name('profile.update');
     
-    // ===== MANAGE USERS (CRUD Admin & Kasir) =====
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [OwnerUserController::class, 'index'])->name('index');
         Route::get('/create', [OwnerUserController::class, 'create'])->name('create');
@@ -200,7 +180,6 @@ Route::middleware(['auth', 'checkRole:owner'])->prefix('owner')->name('owner.')-
     });
 });
 
-// Redirect root berdasarkan role
 Route::get('/', function () {
     if (Auth::check()) {
         switch (Auth::user()->role) {

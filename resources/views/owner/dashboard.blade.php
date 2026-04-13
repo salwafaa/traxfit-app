@@ -9,7 +9,6 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Welcome Message - Clean and Simple -->
     <div class="bg-gradient-to-r from-[#27124A] to-[#3a1d6b] rounded-2xl shadow-lg overflow-hidden">
         <div class="p-6 md:p-8">
             <div class="flex items-center justify-between">
@@ -34,9 +33,7 @@
         </div>
     </div>
 
-    <!-- Key Stats - Only 4 Most Important Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Pendapatan Bulan Ini -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -52,7 +49,6 @@
             </div>
         </div>
 
-        <!-- Member Aktif -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -68,7 +64,6 @@
             </div>
         </div>
 
-        <!-- Transaksi Bulan Ini -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -84,7 +79,6 @@
             </div>
         </div>
 
-        <!-- Produk Tersedia -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -101,9 +95,7 @@
         </div>
     </div>
 
-    <!-- Charts Row -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Grafik Pendapatan -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between mb-4">
                 <div>
@@ -119,7 +111,6 @@
             </div>
         </div>
 
-        <!-- Statistik Member - Simplified -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between mb-4">
                 <div>
@@ -161,9 +152,7 @@
         </div>
     </div>
 
-    <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Top 5 Produk Terlaris -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-4 border-b border-gray-100">
                 <div class="flex justify-between items-center">
@@ -207,7 +196,6 @@
             </div>
         </div>
 
-        <!-- Transaksi Terbaru -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                 <div>

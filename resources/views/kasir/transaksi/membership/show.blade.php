@@ -38,7 +38,6 @@
     </div>
     
     <div class="p-6">
-        {{-- Parse data_tambahan: handle jika masih string JSON atau sudah array --}}
         @php
             $dataTambahan = $transaction->data_tambahan;
             if (is_string($dataTambahan)) {

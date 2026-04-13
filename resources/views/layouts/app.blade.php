@@ -22,7 +22,6 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== SIDEBAR COLLAPSIBLE ===== */
         #sidebar {
             width: 240px;
             transition: width 0.25s ease;
@@ -45,7 +44,6 @@
         #toggleIcon { transition: transform 0.25s ease; }
         #sidebar.collapsed #toggleIcon { transform: rotate(180deg); }
 
-        /* Tooltip */
         .sb-tooltip {
             position: absolute;
             left: calc(100% + 10px);
@@ -73,7 +71,6 @@
             flex: 1;
         }
 
-        /* Scrollbar */
         .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #4b5563 #27124A; }
         .scrollbar-thin::-webkit-scrollbar { width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: #1D0C36; }
@@ -97,10 +94,8 @@
 <body class="bg-gray-50">
     <div class="flex h-screen overflow-hidden">
 
-        <!-- Sidebar -->
         <div id="sidebar" class="bg-primary text-white flex flex-col fixed h-full z-20 shadow-lg">
 
-            <!-- Header: Logo + Toggle -->
             <div class="border-b border-primary-dark px-3 py-3.5" style="min-height: 60px;">
                 <div class="sb-header-inner flex items-center gap-3">
                     <img src="{{ asset('images/logo/trax.png') }}" alt="TraxFit Logo" class="w-9 h-9 object-contain flex-shrink-0">
@@ -118,16 +113,13 @@
                 </div>
             </div>
 
-            <!-- Navigation -->
             <nav class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin py-3 px-2">
                 @yield('sidebar')
             </nav>
         </div>
 
-        <!-- Main Content -->
         <div id="main-content" class="flex flex-col h-screen">
 
-            <!-- Top Bar -->
             <div class="bg-white shadow-sm border-b border-gray-200 flex-shrink-0">
                 <div class="px-6 py-3 flex justify-between items-center">
                     <div>
@@ -167,7 +159,6 @@
                 </div>
             </div>
 
-            <!-- Content -->
             <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
                 <div class="bg-white rounded-xl shadow-sm p-6">
                     @yield('content')
@@ -176,7 +167,6 @@
         </div>
     </div>
 
-    <!-- Logout Modal -->
     <div id="logoutModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 modal-enter">
             <div class="p-6">
@@ -207,7 +197,6 @@
             localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
         }
 
-        // Restore state
         (function () {
             if (localStorage.getItem('sidebarCollapsed') === '1') {
                 sidebar.classList.add('collapsed');
@@ -215,7 +204,6 @@
             }
         })();
 
-        // Logout Modal
         const logoutModal = document.getElementById('logoutModal');
         document.getElementById('logoutBtn')?.addEventListener('click', () => {
             logoutModal.classList.replace('hidden', 'flex');

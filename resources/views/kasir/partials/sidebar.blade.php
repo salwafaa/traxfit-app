@@ -1,5 +1,3 @@
-{{-- resources/views/kasir/partials/sidebar.blade.php --}}
-
 @php
 $navItems = [
     ['route' => 'kasir.dashboard',      'icon' => 'fa-tachometer-alt', 'label' => 'Dashboard'],

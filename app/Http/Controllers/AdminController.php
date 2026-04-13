@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -38,13 +39,13 @@ class AdminController extends Controller
 
         try {
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                 'id_user' => Auth::id(),
+                'role_user' => Auth::user()->role,
                 'activity' => 'View Dashboard',
                 'keterangan' => 'Admin melihat dashboard dengan statistik: ' . $stats['total_members'] . ' member, ' . $stats['total_products'] . ' produk',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            Log::error('Gagal menyimpan log: ' . $e->getMessage());
         }
 
         return view('admin.dashboard', compact('stats', 'recentMembers', 'recentTransactions', 'chartData'));
@@ -113,13 +114,13 @@ class AdminController extends Controller
         
         try {
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                 'id_user' => Auth::id(),
+                'role_user' => Auth::user()->role,
                 'activity' => 'View Chart',
                 'keterangan' => 'Admin melihat grafik periode: ' . $period,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            Log::error('Gagal menyimpan log: ' . $e->getMessage());
         }
         
         return response()->json($chartData);

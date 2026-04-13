@@ -14,13 +14,14 @@ use App\Models\GymSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
     public function index(Request $request)
     {
         $query = Transaction::with(['user', 'member'])
-            ->where('id_user', auth()->id());
+            ->where('id_user', Auth::id());
 
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -43,7 +44,7 @@ class TransactionController extends Controller
 
         $transactions = $query->latest()->paginate(20);
         
-        $totalToday = Transaction::where('id_user', auth()->id())
+        $totalToday = Transaction::where('id_user', Auth::id())
             ->whereDate('created_at', today())
             ->sum('total_harga');
 
@@ -195,7 +196,7 @@ class TransactionController extends Controller
             }
 
             $transaction = Transaction::create([
-                'id_user' => auth()->id(),
+                'id_user' => Auth::id(),
                 'id_member' => $memberId,
                 'nomor_unik' => Transaction::generateNomorUnik(),
                 'jenis_transaksi' => $request->jenis_transaksi,
@@ -228,7 +229,7 @@ class TransactionController extends Controller
                         'tipe' => 'keluar',
                         'qty' => $item['qty'],
                         'keterangan' => 'Penjualan transaksi ' . $transaction->nomor_unik,
-                        'id_user' => auth()->id(),
+                        'id_user' => Auth::id(),
                     ]);
                 }
             }
@@ -242,8 +243,8 @@ class TransactionController extends Controller
             ];
 
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                'id_user' => Auth::id(),
+                'role_user' => Auth::user()->role,
                 'activity' => 'Create Transaction',
                 'keterangan' => $jenisLabels[$request->jenis_transaksi] . ': ' . $transaction->nomor_unik . ' dengan total Rp ' . number_format($transaction->total_harga, 0, ',', '.'),
             ]);

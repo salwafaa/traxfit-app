@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log as FacadesLog;
+use Illuminate\Support\Facades\Auth;
+
 
 class GymSettingController extends Controller
 {
@@ -26,8 +28,8 @@ class GymSettingController extends Controller
         
         try {
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'View Gym Settings',
                 'keterangan' => 'Admin melihat pengaturan gym',
             ]);
@@ -83,8 +85,8 @@ class GymSettingController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Update Gym Settings',
                     'keterangan' => 'Admin mengupdate pengaturan gym (harga visit: Rp ' . number_format($request->harga_visit, 0, ',', '.') . ', nama gym: ' . $request->nama_gym . ')',
                 ]);

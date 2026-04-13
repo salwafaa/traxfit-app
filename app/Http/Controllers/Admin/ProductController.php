@@ -9,6 +9,7 @@ use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log as FacadesLog;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -68,8 +69,8 @@ class ProductController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role ?? 'admin',
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role ?? 'admin',
                     'activity' => 'Create Product',
                     'keterangan' => 'Menambahkan produk baru: ' . $product->nama_produk,
                 ]);
@@ -130,8 +131,8 @@ class ProductController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role ?? 'admin',
+                     'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Update Product',
                     'keterangan' => 'Mengupdate produk: ' . $product->nama_produk,
                 ]);
@@ -166,8 +167,8 @@ class ProductController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role ?? 'admin',
+                     'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role ?? 'admin',
                     'activity' => 'Delete Product',
                     'keterangan' => 'Menghapus produk: ' . $namaProduk,
                 ]);
@@ -200,8 +201,8 @@ class ProductController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role ?? 'admin',
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role ?? 'admin',
                     'activity' => 'Toggle Product Status',
                     'keterangan' => 'Mengubah status produk ' . $product->nama_produk . ' dari ' . ($oldStatus ? 'aktif' : 'nonaktif') . ' menjadi ' . ($product->status ? 'aktif' : 'nonaktif'),
                 ]);

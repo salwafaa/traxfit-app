@@ -17,12 +17,13 @@ use App\Models\ProductCategory;
 use App\Models\GymSetting;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TransactionExport;
 use App\Exports\StockExport;
 use App\Exports\ActivityExport;
 use App\Exports\MemberExport;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -99,7 +100,7 @@ class ReportController extends Controller
             'totalPendapatanNonTunai' => $transactions->where('metode_bayar', 'qris')->sum('total_harga'),
         ];
         
-        $pdf = PDF::loadView('owner.laporan.transaksi-pdf', $data);
+        $pdf = Pdf::loadView('owner.laporan.transaksi-pdf', $data);
         $pdf->setPaper('A4', 'landscape');
         
         return $pdf->download('laporan_transaksi_' . Carbon::now()->format('Ymd_His') . '.pdf');
@@ -142,13 +143,13 @@ class ReportController extends Controller
         
         try {
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'View Transaction Detail',
                 'keterangan' => 'Owner melihat detail transaksi: ' . $transaction->nomor_unik,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            Log::error('Gagal menyimpan log: ' . $e->getMessage());
         }
         
         return view('owner.laporan.transaksi-show', compact('transaction'));
@@ -246,7 +247,7 @@ class ReportController extends Controller
             'produkTersedia' => $products->where('stok', '>', 5)->count(),
         ];
         
-        $pdf = PDF::loadView('owner.laporan.stok-pdf', $data);
+        $pdf = Pdf::loadView('owner.laporan.stok-pdf', $data);
         $pdf->setPaper('A4', 'landscape');
         
         return $pdf->download('laporan_stok_' . Carbon::now()->format('Ymd_His') . '.pdf');
@@ -357,13 +358,13 @@ class ReportController extends Controller
 
         try {
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                 'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'View Activity Report',
                 'keterangan' => 'Owner melihat laporan aktivitas user periode ' . $startDate->format('d/m/Y') . ' - ' . $endDate->format('d/m/Y'),
             ]);
         } catch (\Exception $e) {
-            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            Log::error('Gagal menyimpan log: ' . $e->getMessage());
         }
 
         return view('owner.laporan.aktivitas', compact(
@@ -418,7 +419,7 @@ class ReportController extends Controller
             'userStats' => $userStats,
         ];
         
-        $pdf = PDF::loadView('owner.laporan.aktivitas-pdf', $data);
+        $pdf = Pdf::loadView('owner.laporan.aktivitas-pdf', $data);
         $pdf->setPaper('A4', 'landscape');
         
         return $pdf->download('laporan_aktivitas_' . Carbon::now()->format('Ymd_His') . '.pdf');
@@ -567,7 +568,7 @@ class ReportController extends Controller
             'activePercentage' => $stats['totalMember'] > 0 ? round(($stats['memberAktif'] / $stats['totalMember']) * 100, 1) : 0,
         ];
         
-        $pdf = PDF::loadView('owner.laporan.member-pdf', $data);
+        $pdf = Pdf::loadView('owner.laporan.member-pdf', $data);
         $pdf->setPaper('A4', 'landscape');
         
         return $pdf->download('laporan_member_' . Carbon::now()->format('Ymd_His') . '.pdf');

@@ -6,6 +6,7 @@ use App\Models\Transaction;
 use App\Models\MemberCheckin;
 use App\Models\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KasirController extends Controller
 {
@@ -14,34 +15,34 @@ class KasirController extends Controller
         $today = now()->format('Y-m-d');
         
         $stats = [
-            'today_transactions' => Transaction::where('id_user', auth()->id())
+            'today_transactions' => Transaction::where('id_user', Auth::id())
                 ->whereDate('created_at', $today)
                 ->count(),
                 
-            'today_revenue' => Transaction::where('id_user', auth()->id())
+            'today_revenue' => Transaction::where('id_user', Auth::id())
                 ->whereDate('created_at', $today)
                 ->sum('total_harga'),
                 
-            'today_checkins' => MemberCheckin::where('id_kasir', auth()->id())
+            'today_checkins' => MemberCheckin::where('id_kasir', Auth::id())
                 ->whereDate('tanggal', $today)
                 ->count(),
                 
-            'total_transactions' => Transaction::where('id_user', auth()->id())
+            'total_transactions' => Transaction::where('id_user', Auth::id())
                 ->count(),
                 
-            'total_revenue' => Transaction::where('id_user', auth()->id())
+            'total_revenue' => Transaction::where('id_user', Auth::id())
                 ->sum('total_harga'),
         ];
         
         $todayTransactions = Transaction::with('member')
-            ->where('id_user', auth()->id())
+            ->where('id_user', Auth::id())
             ->whereDate('created_at', $today)
             ->latest()
             ->take(5)
             ->get();
             
         $todayCheckins = MemberCheckin::with('member')
-            ->where('id_kasir', auth()->id())
+            ->where('id_kasir', Auth::id())
             ->whereDate('tanggal', $today)
             ->latest()
             ->take(5)
@@ -49,13 +50,13 @@ class KasirController extends Controller
 
         try {
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+               'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'View Dashboard',
                 'keterangan' => 'Kasir melihat dashboard dengan ' . $stats['today_transactions'] . ' transaksi hari ini',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            Log::error('Gagal menyimpan log: ' . $e->getMessage());
         }
 
         return view('kasir.dashboard', compact('stats', 'todayTransactions', 'todayCheckins'));

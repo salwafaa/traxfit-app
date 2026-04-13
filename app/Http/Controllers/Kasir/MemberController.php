@@ -10,6 +10,7 @@ use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
@@ -171,11 +172,11 @@ class MemberController extends Controller
                 ]);
             });
 
-            $checkinOtomatis = MemberCheckin::buatCheckinOtomatis($member->id, auth()->id());
+            $checkinOtomatis = MemberCheckin::buatCheckinOtomatis($member->id, Auth::id());
 
             Log::create([
-                'id_user'    => auth()->id(),
-                'role_user'  => auth()->user()->role,
+                'id_user' => Auth::id(),
+                'role_user' => Auth::user()->role,
                 'activity'   => 'Renew Member',
                 'keterangan' => 'Kasir memperpanjang member: ' . $member->nama
                     . ' (' . $member->kode_member . ') dengan paket ' . $package->nama_paket
@@ -218,21 +219,20 @@ class MemberController extends Controller
             $package    = MembershipPackage::findOrFail($request->id_paket);
             $tglExpired = now()->addDays($package->durasi_hari);
 
-            $member = null;
-            Member::withoutEvents(function () use ($request, $tglExpired, &$member) {
-                $member = Member::create([
-                    'nama'         => $request->nama,
-                    'telepon'      => $request->telepon,
-                    'alamat'       => $request->alamat ?? null,
-                    'jenis_member' => $request->jenis_member ?? 'Regular',
-                    'id_paket'     => $request->id_paket,
-                    'tgl_daftar'   => now(),
-                    'tgl_expired'  => $tglExpired,
-                    'status'       => 'active',
-                    'created_by'   => auth()->id(),
-                ]);
-            });
+            // Buat member terlebih dahulu
+            $member = Member::create([
+                'nama'         => $request->nama,
+                'telepon'      => $request->telepon,
+                'alamat'       => $request->alamat ?? null,
+                'jenis_member' => $request->jenis_member ?? 'Regular',
+                'id_paket'     => $request->id_paket,
+                'tgl_daftar'   => now(),
+                'tgl_expired'  => $tglExpired,
+                'status'       => 'active',
+                'created_by'   => Auth::id(),
+            ]);
 
+            // Generate kode_member setelah member dibuat
             if (empty($member->kode_member)) {
                 $year  = date('Y');
                 $month = date('m');
@@ -245,14 +245,14 @@ class MemberController extends Controller
                     ? str_pad(intval(substr($last->kode_member, -4)) + 1, 4, '0', STR_PAD_LEFT)
                     : '0001';
                 $member->kode_member = 'MBR-' . $year . $month . '-' . $num;
-                $member->saveQuietly();
+                $member->save();
             }
 
-            MemberCheckin::buatCheckinOtomatis($member->id, auth()->id());
+            MemberCheckin::buatCheckinOtomatis($member->id, Auth::id());
 
             Log::create([
-                'id_user'    => auth()->id(),
-                'role_user'  => auth()->user()->role,
+                'id_user' => Auth::id(),
+                'role_user' => Auth::user()->role,
                 'activity'   => 'Register New Member',
                 'keterangan' => 'Kasir mendaftarkan member baru: ' . $member->nama
                     . ' (' . $member->kode_member . ') | Auto check-in dibuat.',

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StockLogExport;
+use Illuminate\Support\Facades\Auth;
 
 class StockController extends Controller
 {
@@ -59,20 +60,20 @@ class StockController extends Controller
                 'tipe' => $request->tipe,
                 'qty' => $request->qty,
                 'keterangan' => $request->keterangan,
-                'id_user' => auth()->id(),
+                'id_user' => Auth::id(),
             ]);
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Stock ' . ucfirst($request->tipe),
                     'keterangan' => $request->tipe == 'masuk' 
                         ? 'Menambah stok ' . $product->nama_produk . ' sebanyak ' . $request->qty . ' pcs. Keterangan: ' . $request->keterangan
                         : 'Mengurangi stok ' . $product->nama_produk . ' sebanyak ' . $request->qty . ' pcs. Keterangan: ' . $request->keterangan,
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();

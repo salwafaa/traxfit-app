@@ -48,8 +48,8 @@ class MembershipTransactionController extends Controller
         }
 
         Log::create([
-            'id_user'    => auth()->id(),
-            'role_user'  => auth()->user()->role,
+            'id_user' => Auth::id(),
+            'role_user' => Auth::user()->role,
             'activity'   => $isRenewMode ? 'Open Renew Membership' : 'Open Membership Transaction',
             'keterangan' => $isRenewMode
                 ? 'Kasir membuka halaman perpanjangan membership untuk member: ' . ($preloadMember['nama'] ?? '')
@@ -116,7 +116,7 @@ class MembershipTransactionController extends Controller
             if ($isRenew) {
                 $member = Member::findOrFail($request->existing_member_id);
 
-                $fotoPath = $member->foto_identitas;
+                $fotoPath = $member->foto_identitas; 
                 if ($request->hasFile('foto_identitas') && $request->file('foto_identitas')->isValid()) {
                     $fotoPath = $request->file('foto_identitas')->store('identitas', 'public');
                 }
@@ -215,12 +215,12 @@ class MembershipTransactionController extends Controller
                 'tgl_selesai'     => $tglExpired,
                 'subtotal_produk' => $subtotalProduk,
                 'produk'          => $items,
-                'is_renewal'      => $isRenew,
+                'is_renewal'      => $isRenew,  
             ];
 
             $transaction = Transaction::create([
                 'nomor_unik'        => $this->generateNomorUnik(),
-                'id_user'           => auth()->id(),
+                'id_user'           => Auth::id(),
                 'id_member'         => $member->id,
                 'jenis_transaksi'   => $request->jenis_transaksi,
                 'total_harga'       => (float) $totalHarga,
@@ -243,8 +243,8 @@ class MembershipTransactionController extends Controller
             }
 
             Log::create([
-                'id_user'    => auth()->id(),
-                'role_user'  => auth()->user()->role,
+                'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity'   => $logActivity,
                 'keterangan' => $logKeterangan . ' | No. Transaksi: ' . $transaction->nomor_unik,
             ]);
@@ -267,13 +267,74 @@ class MembershipTransactionController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
 
-            \Log::error('Membership Transaction Error: ' . $e->getMessage());
-            \Log::error($e->getTraceAsString());
+            Log::error('Membership Transaction Error: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
 
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memproses transaksi: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function show($id)
+    {
+        $transaction = Transaction::with(['member', 'user', 'details.product'])
+            ->whereIn('jenis_transaksi', ['membership', 'produk_membership'])
+            ->findOrFail($id);
+
+        $gymSettings = GymSetting::first();
+
+        return view('kasir.transaksi.membership.show', compact('transaction', 'gymSettings'));
+    }
+
+    public function struk($id)
+    {
+        $transaction = Transaction::with(['member', 'user', 'details.product'])
+            ->whereIn('jenis_transaksi', ['membership', 'produk_membership'])
+            ->findOrFail($id);
+
+        $gymSettings = GymSetting::first();
+
+        return view('kasir.transaksi.membership.struk', compact('transaction', 'gymSettings'));
+    }
+
+    public function kartuMember($id)
+    {
+        $transaction = Transaction::with(['member.package', 'details'])
+            ->whereIn('jenis_transaksi', ['membership', 'produk_membership'])
+            ->findOrFail($id);
+
+        $gymSettings = GymSetting::first();
+
+        return view('kasir.transaksi.membership.kartu', compact('transaction', 'gymSettings'));
+    }
+
+    private function generateNomorUnik()
+    {
+        $prefix = 'TRX-' . date('Ymd') . '-';
+        $last   = Transaction::where('nomor_unik', 'like', $prefix . '%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $num = $last
+            ? str_pad(intval(substr($last->nomor_unik, -4)) + 1, 4, '0', STR_PAD_LEFT)
+            : '0001';
+
+        return $prefix . $num;
+    }
+
+    private function generateKodeMember()
+    {
+        $prefix = 'MBR-' . date('Y') . '-';
+        $last   = Member::where('kode_member', 'like', $prefix . '%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $num = $last
+            ? str_pad(intval(substr($last->kode_member, -4)) + 1, 4, '0', STR_PAD_LEFT)
+            : '0001';
+
+        return $prefix . $num;
     }
 }

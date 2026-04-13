@@ -7,6 +7,7 @@ use App\Models\ProductCategory;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -35,13 +36,13 @@ class CategoryController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Create Category',
                     'keterangan' => 'Menambahkan kategori baru: ' . $category->nama_kategori,
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -80,13 +81,13 @@ class CategoryController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Update Category',
                     'keterangan' => 'Mengupdate kategori: ' . $category->nama_kategori,
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -119,13 +120,13 @@ class CategoryController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Delete Category',
                     'keterangan' => 'Menghapus kategori: ' . $namaKategori,
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();

@@ -7,6 +7,8 @@ use App\Models\MembershipPackage;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 
 class MembershipPackageController extends Controller
 {
@@ -40,13 +42,13 @@ class MembershipPackageController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Create Membership Package',
                     'keterangan' => 'Menambahkan paket membership: ' . $package->nama_paket,
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -90,13 +92,13 @@ class MembershipPackageController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Update Membership Package',
                     'keterangan' => 'Mengupdate paket membership: ' . $package->nama_paket,
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -129,13 +131,13 @@ class MembershipPackageController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                     'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Delete Membership Package',
                     'keterangan' => 'Menghapus paket membership: ' . $namaPackage,
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -163,13 +165,13 @@ class MembershipPackageController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Toggle Package Status',
                     'keterangan' => 'Mengubah status paket ' . $package->nama_paket . ' dari ' . ($oldStatus ? 'aktif' : 'nonaktif') . ' menjadi ' . ($package->status ? 'aktif' : 'nonaktif'),
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();

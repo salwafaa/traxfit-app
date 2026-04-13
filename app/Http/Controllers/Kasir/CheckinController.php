@@ -9,6 +9,8 @@ use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf; // Tambahkan ini untuk PDF
 
 class CheckinController extends Controller
 {
@@ -185,13 +187,13 @@ class CheckinController extends Controller
                 'id_member'     => $member->id,
                 'tanggal'       => $now->toDateString(),
                 'jam_masuk'     => $now,
-                'id_kasir'      => auth()->id(),
+                'id_kasir'      => Auth::id(),
                 'via_transaksi' => false,
             ]);
 
             Log::create([
-                'id_user'    => auth()->id(),
-                'role_user'  => auth()->user()->role,
+                'id_user' => Auth::id(),
+                'role_user' => Auth::user()->role,
                 'activity'   => 'Member Check-in',
                 'keterangan' => 'Member ' . $member->nama . ' (' . $member->kode_member . ') check-in pada ' . $now->format('d/m/Y H:i:s'),
             ]);
@@ -258,13 +260,13 @@ class CheckinController extends Controller
                 $filterDesc = ' periode ' . $request->start_date . ' s/d ' . $request->end_date;
             }
             Log::create([
-                'id_user'    => auth()->id(),
-                'role_user'  => auth()->user()->role,
+                'id_user' => Auth::id(),
+                'role_user' => Auth::user()->role,
                 'activity'   => 'View Check-in History',
                 'keterangan' => 'Kasir melihat riwayat check-in' . $filterDesc,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            Log::error('Gagal menyimpan log: ' . $e->getMessage());
         }
 
         return view('kasir.checkin.riwayat', compact(
@@ -292,7 +294,8 @@ class CheckinController extends Controller
 
         $checkins = $query->latest('jam_masuk')->get();
 
-        $pdf = PDF::loadView('kasir.checkin.export_pdf', [
+        // Gunakan Pdf::loadView() bukan PDF::loadView()
+        $pdf = Pdf::loadView('kasir.checkin.export_pdf', [
             'checkins'   => $checkins,
             'start_date' => $request->start_date,
             'end_date'   => $request->end_date,

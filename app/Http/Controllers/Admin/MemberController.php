@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+
 
 class MemberController extends Controller
 {
@@ -135,8 +137,8 @@ class MemberController extends Controller
             }
 
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'Update Member',
                 'keterangan' => $keterangan,
             ]);
@@ -180,8 +182,8 @@ class MemberController extends Controller
                 }
                 
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                   'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Delete Member (Soft)',
                     'keterangan' => $keterangan,
                 ]);
@@ -198,8 +200,8 @@ class MemberController extends Controller
                 $member->forceDelete();
                 
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Delete Member (Permanent)',
                     'keterangan' => 'Admin menghapus permanen member: ' . $namaMember . ' (' . $kodeMember . ')',
                 ]);
@@ -242,8 +244,8 @@ class MemberController extends Controller
             ]);
 
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+               'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'Toggle Member Status',
                 'keterangan' => 'Admin mengubah status member ' . $member->nama . ' (' . $member->kode_member . ') dari ' . $oldStatus . ' menjadi ' . $newStatus,
             ]);
@@ -289,8 +291,8 @@ class MemberController extends Controller
             }
 
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'Fix Expired Date',
                 'keterangan' => 'Admin memperbaiki tanggal expired member ' . $member->nama . ' (' . $member->kode_member . ') dari ' . $oldDate . ' menjadi ' . $newDate,
             ]);

@@ -8,12 +8,13 @@ use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $user = Auth::user()->role;
 
         if ($user->role === 'owner') {
             $users = User::whereIn('role', ['admin', 'kasir'])->orderBy('created_at', 'desc')->get();
@@ -26,7 +27,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $user = auth()->user();
+        $user = Auth::user()->role;
 
         if ($user->role === 'admin') {
             return view('admin.users.create', ['allowedRoles' => ['kasir']]);
@@ -41,7 +42,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $currentUser = auth()->user();
+        $currentUser = Auth::user()->role;
 
         $rules = [
             'username' => 'required|unique:users|min:3',
@@ -72,13 +73,13 @@ class UserController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Create User',
                     'keterangan' => 'Menambahkan user baru: ' . $user->nama . ' (Role: ' . $user->role . ')',
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -97,7 +98,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        $currentUser = auth()->user();
+        $currentUser = Auth::user()->role;
 
         if ($currentUser->role === 'owner') {
             if (!in_array($user->role, ['admin', 'kasir'])) {
@@ -123,7 +124,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $currentUser = auth()->user();
+        $currentUser = Auth::user()->role;
 
         if ($currentUser->role === 'admin' && $user->role !== 'kasir') {
             return redirect()->route('admin.users.index')
@@ -170,13 +171,13 @@ class UserController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Update User',
                     'keterangan' => 'Mengupdate user: ' . $user->nama . ' (Role: ' . $user->role . ')',
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log update: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log update: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -195,9 +196,9 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        $currentUser = auth()->user();
+        $currentUser = Auth::user()->role;
 
-        if ($user->id == auth()->id()) {
+        if ($user->id == Auth::id()) {
             return redirect()->route('admin.users.index')
                 ->with('error', 'Tidak dapat menghapus akun sendiri.');
         }
@@ -228,13 +229,13 @@ class UserController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Delete User',
                     'keterangan' => 'Menghapus user: ' . $namaUser . ' (Role: ' . $roleUser . ')',
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log delete: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log delete: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -252,9 +253,9 @@ class UserController extends Controller
     public function toggleStatus($id)
     {
         $user = User::findOrFail($id);
-        $currentUser = auth()->user();
+        $currentUser = Auth::user()->role;
 
-        if ($user->id == auth()->id() && $user->status) {
+        if ($user->id == Auth::id() && $user->status) {
             return redirect()->route('admin.users.index')
                 ->with('error', 'Tidak dapat menonaktifkan akun sendiri.');
         }
@@ -283,13 +284,13 @@ class UserController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                    'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Toggle User Status',
                     'keterangan' => 'Mengubah status user ' . $user->nama . ' (Role: ' . $user->role . ') dari ' . ($oldStatus ? 'aktif' : 'nonaktif') . ' menjadi ' . ($user->status ? 'aktif' : 'nonaktif'),
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log toggle status: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log toggle status: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -307,7 +308,7 @@ class UserController extends Controller
     public function restore($id)
     {
         $user = User::withTrashed()->findOrFail($id);
-        $currentUser = auth()->user();
+        $currentUser = Auth::user()->role;
 
         if ($currentUser->role === 'admin' && $user->role !== 'kasir') {
             return redirect()->route('admin.users.index')
@@ -341,9 +342,9 @@ class UserController extends Controller
     public function forceDelete($id)
     {
         $user = User::withTrashed()->findOrFail($id);
-        $currentUser = auth()->user();
+        $currentUser = Auth::user()->role;
 
-        if ($user->id == auth()->id()) {
+        if ($user->id == Auth::id()) {
             return redirect()->route('admin.users.index')
                 ->with('error', 'Tidak dapat menghapus akun sendiri.');
         }

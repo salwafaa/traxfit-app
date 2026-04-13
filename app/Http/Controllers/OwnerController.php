@@ -85,13 +85,13 @@ class OwnerController extends Controller
 
         try {
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                 'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'View Dashboard',
                 'keterangan' => 'Owner melihat dashboard',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            Log::error('Gagal menyimpan log: ' . $e->getMessage());
         }
         
         return view('owner.dashboard', compact(
@@ -115,13 +115,13 @@ class OwnerController extends Controller
 
         try {
             Log::create([
-                'id_user' => auth()->id(),
-                'role_user' => auth()->user()->role,
+                 'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                 'activity' => 'View Profile',
                 'keterangan' => 'Owner melihat halaman profil',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+            Log::error('Gagal menyimpan log: ' . $e->getMessage());
         }
 
         return view('owner.profile', compact('user'));
@@ -174,13 +174,13 @@ class OwnerController extends Controller
 
             try {
                 Log::create([
-                    'id_user' => auth()->id(),
-                    'role_user' => auth()->user()->role,
+                     'id_user' => Auth::id(),
+                    'role_user' => Auth::user()->role,
                     'activity' => 'Update Profile',
                     'keterangan' => 'Owner mengupdate profil sendiri',
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Gagal menyimpan log: ' . $e->getMessage());
+                Log::error('Gagal menyimpan log: ' . $e->getMessage());
             }
 
             DB::commit();

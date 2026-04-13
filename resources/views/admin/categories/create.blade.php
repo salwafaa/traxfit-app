@@ -21,7 +21,6 @@
             @csrf
             
             <div class="max-w-md mx-auto">
-                <!-- Nama Kategori -->
                 <div class="mb-8">
                     <label class="block text-gray-800 font-semibold mb-3" for="nama_kategori">
                         <i class="fas fa-tag text-primary mr-2"></i>Nama Kategori <span class="text-red-500">*</span>

@@ -14,7 +14,6 @@ return new class extends Migration
             $table->foreignId('id_member')->nullable()->constrained('members');
             $table->string('nomor_unik')->unique();
             
-            // HAPUS ->after('nomor_unik') karena di CREATE TABLE tidak bisa pakai AFTER
             $table->string('jenis_transaksi')
                   ->default('produk')
                   ->comment('produk, visit, membership, produk_visit, produk_membership');
@@ -26,7 +25,6 @@ return new class extends Migration
             $table->enum('status_transaksi', ['pending', 'success', 'cancelled'])->default('success');
             $table->text('catatan')->nullable();
             
-            // HAPUS ->after('catatan') karena di CREATE TABLE tidak bisa pakai AFTER
             $table->json('data_tambahan')
                   ->nullable()
                   ->comment('Menyimpan data visit dan membership');            

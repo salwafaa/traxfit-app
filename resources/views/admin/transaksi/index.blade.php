@@ -9,7 +9,6 @@
 
 @section('content')
 <div class="space-y-4 md:space-y-6 w-full max-w-full overflow-hidden">
-    <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 w-full">
         <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-3 md:p-4 lg:p-5 min-w-0">
             <div class="flex items-center justify-between">
@@ -88,7 +87,6 @@
             </div>
         </div>
 
-        <!-- Filter -->
         <div class="p-3 md:p-4 lg:p-5 border-b border-gray-100 bg-gray-50/50">
             <form method="GET" action="{{ route('admin.transaksi.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 md:gap-3">
                 <div class="min-w-0">
@@ -154,7 +152,6 @@
             </form>
         </div>
 
-        <!-- Table -->
         <div class="overflow-x-auto w-full">
             <div class="inline-block min-w-full align-middle">
                 <table class="min-w-full divide-y divide-gray-100 table-auto">
@@ -267,7 +264,6 @@
             </div>
         </div>
 
-        <!-- Pagination -->
         @if($transactions->hasPages())
             <div class="p-3 md:p-4 border-t border-gray-100">
                 <div class="overflow-x-auto">

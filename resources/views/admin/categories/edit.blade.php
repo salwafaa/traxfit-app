@@ -29,7 +29,6 @@
             @method('PUT')
             
             <div class="max-w-md mx-auto">
-                <!-- Nama Kategori -->
                 <div class="mb-8">
                     <label class="block text-gray-800 font-semibold mb-3" for="nama_kategori">
                         <i class="fas fa-tag text-primary mr-2"></i>Nama Kategori <span class="text-red-500">*</span>
@@ -49,7 +48,6 @@
                     @enderror
                 </div>
                 
-                <!-- Warning jika ada produk -->
                 @if($category->products_count > 0)
                 <div class="mb-8 bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-5">
                     <div class="flex items-start">
@@ -90,7 +88,6 @@
     </div>
 </div>
 
-<!-- Daftar produk dalam kategori -->
 @if($category->products_count > 0)
 <div class="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
     <div class="bg-gradient-to-r from-primary to-primary-dark px-6 py-4">

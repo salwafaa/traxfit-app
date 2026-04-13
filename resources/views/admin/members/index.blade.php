@@ -8,9 +8,7 @@
 @endsection
 
 @section('content')
-<!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <!-- Total Member -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -26,7 +24,6 @@
         </div>
     </div>
     
-    <!-- Member Aktif -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -42,7 +39,6 @@
         </div>
     </div>
     
-    <!-- Member Expired -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -58,7 +54,6 @@
         </div>
     </div>
     
-    <!-- Akan Expired -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -75,7 +70,6 @@
     </div>
 </div>
 
-<!-- Messages -->
 @if(session('success'))
 <div class="mb-6 bg-green-50 border border-green-200 rounded-xl p-4">
     <div class="flex items-center">
@@ -102,7 +96,6 @@
 </div>
 @endif
 
-<!-- Filter Tabs -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
     <div class="border-b border-gray-100">
         <div class="flex flex-wrap -mb-px px-6">
@@ -122,9 +115,7 @@
     </div>
 </div>
 
-<!-- Main Content -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-    <!-- Header -->
     <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
@@ -134,7 +125,6 @@
         </div>
     </div>
     
-    <!-- Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
@@ -161,16 +151,15 @@
                         });
                     }
                     
-                    // Urutkan: yang akan expired (sisa hari 1-7) di atas, lalu aktif biasa, lalu expired
                     $filteredMembers = $filteredMembers->sortByDesc(function($member) {
                         if ($member->is_active) {
                             if ($member->sisa_hari >= 1 && $member->sisa_hari <= 7) {
-                                return 3; // Prioritas tertinggi untuk yang akan expired
+                                return 3; 
                             } else {
-                                return 2; // Prioritas menengah untuk aktif biasa
+                                return 2; 
                             }
                         }
-                        return 1; // Prioritas terendah untuk expired
+                        return 1; 
                     });
                 @endphp
                 
@@ -252,21 +241,18 @@
                     
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center space-x-2">
-                            <!-- Detail Button (Baru) -->
                             <a href="{{ route('admin.members.show', $member->id) }}" 
                                class="p-2 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-all duration-300 border border-purple-100 flex-shrink-0"
                                title="Lihat Detail Member">
                                 <i class="fas fa-eye text-sm"></i>
                             </a>
                             
-                            <!-- Edit Button -->
                             <a href="{{ route('admin.members.edit', $member->id) }}" 
                                class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-all duration-300 border border-blue-100 flex-shrink-0"
                                title="Edit Member">
                                 <i class="fas fa-edit text-sm"></i>
                             </a>
                             
-                            <!-- Delete Button -->
                             <form action="{{ route('admin.members.destroy', $member->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
@@ -304,7 +290,6 @@
     </div>
 </div>
 
-<!-- Member yang akan expired -->
 @php
     $expiringSoonList = $members->filter(function($member) {
         return $member->is_active && $member->sisa_hari >= 0 && $member->sisa_hari <= 7;
@@ -377,7 +362,6 @@
 
 @push('styles')
 <style>
-    /* Custom scrollbar for table */
     .overflow-x-auto {
         scrollbar-width: thin;
         scrollbar-color: #27124A #e5e7eb;
@@ -397,18 +381,15 @@
         border-radius: 3px;
     }
     
-    /* Smooth transitions */
     table tbody tr {
         transition: all 0.2s ease;
     }
     
-    /* Button animations */
     button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
     
-    /* Word break utilities */
     .break-words {
         word-break: break-word;
         overflow-wrap: break-word;
@@ -419,13 +400,11 @@
         max-width: 300px;
     }
     
-    /* Button transitions */
     button, a {
         transition: all 0.2s ease;
     }
     
-    /* Animation for active status dot */
-    .animate-pulse {
+     .animate-pulse {
         animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
     

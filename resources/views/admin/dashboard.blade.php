@@ -9,7 +9,6 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Welcome Message - Clean and Simple -->
     <div class="bg-gradient-to-r from-[#27124A] to-[#3a1d6b] rounded-2xl shadow-lg overflow-hidden">
         <div class="p-6 md:p-8">
             <div class="flex items-center justify-between">
@@ -34,9 +33,7 @@
     </div>
     </div>
 
-    <!-- Key Stats - Only 4 Most Important Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Total Users -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -52,7 +49,6 @@
             </div>
         </div>
 
-        <!-- Member Aktif -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -68,7 +64,6 @@
             </div>
         </div>
 
-        <!-- Produk Tersedia -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -84,7 +79,6 @@
             </div>
         </div>
 
-        <!-- Pendapatan Hari Ini -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between">
                 <div>
@@ -101,9 +95,7 @@
         </div>
     </div>
 
-    <!-- Charts Row -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Grafik Pendapatan -->
         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between mb-4">
                 <div>
@@ -122,7 +114,6 @@
                 </div>
             </div>
             
-            <!-- Chart Container -->
             <div class="h-48 flex items-end space-x-2" id="chart-container">
                 @php
                     $chartData = $chartData ?? ['labels' => ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'], 'values' => [0,0,0,0,0,0,0], 'maxValue' => 1];
@@ -145,7 +136,6 @@
                 @endforeach
             </div>
             
-            <!-- Loading & Empty States -->
             <div id="chart-loading" class="hidden py-8 flex items-center justify-center">
                 <i class="fas fa-spinner fa-spin text-[#27124A] mr-2"></i>
                 <span class="text-sm text-gray-500">Memuat data...</span>
@@ -156,7 +146,6 @@
             </div>
         </div>
 
-        <!-- Statistik Member - Simplified -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h3 class="text-sm font-semibold text-gray-800 mb-3">Statistik Member</h3>
             <div class="space-y-3">
@@ -188,9 +177,7 @@
         </div>
     </div>
 
-    <!-- Recent Data Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Recent Members -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                 <div>
@@ -233,7 +220,6 @@
             </div>
         </div>
         
-        <!-- Recent Transactions -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                 <div>
@@ -279,7 +265,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Simple chart period toggle
     const periodButtons = document.querySelectorAll('.period-btn');
     const chartContainer = document.getElementById('chart-container');
     const chartLoading = document.getElementById('chart-loading');
@@ -290,7 +275,6 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const period = this.dataset.period;
             
-            // Update active state
             periodButtons.forEach(b => {
                 b.classList.remove('bg-[#27124A]/10', 'text-[#27124A]');
                 b.classList.add('text-gray-500', 'hover:bg-gray-50');
@@ -298,10 +282,8 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.remove('text-gray-500', 'hover:bg-gray-50');
             this.classList.add('bg-[#27124A]/10', 'text-[#27124A]');
             
-            // Update subtitle
             chartSubtitle.textContent = period === 'week' ? '7 hari terakhir' : 'Per minggu dalam bulan ini';
             
-            // Simulate loading (replace with actual fetch)
             chartContainer.classList.add('hidden');
             chartLoading.classList.remove('hidden');
             

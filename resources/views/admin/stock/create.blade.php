@@ -8,7 +8,6 @@
 @endsection
 
 @section('content')
-<!-- Header Card -->
 <div class="bg-[#27124A] text-white rounded-2xl shadow-sm overflow-hidden mb-6">
     <div class="px-6 py-5">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -24,7 +23,6 @@
     </div>
 </div>
 
-<!-- Product Info -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
     <div class="p-6">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
@@ -57,7 +55,6 @@
     </div>
 </div>
 
-<!-- Main Form -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
     <div class="p-6">
         <form action="{{ route('admin.stock.store') }}" method="POST">
@@ -66,7 +63,6 @@
             <input type="hidden" name="id_product" value="{{ $product->id }}">
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Tipe -->
                 <div>
                     <label class="block text-gray-800 font-semibold mb-3" for="tipe">
                         <i class="fas fa-exchange-alt text-[#27124A] mr-2"></i>Tipe <span class="text-red-500">*</span>
@@ -92,7 +88,6 @@
                     @enderror
                 </div>
                 
-                <!-- Quantity -->
                 <div>
                     <label class="block text-gray-800 font-semibold mb-3" for="qty">
                         <i class="fas fa-hashtag text-[#27124A] mr-2"></i>Jumlah (pcs) <span class="text-red-500">*</span>
@@ -112,7 +107,6 @@
                     @enderror
                 </div>
                 
-                <!-- Keterangan -->
                 <div class="md:col-span-2">
                     <label class="block text-gray-800 font-semibold mb-3" for="keterangan">
                         <i class="fas fa-sticky-note text-[#27124A] mr-2"></i>Keterangan <span class="text-red-500">*</span>
@@ -132,7 +126,6 @@
                     @enderror
                 </div>
                 
-                <!-- Preview -->
                 <div class="md:col-span-2">
                     <div id="preview" class="border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-purple-50 hover:border-[#27124A] transition-all duration-300 hidden">
                         <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
@@ -156,7 +149,6 @@
                 </div>
             </div>
             
-            <!-- Action Buttons -->
             <div class="mt-10 pt-8 border-t border-gray-100">
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     <div class="text-sm text-gray-600">
@@ -179,7 +171,6 @@
     </div>
 </div>
 
-<!-- Recent Stock History -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">

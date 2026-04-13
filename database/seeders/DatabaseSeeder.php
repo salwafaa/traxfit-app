@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buat data gym settings
         GymSetting::create([
             'nama_gym' => 'TraxFit Gym',
             'alamat' => 'Jl. Contoh No. 123, Kota Bandung',
@@ -29,7 +28,6 @@ class DatabaseSeeder extends Seeder
             'footer_struk' => 'Terima kasih telah berbelanja di TraxFit Gym',
         ]);
 
-        // Buat user admin, kasir, dan owner
         $admin = User::create([
             'username' => 'admin',
             'password' => Hash::make('password123'),

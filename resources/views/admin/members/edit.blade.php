@@ -8,7 +8,6 @@
 @endsection
 
 @section('content')
-<!-- Header Card -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
     <div class="px-6 py-5 bg-gradient-to-r from-[#27124A] to-[#3a1d6b]">
         <div class="flex items-center justify-between">
@@ -40,14 +39,12 @@
     </div>
 </div>
 
-<!-- Main Form -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
     <div class="p-6">
         <form action="{{ route('admin.members.update', $member->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             
-            <!-- Section 1: Informasi Pribadi -->
             <div class="mb-8">
                 <div class="flex items-center mb-5">
                     <div class="w-1 h-6 bg-[#27124A] rounded-full mr-3"></div>
@@ -57,7 +54,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <!-- Nama Lengkap -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="nama">
                             Nama Lengkap <span class="text-red-500">*</span>
@@ -77,7 +73,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Nomor Telepon -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="telepon">
                             Nomor Telepon
@@ -98,7 +93,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Alamat (Full width) -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="alamat">
                             Alamat
@@ -119,7 +113,6 @@
                 </div>
             </div>
             
-            <!-- Section 2: Informasi Identitas -->
             <div class="mb-8">
                 <div class="flex items-center mb-5">
                     <div class="w-1 h-6 bg-[#27124A] rounded-full mr-3"></div>
@@ -129,7 +122,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <!-- Jenis Identitas -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="jenis_identitas">
                             Jenis Identitas
@@ -157,7 +149,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Nomor Identitas -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="no_identitas">
                             Nomor Identitas
@@ -178,7 +169,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Tanggal Lahir -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="tgl_lahir">
                             Tanggal Lahir
@@ -198,7 +188,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Foto Identitas -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="foto_identitas">
                             Foto Identitas
@@ -220,7 +209,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Preview Foto Identitas -->
                     @if($member->foto_identitas_url)
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Foto Identitas Saat Ini</label>
@@ -257,7 +245,6 @@
                 </div>
             </div>
             
-            <!-- Section 3: Detail Membership -->
             <div class="mb-8">
                 <div class="flex items-center mb-5">
                     <div class="w-1 h-6 bg-[#27124A] rounded-full mr-3"></div>
@@ -267,7 +254,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <!-- Paket Membership -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="id_paket">
                             Paket Membership <span class="text-red-500">*</span>
@@ -298,7 +284,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Tanggal Expired -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="tgl_expired">
                             Tanggal Expired <span class="text-red-500">*</span>
@@ -321,7 +306,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Status -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="status">
                             Status <span class="text-red-500">*</span>
@@ -351,7 +335,6 @@
                 </div>
             </div>
             
-            <!-- Action Buttons -->
             <div class="mt-10 pt-6 border-t border-gray-100">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="text-sm text-gray-500">
@@ -364,7 +347,6 @@
                             <i class="fas fa-times mr-2"></i> Batal
                         </a>
                         
-                        <!-- Toggle Status Button -->
                         <form action="{{ route('admin.members.toggleStatus', $member->id) }}" method="POST" class="inline">
                             @csrf
                             @method('PUT')
@@ -396,24 +378,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function updateSisaHari() {
         if (tglExpiredInput.value) {
-            // Parse tanggal expired (YYYY-MM-DD)
             const expiredParts = tglExpiredInput.value.split('-');
             const expiredDate = new Date(expiredParts[0], expiredParts[1] - 1, expiredParts[2]);
             
-            // Dapatkan tanggal hari ini (tanpa waktu)
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             
-            // Reset waktu expired date ke 00:00:00
             expiredDate.setHours(0, 0, 0, 0);
             
-            // Hitung selisih dalam milidetik
             const diffTime = expiredDate.getTime() - today.getTime();
             
-            // Konversi ke hari (1 hari = 24 * 60 * 60 * 1000 milidetik)
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
-            // Tampilkan berdasarkan selisih hari
             if (diffDays < 0) {
                 sisaHariDisplay.textContent = 'Expired ' + Math.abs(diffDays) + ' hari yang lalu';
                 sisaHariDisplay.className = 'font-bold text-red-600';
@@ -433,7 +409,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Update status otomatis berdasarkan tanggal expired
     function updateStatusBasedOnExpired() {
         const statusSelect = document.getElementById('status');
         
@@ -446,10 +421,8 @@ document.addEventListener('DOMContentLoaded', function() {
             expiredDate.setHours(0, 0, 0, 0);
             
             if (expiredDate < today) {
-                // Jika tanggal expired sudah lewat, set status ke expired
                 if (statusSelect.value !== 'expired') {
                     statusSelect.value = 'expired';
-                    // Tampilkan notifikasi
                     const infoDiv = document.createElement('div');
                     infoDiv.className = 'mt-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded-lg';
                     infoDiv.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Status otomatis diubah menjadi Expired karena tanggal expired sudah lewat.';
@@ -466,10 +439,9 @@ document.addEventListener('DOMContentLoaded', function() {
             updateStatusBasedOnExpired();
         });
         
-        updateSisaHari(); // Panggil saat halaman dimuat
+        updateSisaHari(); 
     }
     
-    // Update sisa hari saat paket dipilih
     const paketSelect = document.getElementById('id_paket');
     if (paketSelect) {
         paketSelect.addEventListener('change', function() {
@@ -477,12 +449,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const durasi = selectedOption.getAttribute('data-durasi');
             
             if (durasi && confirm('Apakah Anda ingin mengupdate tanggal expired berdasarkan paket yang dipilih?\n\nPerhitungan: Tanggal hari ini + ' + durasi + ' hari')) {
-                // Hitung tanggal expired baru berdasarkan durasi paket
                 const today = new Date();
                 const newExpired = new Date(today);
                 newExpired.setDate(today.getDate() + parseInt(durasi));
                 
-                // Format ke YYYY-MM-DD untuk input date
                 const year = newExpired.getFullYear();
                 const month = String(newExpired.getMonth() + 1).padStart(2, '0');
                 const day = String(newExpired.getDate()).padStart(2, '0');
@@ -491,7 +461,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateSisaHari();
                 updateStatusBasedOnExpired();
                 
-                // Tampilkan notifikasi
                 const notification = document.createElement('div');
                 notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-pulse';
                 notification.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Tanggal expired diperbarui menjadi ' + newExpired.toLocaleDateString('id-ID');
@@ -501,13 +470,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Preview foto sebelum upload
     const fotoInput = document.getElementById('foto_identitas');
     if (fotoInput) {
         fotoInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                // Validasi tipe file
                 const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
                 if (!allowedTypes.includes(file.type)) {
                     alert('Format file tidak didukung. Gunakan JPG, JPEG, atau PNG.');
@@ -515,17 +482,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Validasi ukuran file (max 2MB)
                 if (file.size > 2 * 1024 * 1024) {
                     alert('Ukuran file terlalu besar. Maksimal 2MB.');
                     this.value = '';
                     return;
                 }
                 
-                // Preview
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Cari atau buat elemen preview
                     let previewContainer = document.querySelector('.foto-preview-container');
                     if (!previewContainer) {
                         const parent = fotoInput.closest('.relative').parentElement;

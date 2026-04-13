@@ -9,7 +9,6 @@
 
 @section('content')
 <div class="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden w-full max-w-full">
-    <!-- Header -->
     <div class="p-3 md:p-4 lg:p-5 border-b border-gray-100">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div class="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
@@ -38,9 +37,7 @@
     
     <div class="p-3 md:p-4 lg:p-5">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5">
-            <!-- Informasi Member (Kiri) -->
             <div class="lg:col-span-2 space-y-3 md:space-y-4 min-w-0">
-                <!-- Profil Member -->
                 <div class="min-w-0">
                     <h4 class="text-sm md:text-base font-semibold text-gray-800 mb-2">Profil Member</h4>
                     <div class="bg-gray-50 rounded-lg md:rounded-xl p-3 md:p-4 border border-gray-100">
@@ -82,7 +79,6 @@
                     </div>
                 </div>
 
-                <!-- Detail Membership -->
                 <div class="min-w-0">
                     <h4 class="text-sm md:text-base font-semibold text-gray-800 mb-2">🎫 Detail Membership</h4>
                     <div class="bg-purple-50 rounded-lg md:rounded-xl p-3 md:p-4 border border-purple-200">
@@ -121,7 +117,6 @@
                     </div>
                 </div>
 
-                <!-- Riwayat Transaksi -->
                 <div class="min-w-0">
                     <h4 class="text-sm md:text-base font-semibold text-gray-800 mb-2">📋 Riwayat Transaksi</h4>
                     <div class="overflow-x-auto border border-gray-100 rounded-lg md:rounded-xl w-full">
@@ -182,7 +177,6 @@
                 </div>
             </div>
             
-            <!-- Ringkasan Status (Kanan) -->
             <div class="lg:col-span-1 min-w-0">
                 <div class="bg-gray-50 border border-gray-100 rounded-lg md:rounded-xl p-3 md:p-4 lg:p-5 sticky top-4">
                     <h4 class="text-sm md:text-base font-semibold text-gray-800 mb-3">Status Member</h4>

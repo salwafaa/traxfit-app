@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Tambah kolom via_transaksi ke tabel member_checkin.
-     * Kolom ini menandai apakah check-in dibuat otomatis
-     * karena member melakukan transaksi/perpanjangan membership hari itu.
-     */
     public function up(): void
     {
         Schema::table('member_checkin', function (Blueprint $table) {

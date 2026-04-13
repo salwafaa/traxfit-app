@@ -8,9 +8,7 @@
 @endsection
 
 @section('content')
-<!-- Header Stats - Updated with dashboard style -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <!-- Total Kategori -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -26,7 +24,6 @@
         </div>
     </div>
     
-    <!-- Total Produk -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -42,7 +39,6 @@
         </div>
     </div>
     
-    <!-- Rata-rata Produk -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -58,7 +54,6 @@
         </div>
     </div>
     
-    <!-- Kategori Populer -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -75,7 +70,6 @@
     </div>
 </div>
 
-<!-- Main Content -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -96,7 +90,6 @@
         </div>
     </div>
     
-    <!-- Alert Messages with consistent spacing and close button -->
     @if(session('success'))
     <div class="mx-6 mt-6 mb-4 bg-green-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
         <div class="flex items-center">
@@ -145,7 +138,6 @@
     </div>
     @endif
 
-    <!-- Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
@@ -242,7 +234,6 @@
 
 @push('styles')
 <style>
-    /* Custom styles for better appearance */
     table tbody tr {
         transition: all 0.2s ease;
     }
@@ -255,7 +246,6 @@
         transition: width 0.6s ease;
     }
     
-    /* Custom color for #27124A */
     .bg-primary-custom {
         background-color: #27124A;
     }
@@ -272,7 +262,6 @@
         background-color: #27124A;
     }
     
-    /* Custom scrollbar for table */
     .overflow-x-auto {
         scrollbar-width: thin;
         scrollbar-color: #27124A #e5e7eb;
@@ -292,7 +281,6 @@
         border-radius: 3px;
     }
     
-    /* Alert close button hover */
     [onclick*="this.closest"]:hover {
         opacity: 0.7;
     }
@@ -301,7 +289,6 @@
 
 @push('scripts')
 <script>
-    // Auto-hide alerts after 5 seconds
     document.addEventListener('DOMContentLoaded', function() {
         const alerts = document.querySelectorAll('.border-l-4');
         alerts.forEach(alert => {

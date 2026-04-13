@@ -1,4 +1,3 @@
-{{-- resources/views/admin/settings/index.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Pengaturan Gym')
@@ -9,7 +8,6 @@
 @endsection
 
 @section('content')
-{{-- Success Message --}}
 @if(session('success'))
 <div class="mb-6 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-xl p-4 shadow-sm">
     <div class="flex items-center">
@@ -23,7 +21,6 @@
 </div>
 @endif
 
-{{-- Error Message --}}
 @if(session('error'))
 <div class="mb-6 bg-red-50 border-l-4 border-red-500 rounded-r-xl p-4 shadow-sm">
     <div class="flex items-center">
@@ -37,7 +34,6 @@
 </div>
 @endif
 
-{{-- Validation Errors --}}
 @if($errors->any())
 <div class="mb-6 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-4 shadow-sm">
     <div class="flex items-start">
@@ -57,7 +53,6 @@
 @endif
 
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-    {{-- Header --}}
     <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-[#1a0f2e] to-[#2d1a4e]">
         <div class="flex items-center gap-4">
             <div class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm">
@@ -70,14 +65,12 @@
         </div>
     </div>
 
-    {{-- Form --}}
     <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                {{-- Section Title --}}
                 <div class="col-span-2">
                     <div class="flex items-center gap-2 border-b border-gray-100 pb-3 mb-2">
                         <i class="fas fa-building text-[#2d1a4e] text-lg"></i>
@@ -85,7 +78,6 @@
                     </div>
                 </div>
 
-                {{-- Nama Gym --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2" for="nama_gym">
                         Nama Gym <span class="text-red-500">*</span>
@@ -98,7 +90,6 @@
                     </div>
                 </div>
 
-                {{-- Telepon --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2" for="telepon">
                         Nomor Telepon
@@ -111,7 +102,6 @@
                     </div>
                 </div>
 
-                {{-- Alamat (Full width) --}}
                 <div class="col-span-2">
                     <label class="block text-sm font-semibold text-gray-700 mb-2" for="alamat">
                         Alamat Lengkap
@@ -123,7 +113,6 @@
                     </div>
                 </div>
 
-                {{-- Harga Visit --}}
                 <div class="col-span-2">
                     <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-5 mt-2">
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -150,7 +139,6 @@
                     </div>
                 </div>
 
-                {{-- Logo --}}
                 <div class="col-span-2 md:col-span-1">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Logo Gym
@@ -171,7 +159,6 @@
                     </div>
                 </div>
 
-                {{-- Footer Struk --}}
                 <div class="col-span-2 md:col-span-1">
                     <label class="block text-sm font-semibold text-gray-700 mb-2" for="footer_struk">
                         Footer Struk
@@ -186,7 +173,6 @@
                 </div>
             </div>
             
-            {{-- Buttons --}}
             <div class="mt-8 pt-4 border-t border-gray-100 flex justify-end gap-3">
                 <a href="{{ route('admin.dashboard') }}" 
                    class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all duration-200 flex items-center gap-2">

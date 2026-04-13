@@ -8,7 +8,6 @@
 @endsection
 
 @section('content')
-<!-- Header Card -->
 <div class="bg-[#27124A] text-white rounded-2xl shadow-sm overflow-hidden mb-6">
     <div class="px-6 py-4">
         <h3 class="text-lg font-bold">Form Tambah Produk</h3>
@@ -16,7 +15,6 @@
     </div>
 </div>
 
-<!-- TAMPILKAN SEMUA ERROR VALIDASI -->
 @if($errors->any())
 <div class="bg-red-50 border-l-4 border-red-500 rounded-xl p-4 mb-6">
     <div class="flex items-start">
@@ -35,7 +33,6 @@
 </div>
 @endif
 
-<!-- TAMPILKAN SESSION ERROR -->
 @if(session('error'))
 <div class="bg-red-50 border-l-4 border-red-500 rounded-xl p-4 mb-6">
     <div class="flex items-start">
@@ -49,14 +46,12 @@
 </div>
 @endif
 
-<!-- Main Form -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
     <div class="p-6">
         <form action="{{ route('admin.products.store') }}" method="POST">
             @csrf
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Nama Produk -->
                 <div>
                     <label class="block text-gray-800 font-semibold mb-3" for="nama_produk">
                         <i class="fas fa-box text-[#27124A] mr-2"></i>Nama Produk <span class="text-red-500">*</span>
@@ -77,7 +72,6 @@
                     @enderror
                 </div>
                 
-                <!-- Kategori -->
                 <div>
                     <label class="block text-gray-800 font-semibold mb-3" for="kategori">
                         <i class="fas fa-tags text-[#27124A] mr-2"></i>Kategori <span class="text-red-500">*</span>
@@ -106,7 +100,6 @@
                     @enderror
                 </div>
                 
-                <!-- Harga -->
                 <div>
                     <label class="block text-gray-800 font-semibold mb-3" for="harga">
                         <i class="fas fa-money-bill-wave text-[#27124A] mr-2"></i>Harga (Rp) <span class="text-red-500">*</span>
@@ -127,7 +120,6 @@
                     @enderror
                 </div>
                 
-                <!-- Stok -->
                 <div>
                     <label class="block text-gray-800 font-semibold mb-3" for="stok">
                         <i class="fas fa-warehouse text-[#27124A] mr-2"></i>Stok Awal <span class="text-red-500">*</span>
@@ -148,7 +140,6 @@
                     @enderror
                 </div>
                 
-                <!-- Deskripsi -->
                 <div class="md:col-span-2">
                     <label class="block text-gray-800 font-semibold mb-3" for="deskripsi">
                         <i class="fas fa-align-left text-[#27124A] mr-2"></i>Deskripsi Produk
@@ -168,7 +159,6 @@
                     @enderror
                 </div>
                 
-                <!-- Status -->
                 <div class="md:col-span-2">
                     <div class="flex items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <input type="checkbox" name="status" id="status" value="1" {{ old('status', true) ? 'checked' : '' }}
@@ -180,7 +170,6 @@
                 </div>
             </div>
             
-            <!-- Action Buttons -->
             <div class="mt-10 pt-8 border-t border-gray-100">
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     <div class="text-sm text-gray-500">

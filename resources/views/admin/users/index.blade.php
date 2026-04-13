@@ -8,9 +8,7 @@
 @endsection
 
 @section('content')
-<!-- Header Stats -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <!-- Total User -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -26,7 +24,6 @@
         </div>
     </div>
     
-    <!-- User Aktif -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -42,7 +39,6 @@
         </div>
     </div>
     
-    <!-- Total Admin (hanya untuk owner) -->
     @if(auth()->user()->role == 'owner')
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
@@ -60,7 +56,6 @@
     </div>
     @endif
     
-    <!-- Total Kasir -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -77,7 +72,6 @@
     </div>
 </div>
 
-<!-- Main Content -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
     <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -100,7 +94,6 @@
         </div>
     </div>
     
-    <!-- Alert Messages -->
     @if(session('success'))
     <div class="mx-6 mt-6 mb-4 bg-green-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
         <div class="flex items-center">
@@ -133,7 +126,6 @@
     </div>
     @endif
 
-    <!-- Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
@@ -208,14 +200,12 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center space-x-2">
-                            <!-- Edit Button -->
                             <a href="{{ route('admin.users.edit', $user->id) }}" 
                                class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-all duration-300 border border-blue-100"
                                title="Edit User">
                                 <i class="fas fa-edit text-sm"></i>
                             </a>
                             
-                            <!-- Delete Button -->
                             <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
@@ -252,7 +242,6 @@
     </div>
 </div>
 
-<!-- Simple Stats (hanya untuk owner) -->
 @if(auth()->user()->role == 'owner' && $users->isNotEmpty())
 <div class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="p-6 border-b border-gray-100">
@@ -262,7 +251,6 @@
     
     <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Admin Stats -->
             <div class="bg-gray-50/50 border border-gray-100 rounded-xl p-5">
                 <div class="flex justify-between items-start mb-4">
                     <div>
@@ -280,7 +268,6 @@
                     </div>
                 </div>
                 
-                <!-- Progress Bar -->
                 <div class="mb-2">
                     <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         @php
@@ -292,7 +279,6 @@
                 </div>
             </div>
             
-            <!-- Kasir Stats -->
             <div class="bg-gray-50/50 border border-gray-100 rounded-xl p-5">
                 <div class="flex justify-between items-start mb-4">
                     <div>
@@ -310,7 +296,6 @@
                     </div>
                 </div>
                 
-                <!-- Progress Bar -->
                 <div class="mb-2">
                     <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         @php
@@ -329,7 +314,6 @@
 
 @push('styles')
 <style>
-    /* Custom styles for better appearance */
     table tbody tr {
         transition: all 0.2s ease;
     }
@@ -342,7 +326,6 @@
         transition: width 0.6s ease;
     }
     
-    /* Custom color for #27124A */
     .bg-primary-custom {
         background-color: #27124A;
     }
@@ -359,7 +342,6 @@
         background-color: #27124A;
     }
     
-    /* Custom scrollbar */
     .overflow-x-auto {
         scrollbar-width: thin;
         scrollbar-color: #27124A #e5e7eb;
@@ -384,7 +366,6 @@
         cursor: not-allowed;
     }
     
-    /* Alert close button hover */
     [onclick*="this.closest"]:hover {
         opacity: 0.7;
     }
@@ -405,7 +386,6 @@
         }
     }
     
-    // Auto-hide alerts after 5 seconds
     document.addEventListener('DOMContentLoaded', function() {
         const alerts = document.querySelectorAll('.border-l-4');
         alerts.forEach(alert => {

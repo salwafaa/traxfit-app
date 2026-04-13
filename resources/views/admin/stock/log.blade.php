@@ -8,9 +8,7 @@
 @endsection
 
 @section('content')
-<!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <!-- Total Stok Masuk -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -26,7 +24,6 @@
         </div>
     </div>
     
-    <!-- Total Stok Keluar -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -42,7 +39,6 @@
         </div>
     </div>
     
-    <!-- Netto Stok -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -65,7 +61,6 @@
     </div>
 </div>
 
-<!-- Alert Messages -->
 @if(session('success'))
 <div class="mx-6 mt-6 mb-4 bg-green-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
     <div class="flex items-center">
@@ -98,9 +93,7 @@
 </div>
 @endif
 
-<!-- Main Content -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-    <!-- Header with Buttons -->
     <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
@@ -108,7 +101,6 @@
                 <p class="text-sm text-gray-500 mt-1">Catatan semua transaksi stok masuk dan keluar</p>
             </div>
             <div class="flex flex-wrap gap-3">
-                <!-- Export Button -->
                 <form action="{{ route('admin.stock.log.export') }}" method="GET" class="inline">
                     @foreach(request()->except('export') as $key => $value)
                         <input type="hidden" name="{{ $key }}" value="{{ $value }}">
@@ -119,7 +111,6 @@
                     </button>
                 </form>
                 
-                <!-- Stock Button -->
                 <a href="{{ route('admin.stock.index') }}" 
                    class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-all duration-300 flex items-center border border-gray-200 shadow-sm hover:shadow-md">
                     <i class="fas fa-warehouse mr-2"></i> Kelola Stok
@@ -128,7 +119,6 @@
         </div>
     </div>
     
-    <!-- Filter -->
     <div class="p-6 border-b border-gray-100 bg-gray-50">
         <form method="GET" action="{{ route('admin.stock.log') }}" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -189,7 +179,6 @@
         </form>
     </div>
     
-    <!-- Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
@@ -272,7 +261,6 @@
         </table>
     </div>
     
-    <!-- Pagination -->
     @if($logs->hasPages())
     <div class="px-6 py-4 border-t border-gray-100">
         {{ $logs->withQueryString()->links('pagination::tailwind') }}
@@ -283,7 +271,6 @@
 
 @push('styles')
 <style>
-    /* Custom scrollbar for table */
     .overflow-x-auto {
         scrollbar-width: thin;
         scrollbar-color: #27124A #e5e7eb;
@@ -303,17 +290,14 @@
         border-radius: 3px;
     }
     
-    /* Smooth transitions */
     table tbody tr {
         transition: all 0.2s ease;
     }
     
-    /* Alert close button hover */
     [onclick*="this.closest"]:hover {
         opacity: 0.7;
     }
     
-    /* Truncate text */
     .truncate {
         overflow: hidden;
         text-overflow: ellipsis;
@@ -328,7 +312,6 @@
 
 @push('scripts')
 <script>
-    // Auto-hide alerts after 5 seconds
     document.addEventListener('DOMContentLoaded', function() {
         const alerts = document.querySelectorAll('.border-l-4');
         alerts.forEach(alert => {

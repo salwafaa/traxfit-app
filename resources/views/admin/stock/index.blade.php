@@ -8,9 +8,7 @@
 @endsection
 
 @section('content')
-<!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <!-- Total Products -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -26,7 +24,6 @@
         </div>
     </div>
     
-    <!-- Total Stock -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -42,7 +39,6 @@
         </div>
     </div>
     
-    <!-- Low Stock -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -58,7 +54,6 @@
         </div>
     </div>
     
-    <!-- Out of Stock -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
@@ -75,7 +70,6 @@
     </div>
 </div>
 
-<!-- Value Stats -->
 @if($totalValue > 0)
 <div class="bg-gradient-to-r from-[#27124A] to-[#3a1d6b] rounded-2xl shadow-sm p-6 mb-8">
     <div class="flex items-center justify-between flex-wrap gap-4">
@@ -98,9 +92,7 @@
 </div>
 @endif
 
-<!-- Main Content -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-    <!-- Header -->
     <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
@@ -148,7 +140,6 @@
     </div>
     @endif
     
-    <!-- Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
@@ -275,7 +266,6 @@
     @endif
 </div>
 
-<!-- Low Stock Products -->
 @php
     $lowStockProducts = $products->filter(function($product) {
         return $product->stok <= 10;
@@ -361,7 +351,6 @@
 
 @push('styles')
 <style>
-    /* Custom scrollbar for table */
     .overflow-x-auto {
         scrollbar-width: thin;
         scrollbar-color: #27124A #e5e7eb;
@@ -381,12 +370,10 @@
         border-radius: 3px;
     }
     
-    /* Smooth transitions */
     table tbody tr {
         transition: all 0.2s ease;
     }
     
-    /* Word break utilities */
     .break-words {
         word-break: break-word;
         overflow-wrap: break-word;
@@ -397,12 +384,10 @@
         max-width: 300px;
     }
     
-    /* Alert close button hover */
     [onclick*="this.closest"]:hover {
         opacity: 0.7;
     }
     
-    /* Progress bar animation */
     .progress-bar {
         transition: width 0.6s ease;
     }
@@ -411,7 +396,6 @@
 
 @push('scripts')
 <script>
-    // Auto-hide alerts after 5 seconds
     document.addEventListener('DOMContentLoaded', function() {
         const alerts = document.querySelectorAll('.border-l-4');
         alerts.forEach(alert => {

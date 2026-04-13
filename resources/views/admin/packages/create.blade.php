@@ -8,7 +8,6 @@
 @endsection
 
 @section('content')
-<!-- Header Card -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
     <div class="px-6 py-5 bg-gradient-to-r from-[#27124A] to-[#3a1d6b]">
         <div class="flex items-center">
@@ -23,16 +22,13 @@
     </div>
 </div>
 
-<!-- Main Form -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
     <div class="p-6">
         <form action="{{ route('admin.packages.store') }}" method="POST">
             @csrf
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Left Column - Form Fields -->
                 <div class="space-y-6">
-                    <!-- Nama Paket -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="nama_paket">
                             Nama Paket <span class="text-red-500">*</span>
@@ -53,7 +49,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Durasi Hari -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="durasi_hari">
                             Durasi (hari) <span class="text-red-500">*</span>
@@ -78,7 +73,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Harga -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2" for="harga">
                             Harga (Rp) <span class="text-red-500">*</span>
@@ -99,7 +93,6 @@
                         @enderror
                     </div>
                     
-                    <!-- Status -->
                     <div class="flex items-center p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <input type="checkbox" name="status" id="status" value="1" {{ old('status', true) ? 'checked' : '' }}
                                class="h-5 w-5 text-[#27124A] focus:ring-[#27124A]/20 border-gray-300 rounded transition-all duration-300">
@@ -109,22 +102,18 @@
                     </div>
                 </div>
                 
-                <!-- Right Column - Preview -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-3">
                         <i class="fas fa-eye text-[#27124A] mr-2"></i>Preview Paket
                     </label>
                     <div id="preview" class="border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-gradient-to-br from-gray-50 to-white hover:border-[#27124A]/30 transition-all duration-300">
                         <div class="text-center">
-                            <!-- Icon -->
                             <div class="inline-flex items-center justify-center w-20 h-20 bg-[#27124A]/10 rounded-2xl mb-4">
                                 <i class="fas fa-gift text-[#27124A] text-3xl"></i>
                             </div>
                             
-                            <!-- Nama Paket -->
                             <h5 class="text-xl font-bold text-gray-800 mb-4" id="preview_nama">-</h5>
                             
-                            <!-- Info Cards -->
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="bg-white p-4 rounded-xl border border-gray-100">
                                     <div class="text-xs text-gray-500 mb-1">Durasi</div>
@@ -136,7 +125,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Harga per Hari -->
                             <div class="bg-[#27124A]/5 p-4 rounded-xl border border-[#27124A]/10">
                                 <div class="text-sm text-gray-600 mb-1">Harga per Hari:</div>
                                 <div class="text-xl font-bold text-[#27124A]" id="preview_harian">Rp 0/hari</div>
@@ -147,7 +135,6 @@
                 </div>
             </div>
             
-            <!-- Action Buttons -->
             <div class="mt-10 pt-6 border-t border-gray-100">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="text-sm text-gray-500">
@@ -183,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const durasi = durasiInput.value ? parseInt(durasiInput.value) : 0;
         const harga = hargaInput.value ? parseInt(hargaInput.value) : 0;
         
-        // Update preview
         document.getElementById('preview_nama').textContent = nama;
         
         if (durasi > 0) {
@@ -219,12 +205,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return 'Rp ' + angka.toLocaleString('id-ID');
     }
     
-    // Event listeners
     namaInput.addEventListener('input', updatePreview);
     durasiInput.addEventListener('input', updatePreview);
     hargaInput.addEventListener('input', updatePreview);
     
-    // Initial preview
     updatePreview();
 });
 </script>

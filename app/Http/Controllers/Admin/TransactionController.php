@@ -11,14 +11,10 @@ use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of all transactions (for admin)
-     */
     public function index(Request $request)
     {
         $query = Transaction::with(['user', 'member']);
 
-        // Filter by date
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
@@ -26,12 +22,10 @@ class TransactionController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // Filter by kasir
         if ($request->filled('id_user')) {
             $query->where('id_user', $request->id_user);
         }
 
-        // Filter by member status
         if ($request->filled('member_status')) {
             if ($request->member_status == 'member') {
                 $query->whereNotNull('id_member');
@@ -40,14 +34,12 @@ class TransactionController extends Controller
             }
         }
 
-        // Filter by transaction type
         if ($request->filled('jenis_transaksi')) {
             $query->where('jenis_transaksi', $request->jenis_transaksi);
         }
 
         $transactions = $query->latest()->paginate(20);
         
-        // Stats for dashboard
         $totalPendapatan = Transaction::sum('total_harga');
         $totalHariIni = Transaction::whereDate('created_at', today())->sum('total_harga');
         $totalBulanIni = Transaction::whereMonth('created_at', now()->month)
@@ -59,7 +51,6 @@ class TransactionController extends Controller
         $totalMember = Transaction::whereNotNull('id_member')->count();
         $totalNonMember = Transaction::whereNull('id_member')->count();
         
-        // Kasir list for filter
         $kasirs = User::where('role', 'kasir')->get();
         
         return view('admin.transaksi.index', compact(
@@ -75,9 +66,6 @@ class TransactionController extends Controller
         ));
     }
 
-    /**
-     * Display the specified transaction
-     */
     public function show($id)
     {
         $transaction = Transaction::with([
@@ -89,9 +77,6 @@ class TransactionController extends Controller
         return view('admin.transaksi.show', compact('transaction'));
     }
 
-    /**
-     * Get transaction statistics for dashboard
-     */
     public function statistics()
     {
         $now = now();

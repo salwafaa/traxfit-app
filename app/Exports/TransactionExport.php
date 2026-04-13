@@ -30,7 +30,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
 
     public function collection()
     {
-        // Pastikan relasi details.product sudah di-load agar getDetailTambahan bisa tampilkan produk
         if ($this->transactions instanceof \Illuminate\Database\Eloquent\Collection) {
             $this->transactions->loadMissing(['details.product', 'user', 'member']);
         }
@@ -118,7 +117,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         $data = $this->resolveDataTambahan($transaction);
 
         if (empty($data)) {
-            // Untuk transaksi produk saja, tampilkan ringkasan produk dari details
             if (in_array($transaction->jenis_transaksi, ['produk']) && $transaction->details->isNotEmpty()) {
                 $produkList = $transaction->details->map(function ($d) {
                     return ($d->product->nama_produk ?? 'Produk') . ' x' . $d->qty;
@@ -131,7 +129,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         $details = [];
         $jenis   = $transaction->jenis_transaksi;
 
-        // ── VISIT ────────────────────────────────────────────────────
         if (in_array($jenis, ['visit', 'produk_visit'])) {
             $harga = $data['harga_visit'] ?? 0;
             $details[] = 'Visit: Rp ' . number_format((float) $harga, 0, ',', '.');
@@ -141,13 +138,8 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
             }
         }
 
-        // ── MEMBERSHIP ───────────────────────────────────────────────
-        // Mendukung DUA format data_tambahan:
-        // Format A (TransactionController)      : data_tambahan['nama_paket'], data_tambahan['harga_paket']
-        // Format B (MembershipTransactionCtrl)  : data_tambahan['paket_membership']['nama'], ['harga']
         if (in_array($jenis, ['membership', 'produk_membership'])) {
 
-            // Normalise: coba Format B dulu, fallback ke Format A
             $paketNested = $data['paket_membership'] ?? null;
 
             $namaPaket  = $paketNested['nama']        ?? $data['nama_paket']  ?? null;
@@ -157,24 +149,20 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
             $tglMulai   = $data['tgl_mulai']   ?? null;
             $tglSelesai = $data['tgl_selesai'] ?? null;
 
-            // Nama paket
             if (!empty($namaPaket)) {
                 $details[] = 'Paket: ' . $namaPaket;
             } elseif (!empty($idPaket)) {
                 $details[] = 'Paket ID: ' . $idPaket;
             }
 
-            // Harga paket
             if ($hargaPaket !== null) {
                 $details[] = 'Harga: Rp ' . number_format((float) $hargaPaket, 0, ',', '.');
             }
 
-            // Durasi
             if ((int) $durasiHari > 0) {
                 $details[] = 'Durasi: ' . $durasiHari . ' hari';
             }
 
-            // Tanggal mulai & selesai
             if (!empty($tglMulai)) {
                 $details[] = 'Mulai: ' . Carbon::parse($tglMulai)->format('d/m/Y');
             }
@@ -182,14 +170,11 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
                 $details[] = 'Selesai: ' . Carbon::parse($tglSelesai)->format('d/m/Y');
             }
 
-            // Flag renewal (hanya dari MembershipTransactionController)
             if (!empty($data['is_renewal'])) {
                 $details[] = 'Perpanjangan: Ya';
             }
         }
 
-        // ── PRODUK (untuk jenis produk_visit / produk_membership) ────
-        // Tampilkan ringkasan produk dari relasi details jika ada
         if (in_array($jenis, ['produk_visit', 'produk_membership']) && $transaction->details->isNotEmpty()) {
             $produkList = $transaction->details->map(function ($d) {
                 return ($d->product->nama_produk ?? 'Produk') . ' x' . $d->qty;
@@ -205,9 +190,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         $lastDataRow = $sheet->getHighestRow();
         $lastCol     = 'L';
 
-        // ── HEADER SECTION ───────────────────────────────────────────
-
-        // Baris 1 - Nama Gym
         $sheet->mergeCells("A1:{$lastCol}1");
         $sheet->getStyle('A1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 18, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -216,7 +198,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         ]);
         $sheet->getRowDimension(1)->setRowHeight(35);
 
-        // Baris 2 - Sub judul
         $sheet->mergeCells("A2:{$lastCol}2");
         $sheet->getStyle('A2')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 13, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -225,7 +206,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         ]);
         $sheet->getRowDimension(2)->setRowHeight(25);
 
-        // Baris 3 - Info filter
         $sheet->mergeCells("A3:{$lastCol}3");
         $sheet->getStyle('A3')->applyFromArray([
             'font'      => ['italic' => true, 'size' => 10, 'color' => ['rgb' => '555555'], 'name' => 'Arial'],
@@ -234,14 +214,12 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         ]);
         $sheet->getRowDimension(3)->setRowHeight(18);
 
-        // Baris 4 - Spacer
         $sheet->mergeCells("A4:{$lastCol}4");
         $sheet->getStyle("A4:{$lastCol}4")->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFFFFF']],
         ]);
         $sheet->getRowDimension(4)->setRowHeight(6);
 
-        // Baris 5 - Header kolom
         $sheet->getStyle("A5:{$lastCol}5")->applyFromArray([
             'font'      => ['bold' => true, 'size' => 11, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '27124A']],
@@ -250,9 +228,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         ]);
         $sheet->getRowDimension(5)->setRowHeight(22);
 
-        // ── DATA ROWS ────────────────────────────────────────────────
-
-        // Format kolom harga sebagai angka ribuan
         $sheet->getStyle("F6:I{$lastDataRow}")->getNumberFormat()->setFormatCode('#,##0');
 
         for ($row = 6; $row <= $lastDataRow; $row++) {
@@ -265,7 +240,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
             ]);
             $sheet->getRowDimension($row)->setRowHeight(18);
 
-            // Warna metode bayar kolom G
             $metodeCell = "G{$row}";
             $metodeVal  = $sheet->getCell($metodeCell)->getValue();
             if ($metodeVal === 'Tunai') {
@@ -282,7 +256,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
                 ]);
             }
 
-            // Warna status kolom L
             $statusCell = "L{$row}";
             $statusVal  = $sheet->getCell($statusCell)->getValue();
             if ($statusVal === 'Selesai') {
@@ -300,11 +273,8 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
             }
         }
 
-        // ── BARIS TOTAL PENDAPATAN ───────────────────────────────────
-
         $totalRow = $lastDataRow + 1;
 
-        // Spacer sebelum total
         $sheet->mergeCells("A{$totalRow}:{$lastCol}{$totalRow}");
         $sheet->getStyle("A{$totalRow}:{$lastCol}{$totalRow}")->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFFFFF']],
@@ -313,7 +283,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
 
         $totalRow++;
 
-        // Label "TOTAL PENDAPATAN"
         $sheet->mergeCells("A{$totalRow}:E{$totalRow}");
         $sheet->getStyle("A{$totalRow}:E{$totalRow}")->applyFromArray([
             'font'      => ['bold' => true, 'size' => 12, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -323,7 +292,6 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         $sheet->getCell("A{$totalRow}")->setValue('TOTAL PENDAPATAN');
         $sheet->getRowDimension($totalRow)->setRowHeight(26);
 
-        // Nilai total - gunakan SUM formula Excel (baris data mulai dari 6)
         $sheet->getStyle("F{$totalRow}")->applyFromArray([
             'font'      => ['bold' => true, 'size' => 13, 'color' => ['rgb' => '27124A'], 'name' => 'Arial'],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'EDE7F6']],
@@ -333,13 +301,10 @@ class TransactionExport implements FromCollection, WithHeadings, WithMapping, Wi
         $sheet->getCell("F{$totalRow}")->setValue("=SUM(F6:F{$lastDataRow})");
         $sheet->getStyle("F{$totalRow}")->getNumberFormat()->setFormatCode('"Rp "#,##0');
 
-        // Sisa kolom G–L baris total
         $sheet->mergeCells("G{$totalRow}:{$lastCol}{$totalRow}");
         $sheet->getStyle("G{$totalRow}:{$lastCol}{$totalRow}")->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'EDE7F6']],
         ]);
-
-        // ── BARIS JUMLAH TRANSAKSI ────────────────────────────────────
 
         $countRow = $totalRow + 1;
 

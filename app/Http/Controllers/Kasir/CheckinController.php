@@ -12,14 +12,10 @@ use Carbon\Carbon;
 
 class CheckinController extends Controller
 {
-    /**
-     * Menampilkan halaman utama check-in dengan semua member
-     */
     public function index()
     {
         $today = Carbon::today();
 
-        // Ambil semua member dengan paketnya, diurutkan berdasarkan status (aktif dulu)
         $allMembers = Member::with('package')
             ->orderByRaw("CASE 
                 WHEN status = 'active' AND tgl_expired >= NOW() THEN 1
@@ -29,12 +25,10 @@ class CheckinController extends Controller
             ->orderBy('nama', 'asc')
             ->get();
 
-        // Proses setiap member untuk menambah info tambahan
         $membersWithStatus = $allMembers->map(function ($member) use ($today) {
             $expired  = $member->tgl_expired ? Carbon::parse($member->tgl_expired)->startOfDay() : null;
             $isActive = $member->status === 'active' && $expired && $expired >= $today;
 
-            // Hitung sisa hari
             if ($expired && $isActive) {
                 $sisaHari     = $today->diffInDays($expired);
                 $sisaHariText = $this->getSisaHariText($sisaHari);
@@ -46,17 +40,13 @@ class CheckinController extends Controller
                 $sisaHariText = '-';
             }
 
-            // Cek apakah sudah check-in hari ini
-            // sudahCheckinHariIni() sudah mencakup pengecekan transaksi hari ini
             $checkedInToday = MemberCheckin::sudahCheckinHariIni($member->id);
 
-            // Cek apakah check-in hari ini via transaksi (untuk label badge)
             $checkinRecord = MemberCheckin::where('id_member', $member->id)
                 ->whereDate('tanggal', $today)
                 ->first();
             $viaTransaksi = $checkinRecord && $checkinRecord->via_transaksi;
 
-            // Tentukan status untuk tampilan
             if (!$isActive) {
                 $statusClass = 'expired';
                 $statusBadge = 'danger';
@@ -100,13 +90,11 @@ class CheckinController extends Controller
             ];
         });
 
-        // Statistik
         $activeCount       = $membersWithStatus->filter(fn($m) => $m['is_active'] && !$m['checked_in_today'])->count();
         $checkedInCount    = $membersWithStatus->filter(fn($m) => $m['checked_in_today'])->count();
         $expiredCount      = $membersWithStatus->filter(fn($m) => !$m['is_active'])->count();
         $almostExpiredCount = $membersWithStatus->filter(fn($m) => $m['is_active'] && !$m['checked_in_today'] && $m['sisa_hari'] <= 7 && $m['sisa_hari'] > 0)->count();
 
-        // Check-in hari ini untuk sidebar/ringkasan
         $todayCheckins = MemberCheckin::with(['member.package', 'kasir'])
             ->whereDate('tanggal', $today)
             ->latest('jam_masuk')
@@ -122,9 +110,6 @@ class CheckinController extends Controller
         ));
     }
 
-    /**
-     * API untuk mencari member (live search)
-     */
     public function cariMember(Request $request)
     {
         $search = $request->input('search', '');
@@ -166,9 +151,6 @@ class CheckinController extends Controller
         return response()->json($result);
     }
 
-    /**
-     * Proses check-in member (manual)
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -181,7 +163,6 @@ class CheckinController extends Controller
             $today  = Carbon::today();
             $now    = Carbon::now();
 
-            // Cek apakah member aktif (belum expired)
             $expired = $member->tgl_expired ? Carbon::parse($member->tgl_expired)->startOfDay() : null;
 
             if (!$expired || $member->status !== 'active' || $expired->lt($today)) {
@@ -192,7 +173,6 @@ class CheckinController extends Controller
                 ]);
             }
 
-            // Cek apakah sudah check-in hari ini (termasuk via transaksi)
             if (MemberCheckin::sudahCheckinHariIni($member->id)) {
                 DB::rollback();
                 return response()->json([
@@ -201,7 +181,6 @@ class CheckinController extends Controller
                 ]);
             }
 
-            // Simpan check-in manual
             MemberCheckin::create([
                 'id_member'     => $member->id,
                 'tanggal'       => $now->toDateString(),
@@ -246,9 +225,6 @@ class CheckinController extends Controller
         }
     }
 
-    /**
-     * Menampilkan riwayat check-in
-     */
     public function riwayat(Request $request)
     {
         $applyFilters = function ($q) use ($request) {
@@ -325,9 +301,6 @@ class CheckinController extends Controller
         return $pdf->download('riwayat_checkin_' . now()->format('Ymd_His') . '.pdf');
     }
 
-    /**
-     * Helper: Mendapatkan teks sisa hari
-     */
     private function getSisaHariText($sisaHari)
     {
         if ($sisaHari <= 0) {

@@ -25,13 +25,11 @@ class TransactionDetail extends Model
         'subtotal' => 'decimal:2',
     ];
 
-    // Relasi dengan transaksi
     public function transaction()
     {
         return $this->belongsTo(Transaction::class, 'id_transaction');
     }
 
-    // Relasi dengan produk
     public function product()
     {
         return $this->belongsTo(Product::class, 'id_product');

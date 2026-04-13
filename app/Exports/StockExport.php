@@ -82,7 +82,6 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, WithStyl
         $lastRow = $sheet->getHighestRow();
         $lastCol = 'G';
 
-        // Baris 1 - Nama Gym
         $sheet->mergeCells("A1:{$lastCol}1");
         $sheet->getStyle('A1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 18, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -91,7 +90,6 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, WithStyl
         ]);
         $sheet->getRowDimension(1)->setRowHeight(35);
 
-        // Baris 2 - Sub judul
         $sheet->mergeCells("A2:{$lastCol}2");
         $sheet->getStyle('A2')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 13, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -100,7 +98,6 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, WithStyl
         ]);
         $sheet->getRowDimension(2)->setRowHeight(25);
 
-        // Baris 3 - Info filter
         $sheet->mergeCells("A3:{$lastCol}3");
         $sheet->getStyle('A3')->applyFromArray([
             'font'      => ['italic' => true, 'size' => 10, 'color' => ['rgb' => '555555'], 'name' => 'Arial'],
@@ -109,14 +106,12 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, WithStyl
         ]);
         $sheet->getRowDimension(3)->setRowHeight(18);
 
-        // Baris 4 - Spacer
         $sheet->mergeCells("A4:{$lastCol}4");
         $sheet->getStyle("A4:{$lastCol}4")->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFFFFF']],
         ]);
         $sheet->getRowDimension(4)->setRowHeight(6);
 
-        // Baris 5 - Header kolom
         $sheet->getStyle("A5:{$lastCol}5")->applyFromArray([
             'font'      => ['bold' => true, 'size' => 11, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '27124A']],
@@ -125,10 +120,8 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, WithStyl
         ]);
         $sheet->getRowDimension(5)->setRowHeight(22);
 
-        // Format harga sebagai angka ribuan
         $sheet->getStyle("C6:C{$lastRow}")->getNumberFormat()->setFormatCode('#,##0');
 
-        // Baris data - zebra striping + status coloring
         for ($row = 6; $row <= $lastRow; $row++) {
             $fillColor = ($row % 2 === 0) ? 'F9F7FD' : 'FFFFFF';
             $sheet->getStyle("A{$row}:{$lastCol}{$row}")->applyFromArray([
@@ -139,7 +132,6 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, WithStyl
             ]);
             $sheet->getRowDimension($row)->setRowHeight(18);
 
-            // Warna status stok kolom E
             $statusStokCell = "E{$row}";
             $statusStokVal  = $sheet->getCell($statusStokCell)->getValue();
             if ($statusStokVal === 'Tersedia') {
@@ -162,7 +154,6 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, WithStyl
                 ]);
             }
 
-            // Warna status produk kolom F
             $statusProdukCell = "F{$row}";
             $statusProdukVal  = $sheet->getCell($statusProdukCell)->getValue();
             if ($statusProdukVal === 'Aktif') {
@@ -180,7 +171,6 @@ class StockExport implements FromCollection, WithHeadings, WithMapping, WithStyl
             }
         }
 
-        // Stok rata tengah
         $sheet->getStyle("D6:D{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         return [];

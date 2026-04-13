@@ -15,26 +15,18 @@ use Carbon\Carbon;
 
 class MemberController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // Ambil semua member dengan package (include yang soft deleted juga ditampilkan?)
-        // Untuk admin, tampilkan semua termasuk yang sudah dihapus
         $members = Member::with('package')->latest()->get();
         
-        // Hitung member aktif (status active DAN tgl_expired >= hari ini)
         $activeMembers = Member::where('status', 'active')
             ->whereDate('tgl_expired', '>=', now()->toDateString())
             ->count();
             
-        // Hitung member expired (status expired ATAU tgl_expired < hari ini)
         $expiredMembers = Member::where('status', 'expired')
             ->orWhereDate('tgl_expired', '<', now()->toDateString())
             ->count();
             
-        // Hitung member yang akan expired (≤7 hari)
         $expiringSoon = Member::where('status', 'active')
             ->whereDate('tgl_expired', '>=', now()->toDateString())
             ->whereRaw('DATEDIFF(tgl_expired, CURDATE()) <= 7')
@@ -44,27 +36,16 @@ class MemberController extends Controller
         return view('admin.members.index', compact('members', 'activeMembers', 'expiredMembers', 'expiringSoon'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * ADMIN TIDAK DIIZINKAN MENDAFTARKAN MEMBER BARU
-     */
     public function create()
     {
         abort(403, 'Admin tidak diizinkan mendaftarkan member baru. Silakan hubungi kasir.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * ADMIN TIDAK DIIZINKAN MENDAFTARKAN MEMBER BARU
-     */
     public function store(Request $request)
     {
         abort(403, 'Admin tidak diizinkan mendaftarkan member baru. Silakan hubungi kasir.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $member = Member::with(['package', 'transactions' => function($query) {
@@ -74,9 +55,6 @@ class MemberController extends Controller
         return view('admin.members.show', compact('member'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
         $member = Member::with('package')->findOrFail($id);
@@ -84,9 +62,6 @@ class MemberController extends Controller
         return view('admin.members.edit', compact('member', 'packages'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $member = Member::findOrFail($id);
@@ -106,7 +81,6 @@ class MemberController extends Controller
 
         DB::beginTransaction();
         try {
-            // Simpan data lama untuk log
             $oldData = [
                 'nama' => $member->nama,
                 'telepon' => $member->telepon,
@@ -115,11 +89,9 @@ class MemberController extends Controller
                 'status' => $member->status
             ];
 
-            // Parse tanggal expired
             $tglExpired = Carbon::parse($request->tgl_expired);
             $today = now()->startOfDay();
             
-            // Auto adjust status berdasarkan tanggal expired
             $status = $request->status;
             if ($tglExpired->startOfDay() < $today) {
                 $status = 'expired';
@@ -137,9 +109,7 @@ class MemberController extends Controller
                 'status' => $status,
             ];
 
-            // Handle upload foto identitas
             if ($request->hasFile('foto_identitas')) {
-                // Hapus foto lama jika ada
                 if ($member->foto_identitas && Storage::disk('public')->exists($member->foto_identitas)) {
                     Storage::disk('public')->delete($member->foto_identitas);
                 }
@@ -152,7 +122,6 @@ class MemberController extends Controller
 
             $member->update($data);
 
-            // Catat perubahan untuk log
             $changes = [];
             if ($oldData['nama'] != $request->nama) $changes[] = 'nama';
             if ($oldData['telepon'] != $request->telepon) $changes[] = 'telepon';
@@ -160,7 +129,6 @@ class MemberController extends Controller
             if ($oldData['status'] != $status) $changes[] = 'status';
             if ($member->id_paket != $request->id_paket) $changes[] = 'paket';
 
-            // Log aktivitas
             $keterangan = 'Admin mengupdate data member: ' . $member->nama . ' (' . $member->kode_member . ')';
             if (!empty($changes)) {
                 $keterangan .= '. Perubahan pada: ' . implode(', ', $changes);
@@ -187,10 +155,6 @@ class MemberController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     * PERBAIKAN: Soft delete dengan pengecekan foreign key
-     */
     public function destroy($id)
     {
         $member = Member::findOrFail($id);
@@ -200,13 +164,11 @@ class MemberController extends Controller
             $namaMember = $member->nama;
             $kodeMember = $member->kode_member;
             
-            // Cek apakah member memiliki transaksi atau checkin
             $hasTransactions = $member->transactions()->count() > 0;
             $hasCheckins = $member->checkins()->count() > 0;
             
             if ($hasTransactions || $hasCheckins) {
-                // Jika memiliki data terkait, lakukan soft delete
-                $member->delete(); // Soft delete karena sudah menggunakan SoftDeletes
+                $member->delete();
                 
                 $keterangan = 'Admin menghapus member (soft delete): ' . $namaMember . ' (' . $kodeMember . ')';
                 
@@ -229,12 +191,10 @@ class MemberController extends Controller
                 return redirect()->route('admin.members.index')
                     ->with('success', 'Member ' . $namaMember . ' berhasil dinonaktifkan (soft delete). Data transaksi tetap tersimpan.');
             } else {
-                // Hapus foto identitas jika ada
                 if ($member->foto_identitas && Storage::disk('public')->exists($member->foto_identitas)) {
                     Storage::disk('public')->delete($member->foto_identitas);
                 }
                 
-                // Jika tidak memiliki data terkait, hapus permanen
                 $member->forceDelete();
                 
                 Log::create([
@@ -258,9 +218,6 @@ class MemberController extends Controller
         }
     }
 
-    /**
-     * Toggle member status (active/expired)
-     */
     public function toggleStatus($id)
     {
         $member = Member::findOrFail($id);
@@ -270,7 +227,6 @@ class MemberController extends Controller
             $oldStatus = $member->status;
             $newStatus = ($oldStatus == 'active') ? 'expired' : 'active';
             
-            // Jika mengubah ke active, pastikan tanggal expired masih berlaku
             if ($newStatus == 'active') {
                 $today = now()->startOfDay();
                 $expired = $member->tgl_expired ? Carbon::parse($member->tgl_expired)->startOfDay() : null;
@@ -285,7 +241,6 @@ class MemberController extends Controller
                 'status' => $newStatus,
             ]);
 
-            // Log aktivitas
             Log::create([
                 'id_user' => auth()->id(),
                 'role_user' => auth()->user()->role,
@@ -307,9 +262,6 @@ class MemberController extends Controller
         }
     }
 
-    /**
-     * Fix expired date for member
-     */
     public function fixExpiredDate(Request $request, $id)
     {
         $member = Member::findOrFail($id);
@@ -323,23 +275,19 @@ class MemberController extends Controller
             $oldDate = $member->tgl_expired_formatted;
             $newDate = Carbon::parse($request->tgl_expired)->format('d/m/Y');
             
-            // Parse tanggal expired
             $tglExpired = Carbon::parse($request->tgl_expired);
             $today = now()->startOfDay();
             
-            // Update tanggal expired
             $member->update([
                 'tgl_expired' => $request->tgl_expired,
             ]);
 
-            // Auto update status berdasarkan tanggal expired
             if ($tglExpired->startOfDay() < $today) {
                 $member->update(['status' => 'expired']);
             } else {
                 $member->update(['status' => 'active']);
             }
 
-            // Log aktivitas
             Log::create([
                 'id_user' => auth()->id(),
                 'role_user' => auth()->user()->role,

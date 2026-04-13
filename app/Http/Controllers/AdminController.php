@@ -12,12 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
-    /**
-     * Display admin dashboard
-     */
     public function dashboard()
     {
-        // Hitung semua statistik
         $stats = [
             'total_users' => User::count(),
             'total_members' => Member::count(),
@@ -31,19 +27,15 @@ class AdminController extends Controller
             'new_members' => Member::whereMonth('created_at', now()->month)->count(),
         ];
 
-        // Ambil 5 member terbaru
         $recentMembers = Member::latest()->take(5)->get();
 
-        // Ambil 5 transaksi terbaru dengan relasi user dan member
         $recentTransactions = Transaction::with(['user', 'member'])
             ->latest()
             ->take(5)
             ->get();
 
-        // Data grafik untuk 7 hari terakhir (default)
         $chartData = $this->getChartData('week');
 
-        // LOG: Admin melihat dashboard
         try {
             Log::create([
                 'id_user' => auth()->id(),
@@ -58,31 +50,24 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats', 'recentMembers', 'recentTransactions', 'chartData'));
     }
 
-    /**
-     * Get chart data based on period
-     */
     public function getChartData($period)
     {
         if ($period == 'week') {
-            // Data 7 hari terakhir
             $labels = [];
             $values = [];
             
             for ($i = 6; $i >= 0; $i--) {
                 $date = now()->subDays($i);
                 
-                // Format label: Sen, Sel, Rab, etc
                 $days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
                 $labels[] = $days[$date->dayOfWeek];
                 
-                // Hitung total transaksi per hari
                 $total = Transaction::whereDate('created_at', $date)
                     ->sum('total_harga');
                 
                 $values[] = $total ?: 0;
             }
         } else {
-            // Data per minggu dalam 1 bulan
             $labels = [];
             $values = [];
             
@@ -112,7 +97,6 @@ class AdminController extends Controller
             }
         }
         
-        // Cari max value untuk height calculation
         $maxValue = count($values) > 0 ? max($values) : 1;
         
         return [
@@ -123,14 +107,10 @@ class AdminController extends Controller
         ];
     }
 
-    /**
-     * API endpoint for chart data
-     */
     public function chartData(Request $request, $period)
     {
         $chartData = $this->getChartData($period);
         
-        // LOG: Admin melihat chart data
         try {
             Log::create([
                 'id_user' => auth()->id(),

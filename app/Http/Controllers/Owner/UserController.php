@@ -13,7 +13,6 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Owner bisa lihat semua user (admin dan kasir)
         $users = User::whereIn('role', ['admin', 'kasir'])->orderBy('created_at', 'desc')->get();
         return view('owner.users.index', compact('users'));
     }
@@ -27,9 +26,8 @@ class UserController extends Controller
 {
     $currentUser = auth()->user();
     
-    // Admin hanya bisa membuat kasir
     if ($currentUser->role !== 'admin') {
-        return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses.');
+        return redirect()->route('admin.dashboard')->with('error', 'Anda tidak memiliki akses.');
     }
     
     $request->validate([
@@ -44,11 +42,10 @@ class UserController extends Controller
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'nama' => $request->nama,
-            'role' => 'kasir', // Admin otomatis membuat kasir
+            'role' => 'kasir', 
             'status' => $request->has('status'),
         ]);
 
-        // Log aktivitas
         try {
             Log::create([
                 'id_user' => auth()->id(),
@@ -107,7 +104,6 @@ class UserController extends Controller
 
             $user->update($data);
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -137,7 +133,6 @@ class UserController extends Controller
     {
         $user = User::whereIn('role', ['admin', 'kasir'])->findOrFail($id);
         
-        // Cek jika user mencoba menghapus dirinya sendiri
         if ($user->id == auth()->id()) {
             return redirect()->route('owner.users.index')
                 ->with('error', 'Tidak dapat menghapus akun sendiri.');
@@ -148,13 +143,10 @@ class UserController extends Controller
             $namaUser = $user->nama;
             $roleUser = $user->role;
             
-            // Hapus semua log terkait user ini terlebih dahulu
             Log::where('id_user', $user->id)->delete();
             
-            // Hapus user
             $user->delete();
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -183,7 +175,6 @@ class UserController extends Controller
     {
         $user = User::whereIn('role', ['admin', 'kasir'])->findOrFail($id);
         
-        // Cek jika user mencoba menonaktifkan dirinya sendiri
         if ($user->id == auth()->id() && $user->status) {
             return redirect()->route('owner.users.index')
                 ->with('error', 'Tidak dapat menonaktifkan akun sendiri.');
@@ -195,7 +186,6 @@ class UserController extends Controller
             $user->status = !$user->status;
             $user->save();
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -226,10 +216,8 @@ class UserController extends Controller
         
         DB::beginTransaction();
         try {
-            // Restore logs terkait
             Log::withTrashed()->where('id_user', $user->id)->restore();
             
-            // Restore user
             $user->restore();
 
             DB::commit();
@@ -249,7 +237,6 @@ class UserController extends Controller
     {
         $user = User::withTrashed()->whereIn('role', ['admin', 'kasir'])->findOrFail($id);
         
-        // Cek jika user mencoba menghapus dirinya sendiri
         if ($user->id == auth()->id()) {
             return redirect()->route('owner.users.index')
                 ->with('error', 'Tidak dapat menghapus akun sendiri.');
@@ -260,10 +247,8 @@ class UserController extends Controller
             $namaUser = $user->nama;
             $roleUser = $user->role;
             
-            // Force delete logs terkait
             Log::where('id_user', $user->id)->forceDelete();
             
-            // Force delete user
             $user->forceDelete();
 
             DB::commit();

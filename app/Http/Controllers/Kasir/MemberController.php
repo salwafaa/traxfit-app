@@ -13,9 +13,6 @@ use Carbon\Carbon;
 
 class MemberController extends Controller
 {
-    /**
-     * Halaman cek status member
-     */
     public function cek()
     {
         $today = now()->startOfDay();
@@ -40,9 +37,6 @@ class MemberController extends Controller
         return view('kasir.member.cek', compact('totalActive', 'expiredToday', 'almostExpired', 'allMembers'));
     }
 
-    /**
-     * API Search member (untuk dropdown)
-     */
     public function cari(Request $request)
     {
         $search = $request->input('search', '');
@@ -95,10 +89,6 @@ class MemberController extends Controller
         return response()->json($result);
     }
 
-    /**
-     * API Get Member Detail
-     * Route: GET /kasir/member/{id}/detail
-     */
     public function getMember($id)
     {
         try {
@@ -136,9 +126,6 @@ class MemberController extends Controller
         }
     }
 
-    /**
-     * Mendapatkan daftar paket membership
-     */
     public function getPackages()
     {
         try {
@@ -152,11 +139,6 @@ class MemberController extends Controller
         }
     }
 
-    /**
-     * Proses perpanjangan member.
-     * Setelah perpanjangan berhasil, otomatis membuat record check-in hari ini
-     * (jika belum ada) karena member dianggap hadir saat melakukan transaksi.
-     */
     public function perpanjang(Request $request, $id)
     {
         $request->validate([
@@ -173,7 +155,6 @@ class MemberController extends Controller
                 ? Carbon::parse($member->tgl_expired)->startOfDay()
                 : null;
 
-            // Tentukan base date perpanjangan
             if ($member->status == 'active' && $expired && $expired >= $today) {
                 $baseDate = Carbon::parse($member->tgl_expired);
             } else {
@@ -190,10 +171,7 @@ class MemberController extends Controller
                 ]);
             });
 
-            // ── AUTO CHECK-IN ─────────────────────────────────────────────
-            // Member yang memperpanjang hari ini otomatis dianggap check-in
             $checkinOtomatis = MemberCheckin::buatCheckinOtomatis($member->id, auth()->id());
-            // ─────────────────────────────────────────────────────────────
 
             Log::create([
                 'id_user'    => auth()->id(),
@@ -227,10 +205,6 @@ class MemberController extends Controller
         }
     }
 
-    /**
-     * Proses pendaftaran member baru.
-     * Member baru yang daftar hari ini otomatis mendapat check-in hari ini.
-     */
     public function daftarBaru(Request $request)
     {
         $request->validate([
@@ -259,7 +233,6 @@ class MemberController extends Controller
                 ]);
             });
 
-            // Generate kode member jika belum ada
             if (empty($member->kode_member)) {
                 $year  = date('Y');
                 $month = date('m');
@@ -275,10 +248,7 @@ class MemberController extends Controller
                 $member->saveQuietly();
             }
 
-            // ── AUTO CHECK-IN ─────────────────────────────────────────────
-            // Member baru yang daftar hari ini otomatis mendapat check-in
             MemberCheckin::buatCheckinOtomatis($member->id, auth()->id());
-            // ─────────────────────────────────────────────────────────────
 
             Log::create([
                 'id_user'    => auth()->id(),

@@ -26,15 +26,11 @@ use App\Exports\MemberExport;
 
 class ReportController extends Controller
 {
-    /**
-     * Laporan Transaksi
-     */
     public function transaksi(Request $request)
     {
         $query = Transaction::with(['user', 'member', 'details.product'])
             ->orderBy('created_at', 'desc');
         
-        // Filter berdasarkan tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $start = Carbon::parse($request->start_date)->startOfDay();
             $end = Carbon::parse($request->end_date)->endOfDay();
@@ -57,12 +53,10 @@ class ReportController extends Controller
             }
         }
         
-        // Filter berdasarkan metode pembayaran
         if ($request->filled('payment_method')) {
             $query->where('metode_bayar', $request->payment_method);
         }
         
-        // CEK APAKAH EXPORT
         if ($request->has('export')) {
             $allTransactions = $query->get();
             
@@ -75,7 +69,6 @@ class ReportController extends Controller
         
         $transactions = $query->paginate(15)->withQueryString();
         
-        // Statistik
         $totalTransaksi = $query->count();
         $totalPendapatan = $query->sum('total_harga');
         $totalPendapatanTunai = (clone $query)->where('metode_bayar', 'cash')->sum('total_harga');
@@ -93,9 +86,6 @@ class ReportController extends Controller
         ));
     }
     
-    /**
-     * Export Transaksi ke PDF
-     */
     private function exportTransaksiPDF($transactions, $request)
     {
         $data = [
@@ -115,9 +105,6 @@ class ReportController extends Controller
         return $pdf->download('laporan_transaksi_' . Carbon::now()->format('Ymd_His') . '.pdf');
     }
     
-    /**
-     * Export Transaksi ke Excel
-     */
     private function exportTransaksiExcel($transactions, $request)
     {
         $filterInfo = $this->getPeriodeText($request);
@@ -127,9 +114,6 @@ class ReportController extends Controller
         );
     }
     
-    /**
-     * Get text description of period filter
-     */
     private function getPeriodeText($request)
     {
         if ($request->filled('start_date') && $request->filled('end_date')) {
@@ -151,9 +135,6 @@ class ReportController extends Controller
         return 'Semua Periode';
     }
     
-    /**
-     * Detail Transaksi untuk Owner
-     */
     public function transaksiShow($id)
     {
         $transaction = Transaction::with(['user', 'member', 'details.product.category'])
@@ -173,9 +154,6 @@ class ReportController extends Controller
         return view('owner.laporan.transaksi-show', compact('transaction'));
     }
     
-    /**
-     * Laporan Stok
-     */
     public function stok(Request $request)
     {
         $query = Product::with(['category', 'stockLogs' => function($q) {
@@ -183,12 +161,10 @@ class ReportController extends Controller
             }])
             ->withCount('stockLogs');
         
-        // Filter berdasarkan kategori
         if ($request->filled('category')) {
             $query->where('kategori', $request->category);
         }
         
-        // Filter stok menipis
         if ($request->filled('stock_status')) {
             if ($request->stock_status == 'low') {
                 $query->where('stok', '<=', 5)->where('stok', '>', 0);
@@ -199,7 +175,6 @@ class ReportController extends Controller
             }
         }
         
-        // Filter status produk
         if ($request->filled('product_status')) {
             if ($request->product_status == 'active') {
                 $query->where('status', true);
@@ -208,7 +183,6 @@ class ReportController extends Controller
             }
         }
         
-        // CEK APAKAH EXPORT STOK
         if ($request->has('export')) {
             $allProducts = $query->orderBy('stok', 'asc')->get();
             
@@ -221,20 +195,16 @@ class ReportController extends Controller
         
         $products = $query->orderBy('stok', 'asc')->paginate(15)->withQueryString();
         
-        // Statistik stok
         $totalProduk = Product::count();
         $totalStok = Product::sum('stok');
         $totalNilaiStok = Product::sum(DB::raw('stok * harga'));
         $produkHampirHabis = Product::where('stok', '<=', 5)->where('stok', '>', 0)->count();
         $produkHabis = Product::where('stok', 0)->count();
         
-        // Kategori untuk filter
         $categories = ProductCategory::all();
         
-        // Membership packages
         $membershipPackages = MembershipPackage::all();
         
-        // Riwayat stok terbaru
         $recentStockLogs = StokLog::with(['user', 'product'])
             ->latest()
             ->limit(20)
@@ -253,12 +223,8 @@ class ReportController extends Controller
         ));
     }
     
-    /**
-     * Export Stok ke PDF
-     */
     private function exportStokPDF($products, $request)
     {
-        // Hitung statistik untuk PDF
         $totalProduk = $products->count();
         $totalStok = $products->sum('stok');
         $totalNilaiStok = $products->sum(function($product) {
@@ -286,17 +252,11 @@ class ReportController extends Controller
         return $pdf->download('laporan_stok_' . Carbon::now()->format('Ymd_His') . '.pdf');
     }
     
-    /**
-     * Export Stok ke Excel
-     */
     private function exportStokExcel($products, $request)
     {
         return Excel::download(new StockExport($products), 'laporan_stok_' . Carbon::now()->format('Ymd_His') . '.xlsx');
     }
     
-    /**
-     * Get text description of stock filter
-     */
     private function getStokFilterText($request)
     {
         $filters = [];
@@ -326,9 +286,6 @@ class ReportController extends Controller
         return empty($filters) ? 'Semua Data' : implode(' | ', $filters);
     }
     
-    /**
-     * Laporan Aktivitas
-     */
     public function aktivitas(Request $request)
     {
         $startDate = $request->filled('start_date') 
@@ -353,7 +310,6 @@ class ReportController extends Controller
             });
         }
 
-        // CEK APAKAH EXPORT AKTIVITAS
         if ($request->has('export')) {
             $allLogs = $query->latest()->get();
             
@@ -420,12 +376,8 @@ class ReportController extends Controller
         ));
     }
     
-    /**
-     * Export Aktivitas ke PDF
-     */
     private function exportAktivitasPDF($logs, $request, $startDate, $endDate)
     {
-        // Hitung statistik untuk PDF
         $totalLogs = $logs->count();
         $totalLogin = $logs->where('activity', 'Login')->count();
         $totalLogout = $logs->where('activity', 'Logout')->count();
@@ -442,7 +394,6 @@ class ReportController extends Controller
             return str_contains($log->activity, 'View');
         })->count();
         
-        // Statistik per user
         $userStats = $logs->groupBy('user.nama')->map(function($group) {
             return [
                 'nama' => $group->first()->user->nama ?? 'Unknown',
@@ -473,17 +424,11 @@ class ReportController extends Controller
         return $pdf->download('laporan_aktivitas_' . Carbon::now()->format('Ymd_His') . '.pdf');
     }
     
-    /**
-     * Export Aktivitas ke Excel
-     */
     private function exportAktivitasExcel($logs, $request)
     {
         return Excel::download(new ActivityExport($logs), 'laporan_aktivitas_' . Carbon::now()->format('Ymd_His') . '.xlsx');
     }
     
-    /**
-     * Get text description of activity filter
-     */
     private function getAktivitasFilterText($request)
     {
         $filters = [];
@@ -504,9 +449,6 @@ class ReportController extends Controller
         return empty($filters) ? 'Semua Data' : implode(' | ', $filters);
     }
     
-    /**
-     * Laporan Member Aktif
-     */
     public function member(Request $request)
     {
         $query = Member::with(['package', 'checkins' => function($q) {
@@ -514,7 +456,6 @@ class ReportController extends Controller
             }])
             ->withCount('checkins');
         
-        // Filter berdasarkan status
         if ($request->filled('status')) {
             if ($request->status == 'active') {
                 $query->where('status', 'active')
@@ -532,23 +473,19 @@ class ReportController extends Controller
                   ->where('tgl_expired', '>=', Carbon::now()->format('Y-m-d'));
         }
         
-        // Filter berdasarkan paket
         if ($request->filled('package')) {
             $query->where('id_paket', $request->package);
         }
         
-        // Filter berdasarkan tanggal daftar
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $start = Carbon::parse($request->start_date)->startOfDay();
             $end = Carbon::parse($request->end_date)->endOfDay();
             $query->whereBetween('tgl_daftar', [$start, $end]);
         }
         
-        // CEK APAKAH EXPORT MEMBER
         if ($request->has('export')) {
             $allMembers = $query->orderBy('created_at', 'desc')->get();
             
-            // Hitung statistik tambahan untuk export
             $exportStats = [
                 'totalMember' => $allMembers->count(),
                 'memberAktif' => $allMembers->filter(function($member) {
@@ -575,7 +512,6 @@ class ReportController extends Controller
         
         $members = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         
-        // Statistik untuk view
         $totalMember = Member::count();
         $memberAktif = Member::where('status', 'active')
             ->where('tgl_expired', '>=', Carbon::now()->format('Y-m-d'))
@@ -614,9 +550,6 @@ class ReportController extends Controller
         ));
     }
     
-    /**
-     * Export Member ke PDF
-     */
     private function exportMemberPDF($members, $request, $stats)
     {
         $data = [
@@ -640,17 +573,11 @@ class ReportController extends Controller
         return $pdf->download('laporan_member_' . Carbon::now()->format('Ymd_His') . '.pdf');
     }
     
-    /**
-     * Export Member ke Excel
-     */
     private function exportMemberExcel($members, $request)
     {
         return Excel::download(new MemberExport($members), 'laporan_member_' . Carbon::now()->format('Ymd_His') . '.xlsx');
     }
     
-    /**
-     * Get text description of member filter
-     */
     private function getMemberFilterText($request)
     {
         $filters = [];

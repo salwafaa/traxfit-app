@@ -20,9 +20,6 @@ class Log extends Model
         'keterangan',
     ];
 
-    /**
-     * Relationship dengan User
-     */
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');

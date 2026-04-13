@@ -15,7 +15,6 @@ class ProductCategory extends Model
         'nama_kategori'
     ];
 
-    // Relasi dengan produk
     public function products()
     {
         return $this->hasMany(Product::class, 'kategori');

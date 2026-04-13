@@ -24,19 +24,16 @@ class Product extends Model
         'status' => 'boolean',
     ];
 
-    // Relasi dengan kategori
     public function category()
     {
         return $this->belongsTo(ProductCategory::class, 'kategori', 'id');
     }
 
-    // Relasi dengan detail transaksi
     public function transactionDetails()
     {
         return $this->hasMany(TransactionDetail::class, 'id_product');
     }
 
-    // Relasi dengan stok log
     public function stockLogs()
     {
         return $this->hasMany(StokLog::class, 'id_product');

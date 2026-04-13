@@ -22,7 +22,6 @@ class TransactionController extends Controller
         $query = Transaction::with(['user', 'member'])
             ->where('id_user', auth()->id());
 
-        // Filter by date
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
@@ -30,7 +29,6 @@ class TransactionController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // Filter by member status
         if ($request->filled('member_status')) {
             if ($request->member_status == 'member') {
                 $query->whereNotNull('id_member');
@@ -39,7 +37,6 @@ class TransactionController extends Controller
             }
         }
 
-        // Filter by transaction type
         if ($request->filled('jenis_transaksi')) {
             $query->where('jenis_transaksi', $request->jenis_transaksi);
         }
@@ -66,10 +63,8 @@ class TransactionController extends Controller
             ->get();
         $membershipPackages = MembershipPackage::where('status', true)->get();
         
-        // ===== AMBIL HARGA VISIT DARI GYM SETTINGS =====
         $gymSettings = GymSetting::first();
         
-        // Jika belum ada setting, buat default
         if (!$gymSettings) {
             $gymSettings = GymSetting::create([
                 'nama_gym' => 'TRAXFIT GYM',
@@ -96,18 +91,14 @@ class TransactionController extends Controller
             'metode_bayar' => 'required|in:cash',
             'member_id' => 'nullable|exists:members,id',
             'catatan' => 'nullable|string',
-            
-            // Visit validation
             'harga_visit' => 'required_if:jenis_transaksi,visit,produk_visit|numeric|min:0',
             'tgl_visit' => 'required_if:jenis_transaksi,visit,produk_visit|date',
         ]);
 
-        // ========== VALIDASI KHUSUS VISIT: HARUS HARI INI ==========
         if (in_array($request->jenis_transaksi, ['visit', 'produk_visit'])) {
             $tanggalVisit = Carbon::parse($request->tgl_visit);
             $tanggalSekarang = Carbon::now();
             
-            // Cek apakah tanggal visit sama dengan hari ini
             if (!$tanggalVisit->isToday()) {
                 return response()->json([
                     'success' => false,
@@ -115,7 +106,6 @@ class TransactionController extends Controller
                 ], 400);
             }
             
-            // Cek jam operasional (06:00 - 22:00)
             if ($tanggalVisit->hour < 6 || $tanggalVisit->hour > 22) {
                 return response()->json([
                     'success' => false,
@@ -124,7 +114,6 @@ class TransactionController extends Controller
             }
         }
 
-        // Validasi stok produk
         if (in_array($request->jenis_transaksi, ['produk', 'produk_visit', 'produk_membership'])) {
             foreach ($request->items as $item) {
                 $product = Product::find($item['product_id']);
@@ -139,7 +128,6 @@ class TransactionController extends Controller
 
         DB::beginTransaction();
         try {
-            // Proses member baru jika ada
             $memberId = $request->member_id;
             
             if ($request->has('new_member')) {
@@ -173,16 +161,13 @@ class TransactionController extends Controller
                 $memberId = $member->id;
             }
 
-            // Siapkan data tambahan (JSON)
             $dataTambahan = [];
             
-            // Data Visit
             if (in_array($request->jenis_transaksi, ['visit', 'produk_visit'])) {
                 $dataTambahan['harga_visit'] = $request->harga_visit;
                 $dataTambahan['tgl_visit'] = Carbon::parse($request->tgl_visit)->format('Y-m-d H:i:s');
             }
             
-            // Data Membership
             if (in_array($request->jenis_transaksi, ['membership', 'produk_membership'])) {
                 $package = MembershipPackage::find($request->id_paket);
                 $tglMulai = Carbon::parse($request->tgl_mulai_membership);
@@ -195,7 +180,6 @@ class TransactionController extends Controller
                 $dataTambahan['tgl_mulai'] = $tglMulai->format('Y-m-d H:i:s');
                 $dataTambahan['tgl_selesai'] = $tglSelesai->format('Y-m-d H:i:s');
 
-                // Update masa aktif member
                 if ($memberId) {
                     $member = Member::find($memberId);
                     if ($member) {
@@ -210,7 +194,6 @@ class TransactionController extends Controller
                 }
             }
 
-            // Buat transaksi utama
             $transaction = Transaction::create([
                 'id_user' => auth()->id(),
                 'id_member' => $memberId,
@@ -225,7 +208,6 @@ class TransactionController extends Controller
                 'data_tambahan' => !empty($dataTambahan) ? $dataTambahan : null,
             ]);
 
-            // Simpan detail produk
             if (in_array($request->jenis_transaksi, ['produk', 'produk_visit', 'produk_membership']) && !empty($request->items)) {
                 foreach ($request->items as $item) {
                     $product = Product::find($item['product_id']);
@@ -238,7 +220,6 @@ class TransactionController extends Controller
                         'subtotal' => $product->harga * $item['qty'],
                     ]);
 
-                    // Update stok
                     $product->stok -= $item['qty'];
                     $product->save();
 
@@ -252,7 +233,6 @@ class TransactionController extends Controller
                 }
             }
 
-            // Log aktivitas
             $jenisLabels = [
                 'produk' => 'Pembelian Produk',
                 'visit' => 'Visit',
@@ -286,100 +266,5 @@ class TransactionController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
-    }
-
-    public function show($id)
-    {
-        $transaction = Transaction::with([
-            'user', 
-            'member', 
-            'details.product.category'
-        ])->findOrFail($id);
-        
-        if ($transaction->id_user != auth()->id()) {
-            abort(403, 'Anda tidak memiliki akses ke transaksi ini');
-        }
-        
-        return view('kasir.transaksi.show', compact('transaction'));
-    }
-
-    public function struk($id)
-    {
-        $transaction = Transaction::with([
-            'user', 
-            'member', 
-            'details.product'
-        ])->findOrFail($id);
-        
-        if ($transaction->id_user != auth()->id()) {
-            abort(403, 'Anda tidak memiliki akses ke transaksi ini');
-        }
-        
-        $gymSettings = GymSetting::first();
-        
-        return view('kasir.transaksi.struk', compact('transaction', 'gymSettings'));
-    }
-
-    public function cariProduk(Request $request)
-    {
-        $search = $request->input('search', '');
-        
-        $products = Product::where('status', true)
-            ->where(function($query) use ($search) {
-                $query->where('nama_produk', 'like', "%{$search}%")
-                      ->orWhere('deskripsi', 'like', "%{$search}%");
-            })
-            ->where('stok', '>', 0)
-            ->take(10)
-            ->get()
-            ->map(function($product) {
-                return [
-                    'id' => $product->id,
-                    'nama' => $product->nama_produk,
-                    'harga' => $product->harga,
-                    'stok' => $product->stok,
-                    'kategori' => $product->category->nama_kategori ?? '-',
-                    'harga_formatted' => 'Rp ' . number_format($product->harga, 0, ',', '.'),
-                ];
-            });
-        
-        return response()->json($products);
-    }
-
-    public function cariMember(Request $request)
-    {
-        $search = $request->input('search', '');
-        
-        $members = Member::with('package')
-            ->where('status', 'active')
-            ->where('tgl_expired', '>=', now())
-            ->where(function($query) use ($search) {
-                $query->where('nama', 'like', "%{$search}%")
-                      ->orWhere('kode_member', 'like', "%{$search}%")
-                      ->orWhere('telepon', 'like', "%{$search}%");
-            })
-            ->take(10)
-            ->get()
-            ->map(function($member) {
-                return [
-                    'id' => $member->id,
-                    'kode' => $member->kode_member,
-                    'nama' => $member->nama,
-                    'status' => 'Aktif',
-                    'expired' => $member->tgl_expired->format('d/m/Y'),
-                    'sisa_hari' => $member->sisa_hari,
-                    'is_active' => $member->is_active,
-                ];
-            });
-        
-        return response()->json($members);
-    }
-
-    public function getHargaVisit()
-    {
-        $gymSettings = GymSetting::first();
-        return response()->json([
-            'harga_visit' => $gymSettings->harga_visit ?? 25000
-        ]);
     }
 }

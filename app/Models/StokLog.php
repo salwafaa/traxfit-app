@@ -23,19 +23,16 @@ class StokLog extends Model
         'qty' => 'integer',
     ];
 
-    // Relasi dengan produk
     public function product()
     {
         return $this->belongsTo(Product::class, 'id_product');
     }
 
-    // Relasi dengan user
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    // Scope untuk filter
     public function scopeFilter($query, $filters)
     {
         if (isset($filters['tipe'])) {

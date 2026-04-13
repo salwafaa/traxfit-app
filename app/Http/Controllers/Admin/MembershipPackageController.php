@@ -38,7 +38,6 @@ class MembershipPackageController extends Controller
                 'status' => $request->has('status'),
             ]);
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -89,7 +88,6 @@ class MembershipPackageController extends Controller
                 'status' => $request->has('status'),
             ]);
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -119,7 +117,6 @@ class MembershipPackageController extends Controller
     {
         $package = MembershipPackage::findOrFail($id);
 
-        // Cek apakah paket digunakan oleh member
         if ($package->members()->count() > 0) {
             return redirect()->route('admin.packages.index')
                 ->with('error', 'Paket tidak dapat dihapus karena masih digunakan oleh member.');
@@ -130,7 +127,6 @@ class MembershipPackageController extends Controller
             $namaPackage = $package->nama_paket;
             $package->delete();
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -165,7 +161,6 @@ class MembershipPackageController extends Controller
             $package->status = !$package->status;
             $package->save();
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),

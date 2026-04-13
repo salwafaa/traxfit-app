@@ -45,16 +45,12 @@ class User extends Authenticatable
         return $this->role === 'owner';
     }
 
-    /**
-     * Accessor untuk format last_login sederhana
-     */
     public function getSimpleLastLoginAttribute()
     {
         if (!$this->last_login) {
             return null;
         }
         
-        // Format yang simple: tanggal dan jam saja
         return [
             'date' => $this->last_login->format('d/m/Y'),
             'time' => $this->last_login->format('H:i')

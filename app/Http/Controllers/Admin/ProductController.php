@@ -26,10 +26,8 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // Debug: lihat data yang dikirim
         FacadesLog::info('Data yang dikirim:', $request->all());
         
-        // Validasi dengan pesan kustom
         $request->validate([
             'nama_produk' => 'required|string|max:255|unique:products,nama_produk',
             'harga' => 'required|numeric|min:0',
@@ -49,17 +47,14 @@ class ProductController extends Controller
 
         DB::beginTransaction();
         try {
-            // Cek dulu kolom apa saja yang ada di tabel products
-            // Ini untuk debugging - hapus setelah selesai
             $columns = DB::getSchemaBuilder()->getColumnListing('products');
             FacadesLog::info('Kolom dalam tabel products:', $columns);
             
-            // Data yang akan disimpan - SESUAIKAN DENGNA KOLOM DI DATABASE ANDA
             $data = [
                 'nama_produk' => $request->nama_produk,
                 'harga' => $request->harga,
                 'stok' => $request->stok,
-                'kategori' => $request->kategori,                    
+                'kategori' => $request->kategori,
                 'deskripsi' => $request->deskripsi,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -67,12 +62,10 @@ class ProductController extends Controller
             
             FacadesLog::info('Data yang akan disimpan:', $data);
             
-            // Simpan data
             $product = Product::create($data);
             
             FacadesLog::info('Produk berhasil disimpan dengan ID: ' . $product->id);
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -82,7 +75,6 @@ class ProductController extends Controller
                 ]);
             } catch (\Exception $e) {
                 FacadesLog::error('Gagal menyimpan log: ' . $e->getMessage());
-                // Tetap lanjutkan meskipun log gagal
             }
 
             DB::commit();
@@ -125,23 +117,17 @@ class ProductController extends Controller
 
         DB::beginTransaction();
         try {
-            // Data yang akan diupdate - SESUAIKAN DENGAN KOLOM DI DATABASE ANDA
             $data = [
                 'nama_produk' => $request->nama_produk,
                 'harga' => $request->harga,
                 'stok' => $request->stok,
-                // UBAH 'kategori' ini sesuai dengan nama kolom di database Anda
-                'kategori' => $request->kategori,                    // Jika kolomnya 'kategori'
-                // 'id_kategori' => $request->kategori,              // Jika kolomnya 'id_kategori'
-                // 'category_id' => $request->kategori,              // Jika kolomnya 'category_id'
-                // 'kategori_id' => $request->kategori,              // Jika kolomnya 'kategori_id'
+                'kategori' => $request->kategori,
                 'status' => $request->has('status') ? 1 : 0,
                 'deskripsi' => $request->deskripsi,
             ];
             
             $product->update($data);
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -178,7 +164,6 @@ class ProductController extends Controller
             $namaProduk = $product->nama_produk;
             $product->delete();
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -213,7 +198,6 @@ class ProductController extends Controller
             $product->status = !$product->status;
             $product->save();
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),

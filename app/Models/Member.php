@@ -43,7 +43,6 @@ class Member extends Model
     {
         parent::boot();
 
-        // Generate kode_member unik saat pertama kali dibuat
         static::creating(function ($member) {
             $year  = date('Y');
             $month = date('m');
@@ -68,7 +67,6 @@ class Member extends Model
         });
 
         static::saving(function ($member) {
-            // Jangan override status jika memang sedang di-set ke 'active'
             if ($member->isDirty('status') && $member->status === 'active') {
                 return;
             }
@@ -83,8 +81,6 @@ class Member extends Model
             }
         });
     }
-
-    // ─── Relasi ──────────────────────────────────────────────────────────────
 
     public function package()
     {
@@ -106,8 +102,6 @@ class Member extends Model
         return $this->hasMany(MemberCheckin::class, 'id_member');
     }
 
-    // ─── Accessor ────────────────────────────────────────────────────────────
-
     public function getFotoIdentitasUrlAttribute()
     {
         if ($this->foto_identitas && Storage::disk('public')->exists($this->foto_identitas)) {
@@ -115,8 +109,6 @@ class Member extends Model
         }
         return null;
     }
-
-    // ─── Scopes ──────────────────────────────────────────────────────────────
 
     public function scopeActive($query)
     {
@@ -131,8 +123,6 @@ class Member extends Model
               ->orWhereDate('tgl_expired', '<', now()->toDateString());
         });
     }
-
-    // ─── Computed Attributes ─────────────────────────────────────────────────
 
     public function getIsActiveAttribute()
     {

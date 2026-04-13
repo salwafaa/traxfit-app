@@ -43,11 +43,9 @@ class StockController extends Controller
         try {
             $product = Product::findOrFail($request->id_product);
             
-            // Update stok produk
             if ($request->tipe == 'masuk') {
                 $product->stok += $request->qty;
             } else {
-                // Cek stok cukup
                 if ($product->stok < $request->qty) {
                     throw new \Exception('Stok tidak mencukupi. Stok tersedia: ' . $product->stok);
                 }
@@ -56,7 +54,6 @@ class StockController extends Controller
             
             $product->save();
 
-            // Catat di log stok
             $stokLog = StokLog::create([
                 'id_product' => $request->id_product,
                 'tipe' => $request->tipe,
@@ -65,7 +62,6 @@ class StockController extends Controller
                 'id_user' => auth()->id(),
             ]);
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -94,59 +90,56 @@ class StockController extends Controller
     }
 
     public function log(Request $request)
-{
-    $query = StokLog::with(['product', 'user'])->latest();
-    
-    // Apply filters
-    if ($request->filled('tipe')) {
-        $query->where('tipe', $request->tipe);
+    {
+        $query = StokLog::with(['product', 'user'])->latest();
+        
+        if ($request->filled('tipe')) {
+            $query->where('tipe', $request->tipe);
+        }
+        
+        if ($request->filled('product')) {
+            $query->where('id_product', $request->product);
+        }
+        
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+        
+        $logs = $query->paginate(20);
+        $totalMasuk = StokLog::where('tipe', 'masuk')->sum('qty');
+        $totalKeluar = StokLog::where('tipe', 'keluar')->sum('qty');
+        
+        $products = Product::all();
+        
+        return view('admin.stock.log', compact('logs', 'totalMasuk', 'totalKeluar', 'products'));
     }
-    
-    if ($request->filled('product')) {
-        $query->where('id_product', $request->product);
-    }
-    
-    if ($request->filled('start_date')) {
-        $query->whereDate('created_at', '>=', $request->start_date);
-    }
-    
-    if ($request->filled('end_date')) {
-        $query->whereDate('created_at', '<=', $request->end_date);
-    }
-    
-    $logs = $query->paginate(20);
-    $totalMasuk = StokLog::where('tipe', 'masuk')->sum('qty');
-    $totalKeluar = StokLog::where('tipe', 'keluar')->sum('qty');
-    
-    // For filter dropdown
-    $products = Product::all();
-    
-    return view('admin.stock.log', compact('logs', 'totalMasuk', 'totalKeluar', 'products'));
-}
 
-public function export(Request $request)
-{
-    $query = StokLog::with(['product', 'user', 'product.category']);
-    
-    // Apply filters
-    if ($request->tipe) {
-        $query->where('tipe', $request->tipe);
+    public function export(Request $request)
+    {
+        $query = StokLog::with(['product', 'user', 'product.category']);
+        
+        if ($request->tipe) {
+            $query->where('tipe', $request->tipe);
+        }
+        
+        if ($request->product) {
+            $query->where('product_id', $request->product);
+        }
+        
+        if ($request->start_date) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        
+        if ($request->end_date) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+        
+        $logs = $query->orderBy('created_at', 'desc')->get();
+        
+        return Excel::download(new StockLogExport($logs), 'log_stok_' . date('Y-m-d_His') . '.xlsx');
     }
-    
-    if ($request->product) {
-        $query->where('product_id', $request->product);
-    }
-    
-    if ($request->start_date) {
-        $query->whereDate('created_at', '>=', $request->start_date);
-    }
-    
-    if ($request->end_date) {
-        $query->whereDate('created_at', '<=', $request->end_date);
-    }
-    
-    $logs = $query->orderBy('created_at', 'desc')->get();
-    
-    return Excel::download(new StockLogExport($logs), 'log_stok_' . date('Y-m-d_His') . '.xlsx');
-}
 }

@@ -17,10 +17,6 @@ use Carbon\Carbon;
 
 class MembershipTransactionController extends Controller
 {
-    /**
-     * Halaman form transaksi membership baru.
-     * Jika ada ?member_id=X&mode=renew, data member akan di-preload untuk perpanjangan.
-     */
     public function create(Request $request)
     {
         $nomorUnik = $this->generateNomorUnik();
@@ -28,7 +24,6 @@ class MembershipTransactionController extends Controller
         $products = Product::with('category')->where('stok', '>', 0)->get();
         $gymSettings = GymSetting::first();
 
-        // BARU: Preload data member jika mode perpanjangan
         $preloadMember = null;
         $isRenewMode = false;
 
@@ -71,15 +66,11 @@ class MembershipTransactionController extends Controller
         ));
     }
 
-    /**
-     * Proses simpan transaksi membership (daftar baru ATAU perpanjangan).
-     */
     public function store(Request $request)
     {
         try {
             $isRenew = $request->filled('existing_member_id');
 
-            // Aturan validasi berbeda antara daftar baru dan perpanjangan
             $rules = [
                 'jenis_transaksi' => 'required|in:membership,produk_membership',
                 'id_paket'        => 'required|exists:membership_packages,id',
@@ -91,7 +82,6 @@ class MembershipTransactionController extends Controller
             ];
 
             if ($isRenew) {
-                // Mode perpanjangan: data member sudah ada, hanya field yang berubah boleh diisi
                 $rules['existing_member_id'] = 'required|exists:members,id';
                 $rules['nama']               = 'required|string|max:255';
                 $rules['telepon']            = 'required|string|max:20';
@@ -100,7 +90,6 @@ class MembershipTransactionController extends Controller
                 $rules['no_identitas']       = 'required|string|max:50';
                 $rules['tgl_lahir']          = 'required|date';
             } else {
-                // Mode daftar baru: semua field wajib
                 $rules['nama']            = 'required|string|max:255';
                 $rules['telepon']         = 'required|string|max:20';
                 $rules['alamat']          = 'required|string';
@@ -124,18 +113,14 @@ class MembershipTransactionController extends Controller
             $package  = MembershipPackage::findOrFail($request->id_paket);
             $tglExpired = date('Y-m-d H:i:s', strtotime($request->tgl_mulai . ' + ' . $package->durasi_hari . ' days'));
 
-            // ---------- Tentukan objek member ----------
             if ($isRenew) {
-                // Perpanjangan: update data member yang sudah ada
                 $member = Member::findOrFail($request->existing_member_id);
 
-                // Upload foto baru jika ada
-                $fotoPath = $member->foto_identitas; // default tetap foto lama
+                $fotoPath = $member->foto_identitas;
                 if ($request->hasFile('foto_identitas') && $request->file('foto_identitas')->isValid()) {
                     $fotoPath = $request->file('foto_identitas')->store('identitas', 'public');
                 }
 
-                // Update data member (boleh diubah kasir saat perpanjang)
                 Member::withoutEvents(function () use ($member, $request, $package, $tglExpired, $fotoPath) {
                     $member->update([
                         'nama'            => $request->nama,
@@ -155,7 +140,6 @@ class MembershipTransactionController extends Controller
                 $logKeterangan = 'Perpanjangan membership: ' . $member->nama . ' (' . $member->kode_member . ')';
 
             } else {
-                // Daftar baru: buat member baru
                 $fotoPath = null;
                 if ($request->hasFile('foto_identitas') && $request->file('foto_identitas')->isValid()) {
                     $fotoPath = $request->file('foto_identitas')->store('identitas', 'public');
@@ -183,7 +167,6 @@ class MembershipTransactionController extends Controller
                 $logKeterangan  = 'Transaksi membership baru: ' . $member->nama . ' (' . $member->kode_member . ')';
             }
 
-            // ---------- Hitung total & proses produk ----------
             $totalHarga     = (float) $package->harga;
             $subtotalProduk = 0;
             $items          = [];
@@ -221,7 +204,6 @@ class MembershipTransactionController extends Controller
                 $totalHarga += $subtotalProduk;
             }
 
-            // ---------- Data tambahan untuk JSON kolom ----------
             $dataTambahan = [
                 'paket_membership' => [
                     'id_paket'    => $package->id,
@@ -233,10 +215,9 @@ class MembershipTransactionController extends Controller
                 'tgl_selesai'     => $tglExpired,
                 'subtotal_produk' => $subtotalProduk,
                 'produk'          => $items,
-                'is_renewal'      => $isRenew,  // flag berguna untuk laporan
+                'is_renewal'      => $isRenew,
             ];
 
-            // ---------- Buat transaksi ----------
             $transaction = Transaction::create([
                 'nomor_unik'        => $this->generateNomorUnik(),
                 'id_user'           => auth()->id(),
@@ -251,7 +232,6 @@ class MembershipTransactionController extends Controller
                 'data_tambahan'     => $dataTambahan,
             ]);
 
-            // ---------- Simpan detail produk ----------
             foreach ($items as $item) {
                 $transaction->details()->create([
                     'id_transaction' => $transaction->id,
@@ -262,7 +242,6 @@ class MembershipTransactionController extends Controller
                 ]);
             }
 
-            // ---------- Log ----------
             Log::create([
                 'id_user'    => auth()->id(),
                 'role_user'  => auth()->user()->role,
@@ -296,68 +275,5 @@ class MembershipTransactionController extends Controller
                 'message' => 'Gagal memproses transaksi: ' . $e->getMessage()
             ], 500);
         }
-    }
-
-    public function show($id)
-    {
-        $transaction = Transaction::with(['member', 'user', 'details.product'])
-            ->whereIn('jenis_transaksi', ['membership', 'produk_membership'])
-            ->findOrFail($id);
-
-        $gymSettings = GymSetting::first();
-
-        return view('kasir.transaksi.membership.show', compact('transaction', 'gymSettings'));
-    }
-
-    public function struk($id)
-    {
-        $transaction = Transaction::with(['member', 'user', 'details.product'])
-            ->whereIn('jenis_transaksi', ['membership', 'produk_membership'])
-            ->findOrFail($id);
-
-        $gymSettings = GymSetting::first();
-
-        return view('kasir.transaksi.membership.struk', compact('transaction', 'gymSettings'));
-    }
-
-    public function kartuMember($id)
-    {
-        $transaction = Transaction::with(['member.package', 'details'])
-            ->whereIn('jenis_transaksi', ['membership', 'produk_membership'])
-            ->findOrFail($id);
-
-        $gymSettings = GymSetting::first();
-
-        return view('kasir.transaksi.membership.kartu', compact('transaction', 'gymSettings'));
-    }
-
-    // ─── Private helpers ──────────────────────────────────────────────────────
-
-    private function generateNomorUnik()
-    {
-        $prefix = 'TRX-' . date('Ymd') . '-';
-        $last   = Transaction::where('nomor_unik', 'like', $prefix . '%')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $num = $last
-            ? str_pad(intval(substr($last->nomor_unik, -4)) + 1, 4, '0', STR_PAD_LEFT)
-            : '0001';
-
-        return $prefix . $num;
-    }
-
-    private function generateKodeMember()
-    {
-        $prefix = 'MBR-' . date('Y') . '-';
-        $last   = Member::where('kode_member', 'like', $prefix . '%')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $num = $last
-            ? str_pad(intval(substr($last->kode_member, -4)) + 1, 4, '0', STR_PAD_LEFT)
-            : '0001';
-
-        return $prefix . $num;
     }
 }

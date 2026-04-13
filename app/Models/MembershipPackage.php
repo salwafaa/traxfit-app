@@ -22,19 +22,16 @@ class MembershipPackage extends Model
         'status' => 'boolean',
     ];
 
-    // Relasi dengan member
     public function members()
     {
         return $this->hasMany(Member::class, 'id_paket');
     }
 
-    // Format harga
     public function getHargaFormattedAttribute()
     {
         return 'Rp ' . number_format($this->harga, 0, ',', '.');
     }
 
-    // Format durasi
     public function getDurasiFormattedAttribute()
     {
         if ($this->durasi_hari >= 365) {
@@ -48,7 +45,6 @@ class MembershipPackage extends Model
         }
     }
 
-    // Hitung harga per hari
     public function getHargaPerHariAttribute()
     {
         if ($this->durasi_hari > 0) {

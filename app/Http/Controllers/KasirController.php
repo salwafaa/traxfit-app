@@ -13,7 +13,6 @@ class KasirController extends Controller
     {
         $today = now()->format('Y-m-d');
         
-        // Statistik hari ini
         $stats = [
             'today_transactions' => Transaction::where('id_user', auth()->id())
                 ->whereDate('created_at', $today)
@@ -34,7 +33,6 @@ class KasirController extends Controller
                 ->sum('total_harga'),
         ];
         
-        // Transaksi hari ini
         $todayTransactions = Transaction::with('member')
             ->where('id_user', auth()->id())
             ->whereDate('created_at', $today)
@@ -42,7 +40,6 @@ class KasirController extends Controller
             ->take(5)
             ->get();
             
-        // Check-in hari ini
         $todayCheckins = MemberCheckin::with('member')
             ->where('id_kasir', auth()->id())
             ->whereDate('tanggal', $today)
@@ -50,7 +47,6 @@ class KasirController extends Controller
             ->take(5)
             ->get();
 
-        // LOG: Kasir melihat dashboard
         try {
             Log::create([
                 'id_user' => auth()->id(),

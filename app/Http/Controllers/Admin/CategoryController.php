@@ -33,7 +33,6 @@ class CategoryController extends Controller
                 'nama_kategori' => $request->nama_kategori,
             ]);
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -79,7 +78,6 @@ class CategoryController extends Controller
                 'nama_kategori' => $request->nama_kategori,
             ]);
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),
@@ -109,7 +107,6 @@ class CategoryController extends Controller
     {
         $category = ProductCategory::findOrFail($id);
 
-        // Cek apakah kategori digunakan oleh produk
         if ($category->products()->count() > 0) {
             return redirect()->route('admin.categories.index')
                 ->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh produk.');
@@ -120,7 +117,6 @@ class CategoryController extends Controller
             $namaKategori = $category->nama_kategori;
             $category->delete();
 
-            // Log aktivitas
             try {
                 Log::create([
                     'id_user' => auth()->id(),

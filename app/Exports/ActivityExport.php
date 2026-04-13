@@ -22,7 +22,6 @@ class ActivityExport implements FromCollection, WithHeadings, WithMapping, WithS
     protected $logs;
     protected $filterInfo;
 
-    // $filterInfo opsional, bisa diisi string keterangan filter, misal: "Periode: 01/01/2025 - 31/01/2025"
     public function __construct($logs, $filterInfo = null)
     {
         $this->logs = $logs;
@@ -41,10 +40,6 @@ class ActivityExport implements FromCollection, WithHeadings, WithMapping, WithS
 
     public function headings(): array
     {
-        // Baris 1: Judul utama (dihandle via AfterSheet)
-        // Baris 2: Info filter / tanggal ekspor
-        // Baris 3: Kosong
-        // Baris 4: Header kolom
         return [
             ['TRAXFIT GYM', '', '', '', '', '', ''],
             ['Laporan Log Aktivitas', '', '', '', '', '', ''],
@@ -83,7 +78,6 @@ class ActivityExport implements FromCollection, WithHeadings, WithMapping, WithS
         $lastRow = $sheet->getHighestRow();
         $lastCol = 'G';
 
-        // Baris 1 - Nama Gym
         $sheet->mergeCells("A1:{$lastCol}1");
         $sheet->getStyle('A1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 18, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -92,7 +86,6 @@ class ActivityExport implements FromCollection, WithHeadings, WithMapping, WithS
         ]);
         $sheet->getRowDimension(1)->setRowHeight(35);
 
-        // Baris 2 - Sub judul laporan
         $sheet->mergeCells("A2:{$lastCol}2");
         $sheet->getStyle('A2')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 13, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -101,7 +94,6 @@ class ActivityExport implements FromCollection, WithHeadings, WithMapping, WithS
         ]);
         $sheet->getRowDimension(2)->setRowHeight(25);
 
-        // Baris 3 - Info filter
         $sheet->mergeCells("A3:{$lastCol}3");
         $sheet->getStyle('A3')->applyFromArray([
             'font'      => ['italic' => true, 'size' => 10, 'color' => ['rgb' => '555555'], 'name' => 'Arial'],
@@ -110,14 +102,12 @@ class ActivityExport implements FromCollection, WithHeadings, WithMapping, WithS
         ]);
         $sheet->getRowDimension(3)->setRowHeight(18);
 
-        // Baris 4 - Kosong / spacer
         $sheet->mergeCells("A4:{$lastCol}4");
         $sheet->getStyle('A4')->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFFFFF']],
         ]);
         $sheet->getRowDimension(4)->setRowHeight(6);
 
-        // Baris 5 - Header kolom
         $sheet->getStyle("A5:{$lastCol}5")->applyFromArray([
             'font'      => ['bold' => true, 'size' => 11, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '27124A']],
@@ -126,7 +116,6 @@ class ActivityExport implements FromCollection, WithHeadings, WithMapping, WithS
         ]);
         $sheet->getRowDimension(5)->setRowHeight(22);
 
-        // Baris data - zebra striping
         for ($row = 6; $row <= $lastRow; $row++) {
             $fillColor = ($row % 2 === 0) ? 'F9F7FD' : 'FFFFFF';
             $sheet->getStyle("A{$row}:{$lastCol}{$row}")->applyFromArray([
@@ -145,7 +134,6 @@ class ActivityExport implements FromCollection, WithHeadings, WithMapping, WithS
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                // Freeze header rows
                 $event->sheet->getDelegate()->freezePane('A6');
             },
         ];

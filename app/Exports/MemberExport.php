@@ -40,7 +40,7 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping, WithSty
 
     public function headings(): array
     {
-        $cols = 10; // berkurang dari 12 → 10 (hapus EMAIL & TERDAFTAR OLEH)
+        $cols = 10; 
         $merge = array_fill(0, $cols, '');
 
         return [
@@ -92,9 +92,7 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping, WithSty
     public function styles(Worksheet $sheet)
     {
         $lastRow = $sheet->getHighestRow();
-        $lastCol = 'J'; // sebelumnya L, sekarang J (10 kolom)
-
-        // Baris 1 - Nama Gym
+        $lastCol = 'J';
         $sheet->mergeCells("A1:{$lastCol}1");
         $sheet->getStyle('A1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 18, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -103,7 +101,6 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping, WithSty
         ]);
         $sheet->getRowDimension(1)->setRowHeight(35);
 
-        // Baris 2 - Sub judul
         $sheet->mergeCells("A2:{$lastCol}2");
         $sheet->getStyle('A2')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 13, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
@@ -112,7 +109,6 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping, WithSty
         ]);
         $sheet->getRowDimension(2)->setRowHeight(25);
 
-        // Baris 3 - Info filter
         $sheet->mergeCells("A3:{$lastCol}3");
         $sheet->getStyle('A3')->applyFromArray([
             'font'      => ['italic' => true, 'size' => 10, 'color' => ['rgb' => '555555'], 'name' => 'Arial'],
@@ -121,14 +117,12 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping, WithSty
         ]);
         $sheet->getRowDimension(3)->setRowHeight(18);
 
-        // Baris 4 - Spacer
         $sheet->mergeCells("A4:{$lastCol}4");
         $sheet->getStyle("A4:{$lastCol}4")->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFFFFF']],
         ]);
         $sheet->getRowDimension(4)->setRowHeight(6);
 
-        // Baris 5 - Header kolom
         $sheet->getStyle("A5:{$lastCol}5")->applyFromArray([
             'font'      => ['bold' => true, 'size' => 11, 'color' => ['rgb' => 'FFFFFF'], 'name' => 'Arial'],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '27124A']],
@@ -137,7 +131,6 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping, WithSty
         ]);
         $sheet->getRowDimension(5)->setRowHeight(22);
 
-        // Baris data - zebra striping + status coloring
         for ($row = 6; $row <= $lastRow; $row++) {
             $fillColor = ($row % 2 === 0) ? 'F9F7FD' : 'FFFFFF';
             $sheet->getStyle("A{$row}:{$lastCol}{$row}")->applyFromArray([
@@ -148,7 +141,6 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping, WithSty
             ]);
             $sheet->getRowDimension($row)->setRowHeight(18);
 
-            // Warna status di kolom J (kolom ke-10, sebelumnya K/ke-11)
             $statusCell = "J{$row}";
             $statusVal  = $sheet->getCell($statusCell)->getValue();
             if ($statusVal === 'Aktif') {
@@ -172,9 +164,7 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping, WithSty
             }
         }
 
-        // Kolom NO rata tengah (A)
         $sheet->getStyle("A6:A{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        // Kolom Check-In rata tengah (I, sebelumnya J)
         $sheet->getStyle("I6:I{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         return [];
